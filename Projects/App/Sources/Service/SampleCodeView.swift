@@ -83,7 +83,7 @@ struct KakaoMapView: UIViewRepresentable {
             let mapviewInfo: MapviewInfo = MapviewInfo(viewName: "mapview", viewInfoName: "map", defaultPosition: defaultPosition)
             
             if controller?.addView(mapviewInfo) == Result.OK {
-                let _ = controller?.getView("mapview") as! KakaoMap
+                let _ = controller?.getView("mapview") as? KakaoMap
             }
         }
         
