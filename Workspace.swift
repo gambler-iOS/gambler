@@ -4,8 +4,8 @@ let workspace = Workspace(
     name: "gambler",
     projects: [
         "Projects/App",
-        "Projects/Common",
-        "Projects/Core",
-        "Projects/DesignSystem"
+//        "Projects/Common",
+//        "Projects/Core",
+//        "Projects/DesignSystem"
     ]
 )

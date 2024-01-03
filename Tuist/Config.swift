@@ -4,4 +4,5 @@ let config = Config(
 //    plugins: [
 //        .local(path: .relativeToManifest("../../Plugins/Gambler")),
 //    ]
+    
 )

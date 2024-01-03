@@ -18,20 +18,20 @@ public extension Project {
             sources: SourceFilesList = ["Sources/**"],
             resources: ResourceFileElements? = nil,
             infoPlist: InfoPlist = .default,
-            entitlements: Path? = nil
+            entitlements: Entitlements? = nil
         ) -> Project {
             let settings: Settings = .settings(
                 base: [:],
                 configurations: [
-                    .debug(name: .debug),
-                    .release(name: .release)
+                    .debug(name: .debug, xcconfig: .relativeToRoot("XCConfig/Secrets.xcconfig")),
+                    .release(name: .release, xcconfig: .relativeToRoot("XCConfig/Secrets.xcconfig")),
                 ], defaultSettings: .recommended)
 
             let appTarget = Target(
                 name: name,
                 platform: platform,
                 product: product,
-                bundleId: "\(organizationName).\(name)",
+                bundleId: "kr.co.\(organizationName).\(name)",
                 deploymentTarget: deploymentTarget,
                 infoPlist: infoPlist,
                 sources: sources,

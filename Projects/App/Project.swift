@@ -16,11 +16,20 @@ let project = Project.makeModule(
     ],
     dependencies: [
 //        .project(target: "Coordinator", path: .relativeToRoot("Projects/Coordinator")),
-        .project(target: "Common", path: .relativeToRoot("Projects/Common")),
-        .project(target: "Core", path: .relativeToRoot("Projects/Core")),
-        .project(target: "DesignSystem", path: .relativeToRoot("Projects/DesignSystem")),
+//        .project(target: "Common", path: .relativeToRoot("Projects/Common")),
+//        .project(target: "Core", path: .relativeToRoot("Projects/Core")),
+//        .project(target: "DesignSystem", path: .relativeToRoot("Projects/DesignSystem")),
+        .SPM.Alamofire,
+        .SPM.Kingfisher,
+        .SPM.SwiftyJSON,
+        .SPM.KakaoMapsSDK_SPM,
+        .SPM.FirebaseAuth,
+        .SPM.FirebaseStorage,
+        .SPM.FirebaseFirestore,
+        .SPM.FirebaseFirestoreSwift,
+        .SPM.FirebaseMessaging
     ],
     resources: ["Resources/**"],
-    infoPlist: .file(path: "Support/Info.plist"),
+    infoPlist: .default, // .file(path: "Support/Info.plist"),
     entitlements: "gambler.entitlements"
 )
