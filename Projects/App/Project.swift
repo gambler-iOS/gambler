@@ -8,19 +8,33 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
+private let projectName = "gambler"
+
+let config = Settings.settings(configurations: [
+    .debug(name: "Debug", xcconfig: .relativeToRoot("Configs/Secrets.xcconfig")),
+    .release(name: "Release", xcconfig: .relativeToRoot("Configs/Secrets.xcconfig")),
+])
+
 let project = Project.makeModule(
-    name: "gambler",
+    name: projectName,
     platform: .iOS,
     product: .app,
     packages: [
     ],
+    settings: config, 
     dependencies: [
-//        .project(target: "Coordinator", path: .relativeToRoot("Projects/Coordinator")),
-        .project(target: "Common", path: .relativeToRoot("Projects/Common")),
-        .project(target: "Core", path: .relativeToRoot("Projects/Core")),
-        .project(target: "DesignSystem", path: .relativeToRoot("Projects/DesignSystem")),
+        .SPM.Kingfisher,
+        .SPM.Alamofire,
+        .SPM.FirebaseAuth,
+        .SPM.FirebaseStorage,
+        .SPM.FirebaseFirestore,
+        .SPM.KakaoMapsSDK,
+        .SPM.SwiftyJSON
     ],
     resources: ["Resources/**"],
-    infoPlist: .file(path: "Support/Info.plist"),
+    infoPlist: .default,
     entitlements: "gambler.entitlements"
 )
+
+
+

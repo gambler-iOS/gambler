@@ -6,27 +6,22 @@ import ProjectDescription
 /// See https://docs.tuist.io/guides/helpers/
 ///
 public extension Project {
-    
     static func makeModule(
             name: String,
             platform: Platform = .iOS,
             product: Product,
             organizationName: String = "gambler",
             packages: [Package] = [],
+            settings: Settings,
             deploymentTarget: DeploymentTarget? = .iOS(targetVersion: "16.0", devices: [.iphone]),
             dependencies: [TargetDependency] = [],
             sources: SourceFilesList = ["Sources/**"],
             resources: ResourceFileElements? = nil,
             infoPlist: InfoPlist = .default,
-            entitlements: Path? = nil
+            entitlements: Entitlements? = nil
         ) -> Project {
-            let settings: Settings = .settings(
-                base: [:],
-                configurations: [
-                    .debug(name: .debug),
-                    .release(name: .release)
-                ], defaultSettings: .recommended)
-
+            let settings: Settings = settings
+                
             let appTarget = Target(
                 name: name,
                 platform: platform,
@@ -47,7 +42,7 @@ public extension Project {
                 product: .unitTests,
                 bundleId: "\(organizationName).\(name)Tests",
                 deploymentTarget: deploymentTarget,
-                infoPlist: .default,
+                infoPlist: .default,  // 기본 생성되는 Plist가 추가 됨
                 sources: ["Tests/**"],
                 dependencies: [.target(name: name)]
             )

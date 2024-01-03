@@ -14,7 +14,10 @@ public extension TargetDependency {
 public extension TargetDependency.SPM {
     static let Kingfisher = TargetDependency.external(name: "Kingfisher")
     static let Alamofire = TargetDependency.external(name: "Alamofire")
-    static let Firebase = TargetDependency.external(name: "Firebase")
-    static let KakaoMapsSDK = TargetDependency.external(name: "KakaoMapsSDK")
-    
+    static let FirebaseAuth = TargetDependency.external(name: "FirebaseAuth")
+    static let FirebaseStorage = TargetDependency.external(name: "FirebaseStorage")
+    static let FirebaseFirestore = TargetDependency.external(name: "FirebaseFirestore")
+    static let KakaoMapsSDK = TargetDependency.external(name: "KakaoMapsSDK_SPM")
+    static let SwiftyJSON = TargetDependency.external(name: "SwiftyJSON")
 }
+
