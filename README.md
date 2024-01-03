@@ -2,6 +2,7 @@
 gambler iOS 프로젝트 입니다.
 
 
+```
 gambler
 ├── Projects
 │		└── APP
@@ -10,7 +11,7 @@ gambler
 │			  ├── Sources
 │			  │   ├── APP
 │			  │   │   ├── Onboarding
-│			  │   │   │		├── View
+│			  │   │   │   ├── View
 │			  │   │   │   └── ViewModel
 │			  │   │   ├── AppDelegate.swift
 │			  │   │   └── GamberApp.swift
@@ -41,3 +42,4 @@ gambler
 │			  └── gambler.entitlements
 └── XCConfig
 	  └── App
+```
