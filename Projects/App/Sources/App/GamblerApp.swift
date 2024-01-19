@@ -10,9 +10,11 @@ import SwiftUI
 
 @main
 struct GamblerApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
     var body: some Scene {
         WindowGroup {
-            MainView()
+            HomeView()
         }
     }
 }

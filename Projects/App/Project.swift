@@ -27,7 +27,10 @@ let project = Project.makeModule(
         .SPM.FirebaseStorage,
         .SPM.FirebaseFirestore,
         .SPM.FirebaseFirestoreSwift,
-        .SPM.FirebaseMessaging
+        .SPM.FirebaseMessaging,
+        .SPM.KakaoSDKCommon,
+        .SPM.KakaoSDKAuth,
+        .SPM.KakaoSDKUser
     ],
     resources: ["Resources/**"],
     infoPlist: .default, // .file(path: "Support/Info.plist"),
