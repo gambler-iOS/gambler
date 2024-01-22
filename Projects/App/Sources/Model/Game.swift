@@ -8,13 +8,16 @@
 
 import Foundation
 
-struct Game: FirebaseAvailable {
+struct Game: AvailableFirebase {
     var id: String
     let gameName: String
     let gamelmage: String
     let gameIntroduction: GameIntroduction
     var descriptionimage: [String]
     var gameLink: String
+    let createdDate: Date
+    var reviewCount: Int
+    var reviewRatingAverage: Double
 }
 
 struct GameIntroduction: Codable {

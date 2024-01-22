@@ -7,3 +7,59 @@
 //
 
 import Foundation
+import FirebaseFirestore
+import FirebaseFirestoreSwift
+
+final class FirebaseManager {
+    static let shared = FirebaseManager()
+
+    private init() {
+    }
+
+    func createData<T: AvailableFirebase>(collectionName: String, data: T) throws {
+        let documentRef = Firestore.firestore().collection(collectionName).document(data.id)
+        try documentRef.setData(from: data)
+    }
+
+    func fetchAllData<T: AvailableFirebase>(collectionName: String, objectType: T.Type,
+                                            completion: @escaping ([T]) -> Void) async {
+        do {
+            let querySnapshot = try await Firestore.firestore().collection(collectionName).getDocuments()
+            let data = querySnapshot.documents.compactMap { try? $0.data(as: objectType) }
+            completion(data)
+        } catch {
+            print("Error fetching \(collectionName): \(error.localizedDescription)")
+        }
+    }
+
+    func fetchData<T: AvailableFirebase>(collectionName: String, objectType: T.Type, orderBy: String, limit: Int?,
+                                         completion: @escaping ([T]) -> Void) async {
+        do {
+            var collectionRef = Firestore.firestore().collection(collectionName)
+                .order(by: orderBy, descending: true)
+            if let limit {
+                collectionRef = collectionRef.limit(to: limit)
+            }
+            let querySnapshot = try await collectionRef.getDocuments()
+            let data = querySnapshot.documents.compactMap { try? $0.data(as: objectType) }
+            completion(data)
+        } catch {
+            print("Error fetching \(collectionName): \(error.localizedDescription)")
+        }
+    }
+
+    func readOneData<T: AvailableFirebase>(collectionName: String, objectType: T.Type, byId: String,
+                                           completion: @escaping ([T]) -> Void) async {
+        do {
+            let querySnapshot = try await Firestore.firestore().collection(collectionName)
+                .whereField("id", isEqualTo: byId).getDocuments()
+            let data = querySnapshot.documents.compactMap { try? $0.data(as: objectType) }
+            completion(data)
+        } catch {
+            print("Error fetching \(collectionName): \(error.localizedDescription)")
+        }
+    }
+    //    func getProfileImageURL(path: ImagePath, fileName:String) -> String {
+    //        Storage.storage().reference().child(path.rawValue + fileName).fullPath
+    //    }
+}

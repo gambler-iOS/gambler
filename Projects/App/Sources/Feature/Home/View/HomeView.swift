@@ -9,11 +9,30 @@
 import SwiftUI
 
 struct HomeView: View {
+    @EnvironmentObject var homeViewModel: HomeViewModel
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationStack {
+            ScrollView {
+                VStack {
+                    Text("Logo")
+                    Spacer()
+                    EventBannerView()
+                    PopularGamesView()
+                    PopularShopsView()
+                }
+            }
+        }
+        .task {
+            await homeViewModel.fetchData()
+        }
+//        .task {
+//            await homeViewModel.testCreate()
+//        }
     }
 }
 
 #Preview {
     HomeView()
+        .environmentObject(HomeViewModel())
 }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Review: FirebaseAvailable {
+struct Review: AvailableFirebase {
     var id: String
     let postld: String
     let userld: String
