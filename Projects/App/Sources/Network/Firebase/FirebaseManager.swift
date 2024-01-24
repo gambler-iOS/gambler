@@ -32,8 +32,9 @@ final class FirebaseManager {
         }
     }
 
-    func fetchData<T: AvailableFirebase>(collectionName: String, objectType: T.Type, orderBy: String, limit: Int?,
-                                         completion: @escaping ([T]) -> Void) async {
+    // TODO: error handler 만들어야하나
+    func fetchData<T: AvailableFirebase>(collectionName: String, objectType: T.Type, orderBy: String, limit: Int?)
+    async -> [T] {
         do {
             var collectionRef = Firestore.firestore().collection(collectionName)
                 .order(by: orderBy, descending: true)
@@ -42,10 +43,11 @@ final class FirebaseManager {
             }
             let querySnapshot = try await collectionRef.getDocuments()
             let data = querySnapshot.documents.compactMap { try? $0.data(as: objectType) }
-            completion(data)
+            return data
         } catch {
             print("Error fetching \(collectionName): \(error.localizedDescription)")
         }
+        return []
     }
 
     func readOneData<T: AvailableFirebase>(collectionName: String, objectType: T.Type, byId: String,

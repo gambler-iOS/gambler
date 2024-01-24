@@ -10,7 +10,14 @@ import SwiftUI
 
 struct EventBannerView: View {
     var body: some View {
-        Text("Event Banner")
+        Rectangle()
+            .fill(Color.clear)
+            .frame(width: .infinity, height: 150)
+            .border(Color.black)
+            .overlay(
+                Text("Event Banner")
+                    .font(.largeTitle)
+            )
     }
 }
 

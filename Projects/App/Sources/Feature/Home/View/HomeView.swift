@@ -14,20 +14,20 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack {
+                VStack(alignment: .leading) {
                     Text("Logo")
-                    Spacer()
                     EventBannerView()
-                    PopularGamesView()
-                    PopularShopsView()
+                    HomeGamesGridView(title: "인기 게임", games: homeViewModel.popularGames)
+                    HomeShopListView(title: "인기 매장", shops: homeViewModel.popularShops)
+                    HomeGamesGridView(title: "신규 게임", games: homeViewModel.newGames)
+                    HomeShopListView(title: "신규 매장", shops: homeViewModel.newShops)
                 }
+                .padding()
             }
         }
-        .task {
-            await homeViewModel.fetchData()
-        }
+        // MARK: 개발 시 쓸모없는 데이터 호출을 막기 위해 firestore fetch 대신 더미데이터 사용하기 위한 주석 처리
 //        .task {
-//            await homeViewModel.testCreate()
+//            await homeViewModel.fetchData()
 //        }
     }
 }
