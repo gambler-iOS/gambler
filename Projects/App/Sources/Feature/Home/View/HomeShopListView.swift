@@ -18,7 +18,7 @@ struct HomeShopListView: View {
                 .font(.title)
             ForEach(shops) { shop in
                 NavigationLink {
-                    
+                    Text(shop.shopName)
                 } label: {
                     Text(shop.shopName)
                 }

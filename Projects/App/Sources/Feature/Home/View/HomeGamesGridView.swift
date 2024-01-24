@@ -18,7 +18,7 @@ struct HomeGamesGridView: View {
                 .font(.title)
             ForEach(games) { game in
                 NavigationLink {
-                    
+                    Text(game.gameName)
                 } label: {
                     Text(game.gameName)
                 }

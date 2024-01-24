@@ -10,17 +10,23 @@ import SwiftUI
 
 struct EventBannerView: View {
     var body: some View {
-        Rectangle()
-            .fill(Color.clear)
-            .frame(width: .infinity, height: 150)
-            .border(Color.black)
-            .overlay(
-                Text("Event Banner")
-                    .font(.largeTitle)
-            )
+        NavigationLink {
+            WebView(urlToLoad: "https://www.apple.com")
+        } label: {
+            Rectangle()
+                .fill(Color.clear)
+                .frame(width: .infinity, height: 150)
+                .border(Color.black)
+                .overlay(
+                    Text("Event Banner")
+                        .font(.largeTitle)
+                )
+        }
     }
 }
 
 #Preview {
-    EventBannerView()
+    NavigationStack {
+        EventBannerView()
+    }
 }
