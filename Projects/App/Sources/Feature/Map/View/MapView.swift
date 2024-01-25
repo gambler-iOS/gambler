@@ -16,6 +16,7 @@ struct MapView: View {
     @State private var userLatitude: Double = 37.402001
     @State private var userLongitude: Double = 127.108678
     @State var isShowingSheet: Bool = false
+    @State var detent : PresentationDetent = .medium
     
     var body: some View {
         KakaoMapView(draw: $draw, userLatitude: $userLatitude, userLongitude: $userLongitude, isShowingSheet: $isShowingSheet)
@@ -31,11 +32,14 @@ struct MapView: View {
             .edgesIgnoringSafeArea(.all)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .sheet(isPresented: $isShowingSheet) {
-                ShopListView()
+                NavigationStack{
+                    ShopListView(isShowingSheet: $isShowingSheet)
+                }.presentationDetents([
+                    .medium,
+                    .large
+                ], selection : $detent)
             }
-            
     }
-    
     func startTask() async {
            // 위치 사용 권한 설정 확인
            let locationManager = CLLocationManager()

@@ -64,7 +64,7 @@ struct KakaoMapView: UIViewRepresentable {
             self._isShowingSheet = isShowingSheet
             super.init()
         }
-        
+    
         func createController(_ view: KMViewContainer) {
             controller = KMController(viewContainer: view)
             controller?.delegate = self
@@ -88,14 +88,14 @@ struct KakaoMapView: UIViewRepresentable {
                     createSpriteGUI()
                     
                 } else {
-                    print("Error: KakaoMap 캐스팅 실패")
+                    print("[Error: KakaoMap casting failure]")
                 }
             }
         }
         
         func cameraWillMove(_ param: CameraActionEventParam) {
             if(param.by == .notUserAction) {
-                print("Camera will move")
+                print("[Action: Camera will move]")
                 cameraStartHandler?.dispose()
             }
         }
@@ -113,7 +113,7 @@ struct KakaoMapView: UIViewRepresentable {
             let coordinate = locationManager.location?.coordinate
             userLatitude = coordinate?.latitude ?? 37.402001
             userLongitude = coordinate?.longitude ?? 127.108678
-            print("myLocation 불러왔음\(userLatitude), \(userLongitude)")
+            print("[Get: MyLocation] latitude = \(userLatitude), longitude = \(userLongitude)")
             moveCameraToFocus(MapPoint(longitude: userLongitude, latitude: userLatitude), zoomLevel: 15)
         }
         
@@ -125,13 +125,13 @@ struct KakaoMapView: UIViewRepresentable {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     let cameraUpdate: CameraUpdate = CameraUpdate.make(target: MapPoint(longitude: 127.108678, latitude: 37.402001), zoomLevel: 15, mapView: mapView!)
                     mapView?.moveCamera(cameraUpdate)
-                    print("카메라 위치 ^.^ \(self.userLatitude), \(self.userLongitude)")
+                    print("[Get: Camera point] latitude = \(self.userLatitude), longitude = \(self.userLongitude)")
                 }
                 first = false
             }
         }
         
-        // MARK: - 마커
+        // MARK: - Poi
         func createLabelLayer() {
             if let view = controller?.getView("mapview") as? KakaoMap{
                 let manager = view.getLabelManager()
@@ -176,7 +176,7 @@ struct KakaoMapView: UIViewRepresentable {
                     let marker = layer?.addPoi(option: poiOption, at: markerPoint)
                     marker?.userObject = markerData as AnyObject
                     let _ = marker?.addPoiTappedEventHandler(target: self , handler: KakaoMapCoordinator.poiDidTapped)
-                    print("@@@@@@@@@@@\(markerData)가 찍혔어요 @@@@@@@@@@@@@")
+                    print("[Action: create Poi] markerData = \(markerData)")
                     marker?.show()
                 }
                 
@@ -193,7 +193,7 @@ struct KakaoMapView: UIViewRepresentable {
         
         func poiDidTapped(_ param: PoiInteractionEventParam) {
             if let markerData = param.poiItem.userObject as? MarkerTestData {
-                print("poi name : \(markerData.name)\npoi lo : \(markerData.longitude)\npoi la : \(markerData.latitude)")
+                print("[Action: Tapped Poi] \npoi name : \(markerData.name)\npoi lo : \(markerData.longitude)\npoi la : \(markerData.latitude)")
                 moveCameraToFocus(MapPoint(longitude: Double(markerData.longitude), latitude: Double(markerData.latitude)), zoomLevel: 17)
                 isShowingSheet = true
             }
@@ -226,11 +226,12 @@ struct KakaoMapView: UIViewRepresentable {
         func guiDidTapped(_ gui: GuiBase, componentName: String) {
             NSLog("Gui: \(gui.name), Component: \(componentName) tapped")
             
-            // GuiButton을 포함하는 SpriteGui에서 특정 아이디의 GuiText Component를 가져온다.
+            // GuiButton을 포함하는 SpriteGui에서 특정 아이디의 GuiText Component를 가져옴
             let guitext = gui.getChild("text") as? GuiText
             getUserLocation()
             gui.updateGui()
         }
+        
         // 카메라 포커스
         func moveCameraToFocus(_ point: MapPoint, zoomLevel: Int){
             if let mapView: KakaoMap = controller?.getView("mapview") as? KakaoMap{
@@ -241,7 +242,7 @@ struct KakaoMapView: UIViewRepresentable {
                     //mapView?.moveCamera(cameraUpdate)
                     mapView.animateCamera(cameraUpdate : cameraUpdate, options: CameraAnimationOptions(autoElevation: false, consecutive: false, durationInMillis: 100))
                     
-                    print("카메라 위치 ^.^ \(self.userLatitude), \(self.userLongitude)")
+                    print("[Get: Camera point] latitude = \(self.userLatitude), longitude = \(self.userLongitude)")
                 }
             }
         }
