@@ -5,7 +5,7 @@
 //  Created by Hyo Myeong Ahn on 12/31/23.
 //  Copyright © 2023 gambler. All rights reserved.
 //
-
+/*
 import SwiftUI
 import KakaoMapsSDK
 
@@ -106,3 +106,4 @@ struct KakaoMapView: UIViewRepresentable {
 #Preview {
     MainView()
 }
+*/
