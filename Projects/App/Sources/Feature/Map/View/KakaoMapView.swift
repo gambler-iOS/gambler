@@ -145,7 +145,7 @@ struct KakaoMapView: UIViewRepresentable {
             if let view = controller?.getView("mapview") as? KakaoMap {
                 let manager = view.getLabelManager()
                 
-                let iconStyle1 = PoiIconStyle(symbol: UIImage(named: "marker"))
+                let iconStyle1 = PoiIconStyle(symbol: UIImage(named: "Pick"))
                 let red = PoiTextLineStyle(textStyle: TextStyle(fontSize: 20, fontColor: UIColor.white, strokeThickness: 2, strokeColor: UIColor.red))
                 let blue = PoiTextLineStyle(textStyle: TextStyle(fontSize: 20, fontColor: UIColor.white, strokeThickness: 2, strokeColor: UIColor.blue))
                 let textStyle1 = PoiTextStyle(textLineStyles: [red, blue])
@@ -172,7 +172,7 @@ struct KakaoMapView: UIViewRepresentable {
                     poiOption.addText(PoiText(text: markerData.name, styleIndex: 0))
                     poiOption.clickable = true
                     
-                    let markerPoint = MapPoint(longitude: Double(markerData.longitude), latitude: Double(markerData.latitude))
+                    let markerPoint = MapPoint(longitude: Double(markerData.longitude), latitude: markerData.latitude)
                     let marker = layer?.addPoi(option: poiOption, at: markerPoint)
                     marker?.userObject = markerData as AnyObject
                     let _ = marker?.addPoiTappedEventHandler(target: self , handler: KakaoMapCoordinator.poiDidTapped)
@@ -185,7 +185,7 @@ struct KakaoMapView: UIViewRepresentable {
                 poiOption.rank = 0
                 poiOption.clickable = true
                 poiOption.addText(PoiText(text: "내위치", styleIndex: 1))
-                let markerPoint = MapPoint(longitude: Double(userLongitude), latitude: Double(userLatitude))
+                let markerPoint = MapPoint(longitude: Double(userLongitude), latitude: userLatitude)
                 let marker = layer?.addPoi(option: poiOption, at: markerPoint)
                 marker?.show()
             }
@@ -194,7 +194,7 @@ struct KakaoMapView: UIViewRepresentable {
         func poiDidTapped(_ param: PoiInteractionEventParam) {
             if let markerData = param.poiItem.userObject as? MarkerTestData {
                 print("[Action: Tapped Poi] \npoi name : \(markerData.name)\npoi lo : \(markerData.longitude)\npoi la : \(markerData.latitude)")
-                moveCameraToFocus(MapPoint(longitude: Double(markerData.longitude), latitude: Double(markerData.latitude)), zoomLevel: 17)
+                moveCameraToFocus(MapPoint(longitude: Double(markerData.longitude), latitude: markerData.latitude), zoomLevel: 17)
                 isShowingSheet = true
             }
         }

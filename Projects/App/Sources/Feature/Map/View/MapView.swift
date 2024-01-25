@@ -40,6 +40,7 @@ struct MapView: View {
                 ], selection : $detent)
             }
     }
+    
     func startTask() async {
            // 위치 사용 권한 설정 확인
            let locationManager = CLLocationManager()
