@@ -15,6 +15,7 @@ struct KakaoMapView: UIViewRepresentable {
     @Binding var draw: Bool
     @Binding var userLatitude: Double
     @Binding var userLongitude: Double
+    @Binding var isShowingSheet: Bool
 
     func makeUIView(context: Self.Context) -> KMViewContainer {
         let view: KMViewContainer = KMViewContainer()
@@ -28,9 +29,7 @@ struct KakaoMapView: UIViewRepresentable {
         if draw {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 context.coordinator.controller?.startEngine()
-                context.coordinator.controller?.startRendering()
-            }
-        }
+                context.coordinator.controller?.startRendering()}}
         else {
             context.coordinator.controller?.stopRendering()
             context.coordinator.controller?.stopEngine()
@@ -38,7 +37,7 @@ struct KakaoMapView: UIViewRepresentable {
     }
     
     func makeCoordinator() -> KakaoMapCoordinator {
-        return KakaoMapCoordinator(userLatitude: $userLatitude, userLongitude: $userLongitude)
+        return KakaoMapCoordinator(userLatitude: $userLatitude, userLongitude: $userLongitude, isShowingSheet: $isShowingSheet)
     }
 
     static func dismantleUIView(_ uiView: KMViewContainer, coordinator: KakaoMapCoordinator) {
@@ -56,11 +55,13 @@ struct KakaoMapView: UIViewRepresentable {
         
         @Binding var userLatitude: Double
         @Binding var userLongitude: Double
+        @Binding var isShowingSheet: Bool
 
-        init(userLatitude: Binding<Double>, userLongitude: Binding<Double>) {
+        init(userLatitude: Binding<Double>, userLongitude: Binding<Double>, isShowingSheet: Binding<Bool>) {
             first = true
             self._userLatitude = userLatitude
             self._userLongitude = userLongitude
+            self._isShowingSheet = isShowingSheet
             super.init()
         }
         
@@ -194,6 +195,7 @@ struct KakaoMapView: UIViewRepresentable {
             if let markerData = param.poiItem.userObject as? MarkerTestData {
                 print("poi name : \(markerData.name)\npoi lo : \(markerData.longitude)\npoi la : \(markerData.latitude)")
                 moveCameraToFocus(MapPoint(longitude: Double(markerData.longitude), latitude: Double(markerData.latitude)), zoomLevel: 17)
+                isShowingSheet = true
             }
         }
         

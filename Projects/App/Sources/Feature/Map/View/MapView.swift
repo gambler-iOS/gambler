@@ -15,10 +15,10 @@ struct MapView: View {
     @State var draw: Bool = true
     @State private var userLatitude: Double = 37.402001
     @State private var userLongitude: Double = 127.108678
-    @State var showingSheet: Bool = false
+    @State var isShowingSheet: Bool = false
     
     var body: some View {
-        KakaoMapView(draw: $draw, userLatitude: $userLatitude, userLongitude: $userLongitude)
+        KakaoMapView(draw: $draw, userLatitude: $userLatitude, userLongitude: $userLongitude, isShowingSheet: $isShowingSheet)
             .onAppear {
                 Task {
                     await startTask()
@@ -30,6 +30,9 @@ struct MapView: View {
             })
             .edgesIgnoringSafeArea(.all)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .sheet(isPresented: $isShowingSheet) {
+                ShopListView()
+            }
             
     }
     
