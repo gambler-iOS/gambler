@@ -92,7 +92,7 @@ struct KakaoMapView: UIViewRepresentable {
                     createPoiStyle()
                     createMarkersOnMap()
                     createSpriteGUI()
-                    
+                
                     
                 } else {
                     print("[Error: KakaoMap casting failure]")
@@ -155,14 +155,22 @@ struct KakaoMapView: UIViewRepresentable {
                 
                 let iconStyle1 = PoiIconStyle(symbol: UIImage(named: "Pick"))
                 let red = PoiTextLineStyle(textStyle: TextStyle(fontSize: 20, fontColor: UIColor.white, strokeThickness: 2, strokeColor: UIColor.red))
+                let iconStyle2 = PoiIconStyle(symbol: UIImage(named: "MyLocation"))
                 let blue = PoiTextLineStyle(textStyle: TextStyle(fontSize: 20, fontColor: UIColor.white, strokeThickness: 2, strokeColor: UIColor.blue))
                 let textStyle1 = PoiTextStyle(textLineStyles: [red, blue])
                 
-                let poiStyle = PoiStyle(styleID: "PerLevelStyle", styles: [
+                let poiStyle1 = PoiStyle(styleID: "PerLevelStyle", styles: [
                     PerLevelPoiStyle(iconStyle: iconStyle1, textStyle: textStyle1, level: 8),
-                    PerLevelPoiStyle(iconStyle: iconStyle1, textStyle: textStyle1, level: 18)
+                    PerLevelPoiStyle(iconStyle: iconStyle1, textStyle: textStyle1, level: 18),
+                  
                 ])
-                manager.addPoiStyle(poiStyle)
+                let poiStyle2 = PoiStyle(styleID: "MyLocationStyle", styles: [
+                    PerLevelPoiStyle(iconStyle: iconStyle2, textStyle: textStyle1, level: 8),
+                    PerLevelPoiStyle(iconStyle: iconStyle2, textStyle: textStyle1, level: 18)
+                ])
+            
+                manager.addPoiStyle(poiStyle1)
+                manager.addPoiStyle(poiStyle2)
             }
         }
         
@@ -189,7 +197,7 @@ struct KakaoMapView: UIViewRepresentable {
                 }
                 
                 // 내위치 Poi
-                let poiOption = PoiOptions(styleID: "PerLevelStyle")
+                let poiOption = PoiOptions(styleID: "MyLocationStyle")
                 poiOption.rank = 0
                 poiOption.clickable = true
                 poiOption.addText(PoiText(text: "내위치", styleIndex: 1))
