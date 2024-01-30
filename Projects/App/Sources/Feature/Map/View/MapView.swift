@@ -19,26 +19,29 @@ struct MapView: View {
     @State var detent : PresentationDetent = .medium
     
     var body: some View {
-        KakaoMapView(draw: $draw, userLatitude: $userLatitude, userLongitude: $userLongitude, isShowingSheet: $isShowingSheet)
-            .onAppear {
-                Task {
-                    await startTask()
-                    self.draw = true
+        VStack{
+            KakaoMapView(draw: $draw, userLatitude: $userLatitude, userLongitude: $userLongitude, isShowingSheet: $isShowingSheet)
+                .onAppear {
+                    Task {
+                        await startTask()
+                        self.draw = true
+                    }
                 }
-            }
-            .onDisappear(perform: {
-                self.draw = false
-            })
-            .edgesIgnoringSafeArea(.all)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .sheet(isPresented: $isShowingSheet) {
-                NavigationStack{
-                    ShopListView(isShowingSheet: $isShowingSheet)
-                }.presentationDetents([
-                    .medium,
-                    .large
-                ], selection : $detent)
-            }
+                .onDisappear(perform: {
+                    self.draw = false
+                })
+                .edgesIgnoringSafeArea(.all)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .sheet(isPresented: $isShowingSheet) {
+                    NavigationView{
+                        ShopListView(isShowingSheet: $isShowingSheet)
+                    }.presentationDetents([
+                        .medium,
+                        .large
+                    ], selection : $detent)
+                }
+        }.frame(height: 800)
+           
     }
     
     func startTask() async {
@@ -62,4 +65,8 @@ struct MapView: View {
                locationManager.requestWhenInUseAuthorization()
            }
        }
+}
+
+#Preview {
+    KakaoMapView(draw: .constant(true), userLatitude: .constant(13.0000), userLongitude: .constant(13.0000), isShowingSheet: .constant(false))
 }

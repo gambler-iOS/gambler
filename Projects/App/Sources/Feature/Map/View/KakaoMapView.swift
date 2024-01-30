@@ -19,13 +19,16 @@ struct KakaoMapView: UIViewRepresentable {
 
     func makeUIView(context: Self.Context) -> KMViewContainer {
         let view: KMViewContainer = KMViewContainer()
+        view.isUserInteractionEnabled = true
         view.sizeToFit()
+       // view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         context.coordinator.createController(view)
         context.coordinator.controller?.initEngine()
         return view
     }
 
     func updateUIView(_ uiView: KMViewContainer, context: Self.Context) {
+        print("[Get: 차일드 뷰 크기\(uiView.renderView?.frame)]")
         if draw {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 context.coordinator.controller?.startEngine()
@@ -66,19 +69,22 @@ struct KakaoMapView: UIViewRepresentable {
         }
     
         func createController(_ view: KMViewContainer) {
+            print("[Get: 부모 뷰 크기\(view.frame)]")
+            print("[Get: 차일드 뷰 크기\(view.renderView?.frame)]")
             controller = KMController(viewContainer: view)
             controller?.delegate = self
         }
         
+
         func addViews() {
             let defaultPosition: MapPoint = MapPoint(longitude: userLongitude, latitude: userLatitude)
             let mapviewInfo: MapviewInfo = MapviewInfo(viewName: "mapview", viewInfoName: "map", defaultPosition: defaultPosition)
             
             if controller?.addView(mapviewInfo) == Result.OK {
-                
+            
                 if let mapView = controller?.getView("mapview") as? KakaoMap {
                     cameraStartHandler = mapView
-                        .addCameraWillMovedEventHandler(target: self , handler: KakaoMapCoordinator.cameraWillMove)
+                        .addCameraWillMovedEventHandler(target: self, handler: KakaoMapCoordinator.cameraWillMove)
                     cameraStoppedHandler = mapView
                         .addCameraStoppedEventHandler(target: self, handler: KakaoMapCoordinator.onCameraStopped)
                     getUserLocation()
@@ -86,6 +92,7 @@ struct KakaoMapView: UIViewRepresentable {
                     createPoiStyle()
                     createMarkersOnMap()
                     createSpriteGUI()
+                    
                     
                 } else {
                     print("[Error: KakaoMap casting failure]")
@@ -120,7 +127,8 @@ struct KakaoMapView: UIViewRepresentable {
         func containerDidResized(_ size: CGSize) {
             let mapView: KakaoMap? = controller?.getView("mapview") as? KakaoMap
             mapView?.viewRect = CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: size)
-            
+           
+            print("[Action: Resizing Container!!!!]")
             if first {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     let cameraUpdate: CameraUpdate = CameraUpdate.make(target: MapPoint(longitude: 127.108678, latitude: 37.402001), zoomLevel: 15, mapView: mapView!)

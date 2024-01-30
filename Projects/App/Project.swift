@@ -8,6 +8,10 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
+var extendedInfoPlist: [String: Plist.Value] = [
+    "KAKAO_APP_KEY": "$(KAKAO_APP_KEY)",
+    "Privacy - Location When In Use Usage Description": "사용자의 위치를 사용하시겠습니까?"
+]
 let project = Project.makeModule(
     name: "gambler",
     platform: .iOS,
@@ -30,6 +34,6 @@ let project = Project.makeModule(
         .SPM.FirebaseMessaging
     ],
     resources: ["Resources/**"],
-    infoPlist: .default, // .file(path: "Support/Info.plist"),
+    infoPlist: .extendingDefault(with: extendedInfoPlist), // .file(path: "Support/Info.plist"),
     entitlements: "gambler.entitlements"
 )
