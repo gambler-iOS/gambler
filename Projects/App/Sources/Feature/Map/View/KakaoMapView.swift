@@ -19,16 +19,14 @@ struct KakaoMapView: UIViewRepresentable {
 
     func makeUIView(context: Self.Context) -> KMViewContainer {
         let view: KMViewContainer = KMViewContainer()
-        view.isUserInteractionEnabled = true
         view.sizeToFit()
-       // view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         context.coordinator.createController(view)
         context.coordinator.controller?.initEngine()
         return view
     }
 
     func updateUIView(_ uiView: KMViewContainer, context: Self.Context) {
-        print("[Get: 차일드 뷰 크기\(uiView.renderView?.frame)]")
+        print("진짜로?\(draw)")
         if draw {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 context.coordinator.controller?.startEngine()
@@ -81,7 +79,6 @@ struct KakaoMapView: UIViewRepresentable {
             let mapviewInfo: MapviewInfo = MapviewInfo(viewName: "mapview", viewInfoName: "map", defaultPosition: defaultPosition)
             
             if controller?.addView(mapviewInfo) == Result.OK {
-            
                 if let mapView = controller?.getView("mapview") as? KakaoMap {
                     cameraStartHandler = mapView
                         .addCameraWillMovedEventHandler(target: self, handler: KakaoMapCoordinator.cameraWillMove)
@@ -90,10 +87,8 @@ struct KakaoMapView: UIViewRepresentable {
                     getUserLocation()
                     createLabelLayer()
                     createPoiStyle()
-                    createMarkersOnMap()
+                    createPoisOnMap()
                     createSpriteGUI()
-                
-                    
                 } else {
                     print("[Error: KakaoMap casting failure]")
                 }
@@ -109,26 +104,24 @@ struct KakaoMapView: UIViewRepresentable {
         
         func onCameraStopped(_ param: CameraActionEventParam) {
             if(param.by == .notUserAction) {
-                if let mapView = param.view as? KakaoMap {
                     cameraStoppedHandler?.dispose()
-                }
             }
         }
         
-        func getUserLocation(){
+        func getUserLocation() {
             locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
             let coordinate = locationManager.location?.coordinate
+            
             userLatitude = coordinate?.latitude ?? 37.402001
             userLongitude = coordinate?.longitude ?? 127.108678
             print("[Get: MyLocation] latitude = \(userLatitude), longitude = \(userLongitude)")
-            moveCameraToFocus(MapPoint(longitude: userLongitude, latitude: userLatitude), zoomLevel: 15)
         }
         
         func containerDidResized(_ size: CGSize) {
             let mapView: KakaoMap? = controller?.getView("mapview") as? KakaoMap
             mapView?.viewRect = CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: size)
            
-            print("[Action: Resizing Container!!!!]")
+            print("[Action: Resizing Container]")
             if first {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     let cameraUpdate: CameraUpdate = CameraUpdate.make(target: MapPoint(longitude: 127.108678, latitude: 37.402001), zoomLevel: 15, mapView: mapView!)
@@ -143,7 +136,7 @@ struct KakaoMapView: UIViewRepresentable {
         func createLabelLayer() {
             if let view = controller?.getView("mapview") as? KakaoMap{
                 let manager = view.getLabelManager()
-                let layerOption = LabelLayerOptions(layerID: "PoiLayer", competitionType: .none, competitionUnit: .symbolFirst, orderType: .rank, zOrder: 1000)
+                let layerOption = LabelLayerOptions(layerID: "PoiLayer", competitionType: .none, competitionUnit: .symbolFirst, orderType: .rank, zOrder: 3000)
                 let _ = manager.addLabelLayer(option: layerOption)
             }
         }
@@ -153,29 +146,29 @@ struct KakaoMapView: UIViewRepresentable {
             if let view = controller?.getView("mapview") as? KakaoMap {
                 let manager = view.getLabelManager()
                 
-                let iconStyle1 = PoiIconStyle(symbol: UIImage(named: "Pick"))
-                let red = PoiTextLineStyle(textStyle: TextStyle(fontSize: 20, fontColor: UIColor.white, strokeThickness: 2, strokeColor: UIColor.red))
-                let iconStyle2 = PoiIconStyle(symbol: UIImage(named: "MyLocation"))
-                let blue = PoiTextLineStyle(textStyle: TextStyle(fontSize: 20, fontColor: UIColor.white, strokeThickness: 2, strokeColor: UIColor.blue))
-                let textStyle1 = PoiTextStyle(textLineStyles: [red, blue])
+                let shopPoiIconStyle = PoiIconStyle(symbol: UIImage(named: "Pick"))
+                let userLocationPoiIconStyle = PoiIconStyle(symbol: UIImage(named: "MyLocation"))
                 
-                let poiStyle1 = PoiStyle(styleID: "PerLevelStyle", styles: [
-                    PerLevelPoiStyle(iconStyle: iconStyle1, textStyle: textStyle1, level: 8),
-                    PerLevelPoiStyle(iconStyle: iconStyle1, textStyle: textStyle1, level: 18),
-                  
+                let red = PoiTextLineStyle(textStyle: TextStyle(fontSize: 20, fontColor: UIColor.white, strokeThickness: 2, strokeColor: UIColor.red))
+                let blue = PoiTextLineStyle(textStyle: TextStyle(fontSize: 20, fontColor: UIColor.white, strokeThickness: 2, strokeColor: UIColor.blue))
+                let textStyle = PoiTextStyle(textLineStyles: [red, blue])
+                
+                let shopPoiStyle = PoiStyle(styleID: "PerLevelStyle", styles: [
+                    PerLevelPoiStyle(iconStyle: shopPoiIconStyle, textStyle: textStyle, level: 8),
+                    PerLevelPoiStyle(iconStyle: shopPoiIconStyle, textStyle: textStyle, level: 18),
                 ])
-                let poiStyle2 = PoiStyle(styleID: "MyLocationStyle", styles: [
-                    PerLevelPoiStyle(iconStyle: iconStyle2, textStyle: textStyle1, level: 8),
-                    PerLevelPoiStyle(iconStyle: iconStyle2, textStyle: textStyle1, level: 18)
+                let userLocationPoiStyle = PoiStyle(styleID: "UserLocationStyle", styles: [
+                    PerLevelPoiStyle(iconStyle: userLocationPoiIconStyle, textStyle: textStyle, level: 8),
+                    PerLevelPoiStyle(iconStyle: userLocationPoiIconStyle, textStyle: textStyle, level: 18)
                 ])
             
-                manager.addPoiStyle(poiStyle1)
-                manager.addPoiStyle(poiStyle2)
+                manager.addPoiStyle(shopPoiStyle)
+                manager.addPoiStyle(userLocationPoiStyle)
             }
         }
         
         // Poi 맵에 찍기
-        func createMarkersOnMap() {
+        func createPoisOnMap() {
             if let view = controller?.getView("mapview") as? KakaoMap{
                 let manager = view.getLabelManager()
                 let layer = manager.getLabelLayer(layerID: "PoiLayer")
@@ -197,7 +190,7 @@ struct KakaoMapView: UIViewRepresentable {
                 }
                 
                 // 내위치 Poi
-                let poiOption = PoiOptions(styleID: "MyLocationStyle")
+                let poiOption = PoiOptions(styleID: "UserLocationStyle")
                 poiOption.rank = 0
                 poiOption.clickable = true
                 poiOption.addText(PoiText(text: "내위치", styleIndex: 1))
@@ -219,7 +212,7 @@ struct KakaoMapView: UIViewRepresentable {
         func createSpriteGUI() {
             if let mapView = controller?.getView("mapview") as? KakaoMap {
                 let guiManager = mapView.getGuiManager()
-                let spriteGui = SpriteGui("testSprite")
+                let spriteGui = SpriteGui("Sprite")
                 
                 spriteGui.arrangement = .horizontal
                 spriteGui.bgColor = UIColor.clear
@@ -228,12 +221,12 @@ struct KakaoMapView: UIViewRepresentable {
                 spriteGui.origin = GuiAlignment(vAlign: .top, hAlign: .right)
                 spriteGui.position = CGPoint(x: 20, y: 20)
                 
-                let button1 = GuiButton("button1")
-                button1.image = UIImage(systemName: "paperplane.circle.fill")
+                let gpsButton = GuiButton("GPS Button")
+                gpsButton.image = UIImage(systemName: "paperplane.circle.fill")
                 
-                spriteGui.addChild(button1)
+                spriteGui.addChild(gpsButton)
                 
-                let _ = guiManager.spriteGuiLayer.addSpriteGui(spriteGui)
+                guiManager.spriteGuiLayer.addSpriteGui(spriteGui)
                 spriteGui.delegate = self
                 spriteGui.show()
             }
@@ -241,23 +234,18 @@ struct KakaoMapView: UIViewRepresentable {
         
         func guiDidTapped(_ gui: GuiBase, componentName: String) {
             NSLog("Gui: \(gui.name), Component: \(componentName) tapped")
-            
-            // GuiButton을 포함하는 SpriteGui에서 특정 아이디의 GuiText Component를 가져옴
-            let guitext = gui.getChild("text") as? GuiText
             getUserLocation()
+            moveCameraToFocus(MapPoint(longitude: userLongitude, latitude: userLatitude), zoomLevel: 15)
             gui.updateGui()
         }
         
         // 카메라 포커스
         func moveCameraToFocus(_ point: MapPoint, zoomLevel: Int){
             if let mapView: KakaoMap = controller?.getView("mapview") as? KakaoMap{
-                
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     let cameraUpdate: CameraUpdate = CameraUpdate
                         .make(target: MapPoint(from: point), zoomLevel: zoomLevel, mapView: mapView)
-                    //mapView?.moveCamera(cameraUpdate)
                     mapView.animateCamera(cameraUpdate : cameraUpdate, options: CameraAnimationOptions(autoElevation: false, consecutive: false, durationInMillis: 100))
-                    
                     print("[Get: Camera point] latitude = \(self.userLatitude), longitude = \(self.userLongitude)")
                 }
             }

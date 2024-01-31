@@ -12,59 +12,57 @@ import KakaoMapsSDK
 import CoreLocation
 
 struct MapView: View {
-    @State var draw: Bool = true
+    @State var draw: Bool = false
     @State private var userLatitude: Double = 37.402001
     @State private var userLongitude: Double = 127.108678
     @State var isShowingSheet: Bool = false
-    @State var detent : PresentationDetent = .medium
+    @State var detent: PresentationDetent = .medium
     
     var body: some View {
-        VStack{
-            KakaoMapView(draw: $draw, userLatitude: $userLatitude, userLongitude: $userLongitude, isShowingSheet: $isShowingSheet)
-                .onAppear {
-                    Task {
-                        await startTask()
-                        self.draw = true
-                    }
+        KakaoMapView(draw: $draw, userLatitude: $userLatitude, userLongitude: $userLongitude, isShowingSheet: $isShowingSheet)
+            .onAppear {
+                Task {
+                    await startTask()
+                    self.draw = true
                 }
-                .onDisappear(perform: {
-                    self.draw = false
-                })
-                .edgesIgnoringSafeArea(.all)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .sheet(isPresented: $isShowingSheet) {
-                    NavigationView{
-                        ShopListView(isShowingSheet: $isShowingSheet)
-                    }.presentationDetents([
-                        .medium,
-                        .large
-                    ], selection : $detent)
-                }
-        }.frame(height: 800)
-           
+            }
+            .onDisappear(perform: {
+                self.draw = false
+            })
+            .edgesIgnoringSafeArea(.all)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .sheet(isPresented: $isShowingSheet) {
+                NavigationView{
+                    ShopListView(isShowingSheet: $isShowingSheet)
+                }.presentationDetents([
+                    .medium,
+                    .large
+                ], selection : $detent)
+            }
     }
     
     func startTask() async {
-           // 위치 사용 권한 설정 확인
-           let locationManager = CLLocationManager()
-           let authorizationStatus = locationManager.authorizationStatus
-          // 위치 사용 권한 항상 허용되어 있음
-           if authorizationStatus == .authorizedAlways {}
+        // 위치 사용 권한 설정 확인
+        let locationManager = CLLocationManager()
+        let authorizationStatus = locationManager.authorizationStatus
+        // 위치 사용 권한 항상 허용되어 있음
+        if authorizationStatus == .authorizedAlways {}
         //위치 사용 권한 앱 사용 시 허용되어 있음
-           else if authorizationStatus == .authorizedWhenInUse {}
-           // 위치 사용 권한 거부되어 있음
-           if authorizationStatus == .denied {
-               // 앱 설정화면으로 이동 - 필요한지 고려해보기
-               DispatchQueue.main.async {
-                   UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-               }
-           }
-           // 위치 사용 권한 대기 상태
-           else if authorizationStatus == .restricted || authorizationStatus == .notDetermined {
-               // 권한 요청 팝업창
-               locationManager.requestWhenInUseAuthorization()
-           }
-       }
+        else if authorizationStatus == .authorizedWhenInUse {}
+        // 위치 사용 권한 거부되어 있음
+        if authorizationStatus == .denied {
+            // 앱 설정화면으로 이동 - 필요한지 고려해보기
+            DispatchQueue.main.async {
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+            }
+        }
+        // 위치 사용 권한 대기 상태
+        else if authorizationStatus == .restricted || authorizationStatus == .notDetermined {
+            // 권한 요청 팝업창
+            locationManager.requestWhenInUseAuthorization()
+        }
+        print("시발 먼저그려지냐ㅜ 왜\(draw)")
+    }
 }
 
 #Preview {
