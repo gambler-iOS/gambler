@@ -9,24 +9,28 @@
 import SwiftUI
 
 struct EventBannerView: View {
+    var eventBannerViewModel: EventBannerViewModel
+
     var body: some View {
-        NavigationLink {
-            WebView(urlToLoad: "https://www.apple.com")
-        } label: {
-            Rectangle()
-                .fill(Color.clear)
-                .frame(width: .infinity, height: 150)
-                .border(Color.black)
-                .overlay(
-                    Text("Event Banner")
-                        .font(.largeTitle)
-                )
+        VStack {
+            NavigationLink {
+                WebView(urlToLoad: "https://www.apple.com")
+            } label: {
+                Rectangle()
+                    .fill(Color.clear)
+                    .border(Color.black)
+                    .frame(width: 300, height: 150)
+                    .overlay(
+                        Text("Event Banner")
+                            .font(.largeTitle)
+                    )
+            }
         }
     }
 }
 
 #Preview {
     NavigationStack {
-        EventBannerView()
+        EventBannerView(eventBannerViewModel: EventBannerViewModel())
     }
 }

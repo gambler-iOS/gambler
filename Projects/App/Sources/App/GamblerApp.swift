@@ -12,11 +12,13 @@ import SwiftUI
 struct GamblerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var homeViewModel = HomeViewModel()
+    @StateObject private var shopDetailViewModel = ShopDetailViewModel()
 
     var body: some Scene {
         WindowGroup {
             HomeView()
-                .environmentObject(HomeViewModel())
+                .environmentObject(homeViewModel)
+                .environmentObject(shopDetailViewModel)
         }
     }
 }

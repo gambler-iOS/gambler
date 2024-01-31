@@ -8,7 +8,11 @@
 
 import Foundation
 
-struct Shop: AvailableFirebase {
+struct Shop: AvailableFirebase, Hashable {
+    static func == (lhs: Shop, rhs: Shop) -> Bool {
+        return lhs.id == rhs.id
+    }
+
     var id: String
     let shopName: String
     let shopAddress: String
@@ -25,7 +29,7 @@ struct Shop: AvailableFirebase {
     var reviewRatingAverage: Double
 }
 
-struct GeoPoint: Codable {
+struct GeoPoint: Codable, Hashable {
     var latitude: Double
     var longitude: Double
 }

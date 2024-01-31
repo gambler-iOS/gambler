@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct HomeShopListView: View {
+    @Binding var path: NavigationPath
     let title: String
     var shops: [Shop]
 
@@ -17,9 +18,7 @@ struct HomeShopListView: View {
             Text(title)
                 .font(.title)
             ForEach(shops) { shop in
-                NavigationLink {
-                    Text(shop.shopName)
-                } label: {
+                NavigationLink(value: shop) {
                     Text(shop.shopName)
                 }
             }
@@ -29,6 +28,7 @@ struct HomeShopListView: View {
 
 #Preview {
     NavigationStack {
-        HomeShopListView(title: "인기 매장", shops: [])
+        HomeShopListView(path: .constant(NavigationPath()),
+                         title: "인기 매장", shops: [])
     }
 }

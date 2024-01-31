@@ -21,15 +21,15 @@ final class FirebaseManager {
         try documentRef.setData(from: data)
     }
 
-    func fetchAllData<T: AvailableFirebase>(collectionName: String, objectType: T.Type,
-                                            completion: @escaping ([T]) -> Void) async {
+    func fetchAllData<T: AvailableFirebase>(collectionName: String, objectType: T.Type) async -> [T] {
         do {
             let querySnapshot = try await Firestore.firestore().collection(collectionName).getDocuments()
             let data = querySnapshot.documents.compactMap { try? $0.data(as: objectType) }
-            completion(data)
+            return data
         } catch {
             print("Error fetching \(collectionName): \(error.localizedDescription)")
         }
+        return []
     }
 
     // TODO: error handler 만들어야하나
@@ -50,16 +50,16 @@ final class FirebaseManager {
         return []
     }
 
-    func readOneData<T: AvailableFirebase>(collectionName: String, objectType: T.Type, byId: String,
-                                           completion: @escaping ([T]) -> Void) async {
+    func fetchOneData<T: AvailableFirebase>(collectionName: String, objectType: T.Type, byId: String) async -> T? {
         do {
             let querySnapshot = try await Firestore.firestore().collection(collectionName)
                 .whereField("id", isEqualTo: byId).getDocuments()
             let data = querySnapshot.documents.compactMap { try? $0.data(as: objectType) }
-            completion(data)
+            return data[0]
         } catch {
             print("Error fetching \(collectionName): \(error.localizedDescription)")
         }
+        return nil
     }
     //    func getProfileImageURL(path: ImagePath, fileName:String) -> String {
     //        Storage.storage().reference().child(path.rawValue + fileName).fullPath
