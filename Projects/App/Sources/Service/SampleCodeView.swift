@@ -11,19 +11,9 @@ import FirebaseAuth
 
 struct MainView: View {
     @State private var myPageViewModel = MyPageViewModel()
-    @StateObject var loginViewModel: LoginViewModel = LoginViewModel()
     
     var body: some View {
-        if loginViewModel.signState == .signIn {
             mainView()
-                .onAppear {
-                    if Auth.auth().currentUser != nil {
-                        loginViewModel.signState = .signIn
-                    }
-                }
-        } else {
-            LoginView()
-        }
     }
     
     @ViewBuilder
