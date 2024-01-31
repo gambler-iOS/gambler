@@ -26,7 +26,6 @@ struct KakaoMapView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: KMViewContainer, context: Self.Context) {
-        print("진짜로?\(draw)")
         if draw {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 context.coordinator.controller?.startEngine()
@@ -68,8 +67,6 @@ struct KakaoMapView: UIViewRepresentable {
         }
     
         func createController(_ view: KMViewContainer) {
-            print("[Get: 부모 뷰 크기\(view.frame)]")
-            print("[Get: 차일드 뷰 크기\(view.renderView?.frame)]")
             controller = KMController(viewContainer: view)
             controller?.delegate = self
         }

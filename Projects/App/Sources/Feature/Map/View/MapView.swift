@@ -26,13 +26,13 @@ struct MapView: View {
                     self.draw = true
                 }
             }
-            .onDisappear(perform: {
+            /*.onDisappear(perform: {
                 self.draw = false
-            })
-            .edgesIgnoringSafeArea(.all)
+            })*/
+            .edgesIgnoringSafeArea(.top)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .sheet(isPresented: $isShowingSheet) {
-                NavigationView{
+                NavigationView {
                     ShopListView(isShowingSheet: $isShowingSheet)
                 }.presentationDetents([
                     .medium,
@@ -61,7 +61,6 @@ struct MapView: View {
             // 권한 요청 팝업창
             locationManager.requestWhenInUseAuthorization()
         }
-        print("시발 먼저그려지냐ㅜ 왜\(draw)")
     }
 }
 
