@@ -26,9 +26,10 @@ struct MapView: View {
                     self.draw = true
                 }
             }
-            /*.onDisappear(perform: {
-                self.draw = false
-            })*/
+        
+        /*.onDisappear(perform: {
+         self.draw = false
+         })*/
             .edgesIgnoringSafeArea(.top)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .sheet(isPresented: $isShowingSheet) {

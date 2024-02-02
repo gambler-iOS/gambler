@@ -32,7 +32,7 @@ struct KakaoMapView: UIViewRepresentable {
                 context.coordinator.controller?.startRendering()}}
         else {
             context.coordinator.controller?.stopRendering()
-            context.coordinator.controller?.stopEngine()
+            //context.coordinator.controller?.stopEngine()
         }
     }
     
@@ -108,6 +108,7 @@ struct KakaoMapView: UIViewRepresentable {
         
         func getUserLocation() {
             locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+            locationManager.distanceFilter = 20
             let coordinate = locationManager.location?.coordinate
             
             userLatitude = coordinate?.latitude ?? 37.402001
@@ -266,7 +267,7 @@ struct KakaoMapView: UIViewRepresentable {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     let cameraUpdate: CameraUpdate = CameraUpdate
                         .make(target: MapPoint(from: point), zoomLevel: zoomLevel, mapView: mapView)
-                    mapView.animateCamera(cameraUpdate : cameraUpdate, options: CameraAnimationOptions(autoElevation: false, consecutive: false, durationInMillis: 100))
+                    mapView.animateCamera(cameraUpdate: cameraUpdate, options: CameraAnimationOptions(autoElevation: false, consecutive: false, durationInMillis: 50))
                     print("[Get: Camera point] latitude = \(self.userLatitude), longitude = \(self.userLongitude)")
                 }
             }
