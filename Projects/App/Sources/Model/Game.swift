@@ -8,7 +8,11 @@
 
 import Foundation
 
-struct Game: AvailableFirebase {
+struct Game: AvailableFirebase, Hashable {
+    static func == (lhs: Game, rhs: Game) -> Bool {
+        lhs.id == rhs.id
+    }
+
     var id: String
     let gameName: String
     let gameImage: String
@@ -20,7 +24,7 @@ struct Game: AvailableFirebase {
     var reviewRatingAverage: Double
 }
 
-struct GameIntroduction: Codable {
+struct GameIntroduction: Codable, Hashable {
     let difficulty: Double
     let minPlayerCount: Int
     let maxPlayerCount: Int
