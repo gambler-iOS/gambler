@@ -22,26 +22,26 @@ final class HomeViewModel: ObservableObject {
 
     func generateDummyData() {
         for num in 1...4 {
-            popularGames.append(Game(id: UUID().uuidString, gameName: "game\(num)", gamelmage: "imagePath",
+            popularGames.append(Game(id: UUID().uuidString, gameName: "game\(num)", gameImage: "imagePath",
                                      gameIntroduction: GameIntroduction(difficulty: 3.1, minPlayerCount: 2 + num,
                                                                         maxPlayerCount: 4 + num, playTime: 2 + num,
                                                                         genre: .fantasy),
-                                     descriptionimage: ["image\(num)"], gameLink: "link\(num)", createdDate: Date(),
+                                     descriptionImage: ["image\(num)"], gameLink: "link\(num)", createdDate: Date(),
                                      reviewCount: 1 + num, reviewRatingAverage: 3.5 + (0.1 * Double(num))))
             popularShops.append(Shop(id: UUID().uuidString, shopName: "shop\(num)", shopAddress: "address\(num)",
-                                     shopimage: "image\(num)", location: GeoPoint(latitude: 120.1, longitude: 140),
+                                     shopImage: "image\(num)", location: GeoPoint(latitude: 120.1, longitude: 140),
                                      shopPhoneNumber: "010-5555", menu: ["커피": 1000],
                                      openingHour: "10시", amenity: ["주차"], shopDetailImage: ["detailImage\(num)"],
                                      createdDate: Date(), reviewCount: 3 + num,
                                      reviewRatingAverage: 3.5 + (0.1 * Double(num))))
-            newGames.append(Game(id: UUID().uuidString, gameName: "game\(num)", gamelmage: "imagePath",
+            newGames.append(Game(id: UUID().uuidString, gameName: "game\(num)", gameImage: "imagePath",
                                      gameIntroduction: GameIntroduction(difficulty: 3.1, minPlayerCount: 2 + num,
                                                                         maxPlayerCount: 4 + num, playTime: 2 + num,
                                                                         genre: .fantasy),
-                                     descriptionimage: ["image\(num)"], gameLink: "link\(num)", createdDate: Date(),
+                                     descriptionImage: ["image\(num)"], gameLink: "link\(num)", createdDate: Date(),
                                      reviewCount: 1 + num, reviewRatingAverage: 3.5 + (0.1 * Double(num))))
             newShops.append(Shop(id: UUID().uuidString, shopName: "shop\(num)", shopAddress: "address\(num)",
-                                     shopimage: "image\(num)", location: GeoPoint(latitude: 120.1, longitude: 140),
+                                     shopImage: "image\(num)", location: GeoPoint(latitude: 120.1, longitude: 140),
                                      shopPhoneNumber: "010-5555", menu: ["커피": 1000],
                                      openingHour: "10시", amenity: ["주차"], shopDetailImage: ["detailImage\(num)"],
                                      createdDate: Date(), reviewCount: 4 + num,
@@ -55,16 +55,16 @@ final class HomeViewModel: ObservableObject {
             for num in 1...5 {
                 try firebaseManager.createData(
                     collectionName: "Games",
-                    data: Game(id: UUID().uuidString, gameName: "game\(num)", gamelmage: "imagePath",
+                    data: Game(id: UUID().uuidString, gameName: "game\(num)", gameImage: "imagePath",
                                gameIntroduction: GameIntroduction(difficulty: 3.1, minPlayerCount: 2 + num,
                                                                   maxPlayerCount: 4 + num, playTime: 2 + num,
                                                                   genre: .fantasy),
-                               descriptionimage: ["image\(num)"], gameLink: "link\(num)", createdDate: Date(),
+                               descriptionImage: ["image\(num)"], gameLink: "link\(num)", createdDate: Date(),
                                reviewCount: 1 + num, reviewRatingAverage: 3.5 + (0.1 * Double(num))))
                 try firebaseManager.createData(
                     collectionName: "Shops",
                     data: Shop(id: UUID().uuidString, shopName: "shop\(num)", shopAddress: "address\(num)",
-                               shopimage: "image\(num)", location: GeoPoint(latitude: 120.1, longitude: 140),
+                               shopImage: "image\(num)", location: GeoPoint(latitude: 120.1, longitude: 140),
                                shopPhoneNumber: "010-5555", menu: ["커피": 1000], openingHour: "10시",
                                amenity: ["주차"], shopDetailImage: ["detailImage\(num)"], createdDate: Date(),
                                reviewCount: 3 + num, reviewRatingAverage: 3.5 + (0.1 * Double(num))))
@@ -81,13 +81,13 @@ final class HomeViewModel: ObservableObject {
         newGames.removeAll()
         newShops.removeAll()
 
-        let popularGames = await firebaseManager.fetchData(collectionName: "Games", objectType: Game.self,
+        let popularGames = await firebaseManager.fetchOrderData(collectionName: "Games", objectType: Game.self,
                                              orderBy: "reviewCount", limit: 4)
-        let popularShops = await firebaseManager.fetchData(collectionName: "Shops", objectType: Shop.self,
+        let popularShops = await firebaseManager.fetchOrderData(collectionName: "Shops", objectType: Shop.self,
                                              orderBy: "reviewCount", limit: 4)
-        let newGames = await firebaseManager.fetchData(collectionName: "Games", objectType: Game.self,
+        let newGames = await firebaseManager.fetchOrderData(collectionName: "Games", objectType: Game.self,
                                              orderBy: "createdDate", limit: 4)
-        let newShops = await firebaseManager.fetchData(collectionName: "Shops", objectType: Shop.self,
+        let newShops = await firebaseManager.fetchOrderData(collectionName: "Shops", objectType: Shop.self,
                                              orderBy: "createdDate", limit: 4)
 
         self.popularGames = popularGames

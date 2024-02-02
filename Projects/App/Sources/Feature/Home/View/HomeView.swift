@@ -31,11 +31,11 @@ struct HomeView: View {
             }
         }
         // MARK: 개발 시 쓸모없는 데이터 호출을 막기 위해 firestore fetch 대신 더미데이터 사용하기 위한 주석 처리
-//        .task {
-//            print(" == fetch homeviewModel == ")
-//            await eventBannerViewModel.fetchData()
-//            await homeViewModel.fetchData()
-//        }
+        .task {
+            print(" == fetch homeviewModel == ")
+            await eventBannerViewModel.fetchData()
+            await homeViewModel.fetchData()
+        }
     }
 }
 

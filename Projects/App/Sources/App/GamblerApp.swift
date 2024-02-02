@@ -13,12 +13,14 @@ struct GamblerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var homeViewModel = HomeViewModel()
     @StateObject private var shopDetailViewModel = ShopDetailViewModel()
+    @StateObject private var reviewViewModel = ReviewViewModel()
 
     var body: some Scene {
         WindowGroup {
             HomeView()
                 .environmentObject(homeViewModel)
                 .environmentObject(shopDetailViewModel)
+                .environmentObject(reviewViewModel)
         }
     }
 }

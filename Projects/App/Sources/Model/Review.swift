@@ -10,10 +10,10 @@ import Foundation
 
 struct Review: AvailableFirebase {
     var id: String
-    let postld: String
-    let userld: String
+    let postId: String
+    let userId: String
     var reviewContent: String
-    var reviewRating: Int
-    var reviewlmage: [String]?
+    var reviewRating: Double
+    var reviewImage: [String]?
     let createdDate: Date
 }

@@ -11,9 +11,9 @@ import Foundation
 struct Game: AvailableFirebase {
     var id: String
     let gameName: String
-    let gamelmage: String
+    let gameImage: String
     let gameIntroduction: GameIntroduction
-    var descriptionimage: [String]
+    var descriptionImage: [String]
     var gameLink: String
     let createdDate: Date
     var reviewCount: Int

@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Shop: AvailableFirebase, Hashable {
+struct Shop: AvailableFirebase, AvailableAggregateReview, Hashable {
     static func == (lhs: Shop, rhs: Shop) -> Bool {
         return lhs.id == rhs.id
     }
@@ -16,7 +16,7 @@ struct Shop: AvailableFirebase, Hashable {
     var id: String
     let shopName: String
     let shopAddress: String
-    let shopimage: String
+    let shopImage: String
     let location: GeoPoint
     let shopPhoneNumber: String
     let menu: [String: Int]
