@@ -10,8 +10,10 @@ import ProjectDescriptionHelpers
 
 var extendedInfoPlist: [String: Plist.Value] = [
     "KAKAO_APP_KEY": "$(KAKAO_APP_KEY)",
-    "NSLocationWhenInUseUsageDescription": "위치 정보를 사용하시겠습니까?"
+    "NSLocationWhenInUseUsageDescription": "위치 정보를 사용하시겠습니까?",
+    "UILaunchStoryboardName": "Launch"
 ]
+
 let project = Project.makeModule(
     name: "gambler",
     platform: .iOS,
