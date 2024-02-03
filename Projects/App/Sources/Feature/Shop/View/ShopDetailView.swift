@@ -81,6 +81,7 @@ struct ShopDetailView: View {
                             Spacer()
                         }.padding(EdgeInsets(top: 10, leading: 30, bottom: 20, trailing: 0))
                         DetailViewButton()
+                            .padding(.bottom, -15)
                         ShopDetailInnerView()
                     }
                     ///

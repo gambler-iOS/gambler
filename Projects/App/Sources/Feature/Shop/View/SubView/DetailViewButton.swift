@@ -12,16 +12,18 @@ struct DetailViewButton: View {
     
     var body: some View {
         HStack{
-            
+            makeButton(image: "phone", buttonName: "전화")
+            makeButton(image: "phone", buttonName: "전화")
+            makeButton(image: "phone", buttonName: "전화")
         }
     }
     
-    func makeButton(image: String, buttonName: String) -> some View {
+    private func makeButton(image: String, buttonName: String) -> some View {
         return
             HStack{
                 Image(systemName: image)
                 Text(buttonName)
-            }.padding()
+            }.padding(30)
     }
 }
 

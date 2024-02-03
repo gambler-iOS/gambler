@@ -12,14 +12,16 @@ struct ShopDetailInnerView: View {
     var shop: Shop?
     
     var body: some View {
-        VStack(alignment: .leading){
+        VStack{
             BoldDivider()
             ShopDetailInfo(shop: shop)
             BoldDivider()
             SummaryReviewView()
             BoldDivider()
-           
+            LocationMapView()
+            
         }
+        .padding(.bottom, 30)
     }
     
     private struct BoldDivider: View {
