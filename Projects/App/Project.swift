@@ -30,7 +30,7 @@ let project = Project.makeModule(
         .SPM.SwiftyJSON,
         .SPM.KakaoMapsSDK_SPM,
         .SPM.FirebaseAuth,
-        .SPM.FirebaseStorage,
+        //.SPM.FirebaseStorage,
         .SPM.FirebaseFirestore,
         .SPM.FirebaseFirestoreSwift,
         .SPM.FirebaseMessaging

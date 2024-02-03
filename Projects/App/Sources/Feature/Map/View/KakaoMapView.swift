@@ -239,7 +239,7 @@ struct KakaoMapView: UIViewRepresentable {
                 spriteGui.splitLineColor = UIColor.white
                 
                 spriteGui.origin = GuiAlignment(vAlign: .top, hAlign: .right)
-                spriteGui.position = CGPoint(x: 20, y: 20)
+                spriteGui.position = CGPoint(x: 50, y: 130)
                 
                 let gpsButton = GuiButton("GPS Button")
                 gpsButton.image = UIImage(systemName: "paperplane.circle.fill")
