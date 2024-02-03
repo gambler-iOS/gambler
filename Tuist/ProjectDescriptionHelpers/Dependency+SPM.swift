@@ -20,5 +20,8 @@ public extension TargetDependency.SPM {
     static let FirebaseFirestore = TargetDependency.external(name: "FirebaseFirestore")
     static let FirebaseFirestoreSwift = TargetDependency.external(name: "FirebaseFirestoreSwift")
     static let FirebaseAuth = TargetDependency.external(name: "FirebaseAuth")
-    //static let FirebaseStorage = TargetDependency.external(name: "FirebaseStorage")
+      //static let FirebaseStorage = TargetDependency.external(name: "FirebaseStorage")
+    static let KakaoSDKCommon = TargetDependency.external(name: "KakaoSDKCommon")
+    static let KakaoSDKAuth = TargetDependency.external(name: "KakaoSDKAuth")
+    static let KakaoSDKUser = TargetDependency.external(name: "KakaoSDKUser")
 }
