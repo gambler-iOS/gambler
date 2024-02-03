@@ -76,12 +76,12 @@ struct ShopDetailView: View {
                 Section(header: HeaderView()) {
                     /// 스크롤뷰
                     VStack {
-                        ForEach(0...30, id: \.self) { index in
-                            Text("\(index)item")
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 4)
-                           
-                        }
+                        HStack{
+                            Text("주손ㅇㅇ냥냐ㅓㅇ넝ㄴ앙ㄴㅇㄴㅇㄴㅇㄴ")
+                            Spacer()
+                        }.padding(EdgeInsets(top: 10, leading: 30, bottom: 20, trailing: 0))
+                        DetailViewButton()
+                        ShopDetailInnerView()
                     }
                     ///
                 }
@@ -126,6 +126,8 @@ struct ShopDetailView: View {
             .background(.white)
         }
     }
+    
+   
 }
 
 #Preview {
