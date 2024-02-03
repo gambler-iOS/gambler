@@ -8,6 +8,12 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
+var extendedInfoPlist: [String: Plist.Value] = [
+    "KAKAO_APP_KEY": "$(KAKAO_APP_KEY)",
+    "NSLocationWhenInUseUsageDescription": "위치 정보를 사용하시겠습니까?",
+    "UILaunchStoryboardName": "Launch"
+]
+
 let project = Project.makeModule(
     name: "gambler",
     platform: .iOS,
@@ -24,12 +30,12 @@ let project = Project.makeModule(
         .SPM.SwiftyJSON,
         .SPM.KakaoMapsSDK_SPM,
         .SPM.FirebaseAuth,
-        .SPM.FirebaseStorage,
+        //.SPM.FirebaseStorage,
         .SPM.FirebaseFirestore,
         .SPM.FirebaseFirestoreSwift,
         .SPM.FirebaseMessaging
     ],
     resources: ["Resources/**"],
-    infoPlist: .default, // .file(path: "Support/Info.plist"),
+    infoPlist: .extendingDefault(with: extendedInfoPlist), // .file(path: "Support/Info.plist"),
     entitlements: "gambler.entitlements"
 )
