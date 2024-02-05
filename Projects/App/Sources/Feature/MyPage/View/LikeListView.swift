@@ -14,7 +14,7 @@ struct LikeListView: View {
     private let shopImageURL: String = ""
 //    "https://search.pstatic.net/common/?src=https%3A%2F%2Fditto-phinf.pstatic.net%2F20201202_84%2F1606873241179R2svf_PNG%2Fbf530979564df524f3516cd338d37711.png&type=o&size=488x470&ttype=input"
     
-    var category: MyPageViewModel.LikeCategory
+    var category: MyPageViewModel.LikeCategory = .game
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {

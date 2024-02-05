@@ -18,7 +18,7 @@ final class MyPageViewModel: ObservableObject {
     @Published var user: User
     
     init() {
-        user = User(nickname: "성훈이", profileImageURL: "https://github.com/orgs/gambler-iOS/dashboard")
+        user = User(nickname: "성훈이", profileImageURL: "https://cdn-icons-png.flaticon.com/512/21/21104.png")
     }
     
     func generateDummyData() {
