@@ -18,7 +18,7 @@ struct LocationMapView: View {
                     .bold()
                 Spacer()
             }.padding(.bottom, 24)
-            KakaoMapView(draw: $draw, userLatitude: .constant(10), userLongitude: .constant(10), isShowingSheet: .constant(false))
+            KakaoMapView(draw: $draw, userLatitude: .constant(10), userLongitude: .constant(10), isShowingSheet: .constant(false), isMainMap: false)
                 .onAppear {
                     Task {
                         self.draw = true

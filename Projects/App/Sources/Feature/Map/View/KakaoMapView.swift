@@ -16,6 +16,7 @@ struct KakaoMapView: UIViewRepresentable {
     @Binding var userLatitude: Double
     @Binding var userLongitude: Double
     @Binding var isShowingSheet: Bool
+    var isMainMap: Bool
 
     func makeUIView(context: Self.Context) -> KMViewContainer {
         let view: KMViewContainer = KMViewContainer()
@@ -37,7 +38,7 @@ struct KakaoMapView: UIViewRepresentable {
     }
     
     func makeCoordinator() -> KakaoMapCoordinator {
-        return KakaoMapCoordinator(userLatitude: $userLatitude, userLongitude: $userLongitude, isShowingSheet: $isShowingSheet)
+        return KakaoMapCoordinator(isMainMap: isMainMap, userLatitude: $userLatitude, userLongitude: $userLongitude, isShowingSheet: $isShowingSheet)
     }
 
     static func dismantleUIView(_ uiView: KMViewContainer, coordinator: KakaoMapCoordinator) {
@@ -53,13 +54,14 @@ struct KakaoMapView: UIViewRepresentable {
         var cameraStartHandler: DisposableEventHandler?
         var locationPoiID: String = ""
         private let locationManager = CLLocationManager()
-        
+        var isMainMap: Bool
         @Binding var userLatitude: Double
         @Binding var userLongitude: Double
         @Binding var isShowingSheet: Bool
 
-        init(userLatitude: Binding<Double>, userLongitude: Binding<Double>, isShowingSheet: Binding<Bool>) {
+        init(isMainMap: Bool, userLatitude: Binding<Double>, userLongitude: Binding<Double>, isShowingSheet: Binding<Bool>) {
             first = true
+            self.isMainMap = isMainMap
             self._userLatitude = userLatitude
             self._userLongitude = userLongitude
             self._isShowingSheet = isShowingSheet
@@ -78,15 +80,19 @@ struct KakaoMapView: UIViewRepresentable {
             
             if controller?.addView(mapviewInfo) == Result.OK {
                 if let mapView = controller?.getView("mapview") as? KakaoMap {
-                    cameraStartHandler = mapView
-                        .addCameraWillMovedEventHandler(target: self, handler: KakaoMapCoordinator.cameraWillMove)
-                    cameraStoppedHandler = mapView
-                        .addCameraStoppedEventHandler(target: self, handler: KakaoMapCoordinator.onCameraStopped)
-                    getUserLocation()
-                    createLabelLayer()
-                    createPoiStyle()
-                    createPoisOnMap()
-                    createSpriteGUI()
+                    if isMainMap{
+                        cameraStartHandler = mapView
+                            .addCameraWillMovedEventHandler(target: self, handler: KakaoMapCoordinator.cameraWillMove)
+                        cameraStoppedHandler = mapView
+                            .addCameraStoppedEventHandler(target: self, handler: KakaoMapCoordinator.onCameraStopped)
+                        getUserLocation()
+                        createLabelLayer()
+                        createPoiStyle()
+                        createPoisOnMap()
+                        createSpriteGUI()
+                    } else {
+                        //디테일뷰 일때 띄울것
+                    }
                 } else {
                     print("[Error: KakaoMap casting failure]")
                 }

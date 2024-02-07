@@ -19,11 +19,18 @@ struct MapView: View {
     @State var detent: PresentationDetent = .medium
     
     var body: some View {
-        KakaoMapView(draw: $draw, userLatitude: $userLatitude, userLongitude: $userLongitude, isShowingSheet: $isShowingSheet)
+        KakaoMapView(draw: $draw, userLatitude: $userLatitude, userLongitude: $userLongitude, isShowingSheet: $isShowingSheet, isMainMap: true)
             .onAppear {
                 Task {
                     await startTask()
                     self.draw = true
+                }
+            }
+            .overlay{
+                if isShowingSheet {
+                    FlotingView()
+                        .offset(y: 250)
+                      
                 }
             }
         
@@ -32,14 +39,6 @@ struct MapView: View {
          })*/
             .edgesIgnoringSafeArea(.top)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .sheet(isPresented: $isShowingSheet) {
-                NavigationView {
-                    ShopListView(isShowingSheet: $isShowingSheet)
-                }.presentationDetents([
-                    .medium,
-                    .large
-                ], selection : $detent)
-            }
     }
     
     func startTask() async {
@@ -54,8 +53,19 @@ struct MapView: View {
             locationManager.requestWhenInUseAuthorization()
         }
     }
+    
+    private struct FlotingView: View {
+        var body: some View{
+            HStack{
+                Text("FlotingView")
+            }.frame(width: 327, height: 132)
+                .background(Color.white)
+                .cornerRadius(16)
+        }
+    }
+    
 }
 
 #Preview {
-    KakaoMapView(draw: .constant(true), userLatitude: .constant(13.0000), userLongitude: .constant(13.0000), isShowingSheet: .constant(false))
+    KakaoMapView(draw: .constant(true), userLatitude: .constant(13.0000), userLongitude: .constant(13.0000), isShowingSheet: .constant(false), isMainMap: true)
 }
