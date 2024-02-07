@@ -10,9 +10,10 @@ import SwiftUI
 
 struct ShopDetailInnerView: View {
     var shop: Shop?
+    var review: Review?
     
     var body: some View {
-        VStack{
+        VStack(alignment: .leading){
             BoldDivider()
             ShopDetailInfo(shop: shop)
             BoldDivider()
@@ -22,14 +23,6 @@ struct ShopDetailInnerView: View {
             
         }
         .padding(.bottom, 30)
-    }
-    
-    private struct BoldDivider: View {
-        var body: some View {
-            Rectangle()
-                .fill(Color(red: 0.95, green: 0.95, blue: 0.95))
-                .frame(height: 5)
-        }
     }
 }
 

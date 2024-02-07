@@ -14,7 +14,7 @@ struct ShopListView: View {
     var body: some View {
         VStack{
             NavigationLink {
-                ShopDetailView()
+                DetailView(type: .shop)
             } label: {
                 Text("다음")
             }

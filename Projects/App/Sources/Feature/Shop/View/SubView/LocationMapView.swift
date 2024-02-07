@@ -14,9 +14,10 @@ struct LocationMapView: View {
         VStack{
             HStack{
                 Text("위치")
+                    .font(.title3)
                     .bold()
                 Spacer()
-            }
+            }.padding(.bottom, 24)
             KakaoMapView(draw: $draw, userLatitude: .constant(10), userLongitude: .constant(10), isShowingSheet: .constant(false))
                 .onAppear {
                     Task {
@@ -24,11 +25,10 @@ struct LocationMapView: View {
                     }
                 }
                 .allowsHitTesting(false)
-                .frame(width: 350, height: 200)
-                .cornerRadius(10)
-                .padding()
-                
-        }.padding(20)
+                .frame(width: 327, height: 215)
+                .cornerRadius(8)
+        }.padding(.horizontal, 24)
+            .padding(.vertical, 32)
     }
 }
 

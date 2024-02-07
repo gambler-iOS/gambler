@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct SummaryReviewView: View {
     var review: Review?
@@ -16,19 +17,11 @@ struct SummaryReviewView: View {
     
     var body: some View {
         VStack{
-            HStack{
-                Text("리뷰 \(rating)(\(reviewNum))")
-                    .font(.title3)
-                Spacer()
-                Image(systemName: "greaterthan")
-                    .foregroundColor(.gray)
-            }.bold()
-            .padding()
-            
+    
+            SectionHeader(title: "리뷰", rating: "\(rating)(\(reviewNum))")
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 20) {
+                HStack(spacing: 8) {
                     ForEach(1..<10) { index in
-                        // 수평으로 배치될 각 페이지
                         Rectangle()
                             .frame(width: 250, height: 90)
                             .foregroundColor(Color(red: 0.95, green: 0.95, blue: 0.95))
@@ -38,25 +31,22 @@ struct SummaryReviewView: View {
                                 ReviewPreview(testImage: testImage)
                             }
                     }
-                }
-                .padding(.leading, 30)
-            }
-        }.padding(.bottom, 10)
+                }.padding()
+            }.padding(.leading, 16)
+        }
+           .padding(.vertical, 25)
     }
     
-    private struct ReviewPreview: View {
+    struct ReviewPreview: View {
         var testImage: String
         var body: some View {
             HStack{
-                AsyncImage(url: URL(string: testImage)) { image in
-                    image
-                        .resizable()
-                        .frame(width:60, height:60)
-                        .cornerRadius(10)
-                        .clipped()
-                } placeholder: {
-                    ProgressView()
-                }
+                KFImage(URL(string: testImage))
+                    .resizable()
+                    .frame(width:60, height:60)
+                    .cornerRadius(10)
+                    .clipped()
+                
                 VStack(alignment: .leading){
                     HStack{
                         Group {
@@ -65,10 +55,10 @@ struct SummaryReviewView: View {
                         }
                     }.foregroundStyle(.pink)
                         .padding(.bottom, 5)
-                    Text("후기가어쭈거ㅜ어ㅝㅜ우너ㅝㅇㄴㅇㄴ언ㅇㄴ어루눌ㅇ넝ㄹ눨ㅇㄴㄹㅇ너ㅜㄹ운ㄹ웅ㄹ눨ㅇ널ㅇ누렁ㄴ")
+                    Text("후기가Wㅜ구ㅜ구구구dasdsdsdsssㅜ국")
                 }.font(.caption2)
-                    .padding(5)
-            }.padding(10)
+                    .padding(10)
+            }.padding()
         }
     }
 }
