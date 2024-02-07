@@ -53,6 +53,7 @@ struct KakaoMapView: UIViewRepresentable {
         var cameraStoppedHandler: DisposableEventHandler?
         var cameraStartHandler: DisposableEventHandler?
         var locationPoiID: String = ""
+        var recentPoiId: String?
         private let locationManager = CLLocationManager()
         var isMainMap: Bool
         @Binding var userLatitude: Double
@@ -153,6 +154,7 @@ struct KakaoMapView: UIViewRepresentable {
                 
                 let shopPoiIconStyle = PoiIconStyle(symbol: UIImage(named: "Pick"))
                 let userLocationPoiIconStyle = PoiIconStyle(symbol: UIImage(named: "MyLocation"))
+                let pickPoiIconStyle = PoiIconStyle(symbol: UIImage(named: "MyPick"))
                 
                 let red = PoiTextLineStyle(textStyle: TextStyle(fontSize: 20, fontColor: UIColor.white, strokeThickness: 2, strokeColor: UIColor.red))
                 let blue = PoiTextLineStyle(textStyle: TextStyle(fontSize: 20, fontColor: UIColor.white, strokeThickness: 2, strokeColor: UIColor.blue))
@@ -162,13 +164,20 @@ struct KakaoMapView: UIViewRepresentable {
                     PerLevelPoiStyle(iconStyle: shopPoiIconStyle, textStyle: textStyle, level: 8),
                     PerLevelPoiStyle(iconStyle: shopPoiIconStyle, textStyle: textStyle, level: 18),
                 ])
+        
+                let pickPoiStyle = PoiStyle(styleID: "pickPoiIconStyle", styles: [
+                    PerLevelPoiStyle(iconStyle: pickPoiIconStyle, textStyle: textStyle, level: 8),
+                    PerLevelPoiStyle(iconStyle: pickPoiIconStyle, textStyle: textStyle, level: 18),
+                ])
                 let userLocationPoiStyle = PoiStyle(styleID: "UserLocationStyle", styles: [
                     PerLevelPoiStyle(iconStyle: userLocationPoiIconStyle, textStyle: textStyle, level: 8),
                     PerLevelPoiStyle(iconStyle: userLocationPoiIconStyle, textStyle: textStyle, level: 18)
                 ])
             
                 manager.addPoiStyle(shopPoiStyle)
+                manager.addPoiStyle(pickPoiStyle)
                 manager.addPoiStyle(userLocationPoiStyle)
+            
             }
         }
         
@@ -228,9 +237,25 @@ struct KakaoMapView: UIViewRepresentable {
         
         func poiDidTapped(_ param: PoiInteractionEventParam) {
             if let markerData = param.poiItem.userObject as? MarkerTestData {
-                print("[Action: Tapped Poi] \npoi name : \(markerData.name)\npoi lo : \(markerData.longitude)\npoi la : \(markerData.latitude)")
-                moveCameraToFocus(MapPoint(longitude: Double(markerData.longitude), latitude: markerData.latitude), zoomLevel: 17)
-                isShowingSheet = true
+                if let view = controller?.getView("mapview") as? KakaoMap{
+                    let manager = view.getLabelManager()
+                    let layer = manager.getLabelLayer(layerID: "PoiLayer")
+                    
+                    print("[Action: Tapped Poi] \npoi name : \(markerData.name)\npoi lo : \(markerData.longitude)\npoi la : \(markerData.latitude)")
+                  
+                    moveCameraToFocus(MapPoint(longitude: Double(markerData.longitude), latitude: markerData.latitude), zoomLevel: 17)
+                    isShowingSheet = true
+
+                    let tabMarker = layer?.getPoi(poiID: param.poiItem.itemID)
+                    tabMarker?.changeStyle(styleID: "pickPoiIconStyle")
+                    
+                    if let recentMarkerId = recentPoiId {
+                        let recentMarker = layer?.getPoi(poiID: recentMarkerId)
+                        recentMarker?.changeStyle(styleID: "PerLevelStyle")
+                    }
+                    recentPoiId = param.poiItem.itemID
+                }
+               
             }
         }
         

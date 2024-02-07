@@ -54,7 +54,6 @@ struct ShopDetailInfo: View {
                             }
                         }
                     }
-                    
                 }
             }
             .padding(.top, 1)
