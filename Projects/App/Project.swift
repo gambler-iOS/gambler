@@ -28,7 +28,6 @@ let project = Project.makeModule(
         .SPM.FirebaseFirestore,
         .SPM.FirebaseFirestoreSwift,
         .SPM.FirebaseMessaging,
-        .SPM.GoogleSignIn,
     ],
     resources: ["Resources/**"],
     infoPlist: .default, // .file(path: "Support/Info.plist"),
