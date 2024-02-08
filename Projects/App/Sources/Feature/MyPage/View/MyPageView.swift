@@ -72,7 +72,7 @@ struct MyPageView: View {
                         Divider()
                         Spacer()
                         NavigationLink {
-                            LikeListView()
+                            LikeCategoryView()
                         } label: {
                             VStack {
                                 Text("\(numberOfLikes)")
