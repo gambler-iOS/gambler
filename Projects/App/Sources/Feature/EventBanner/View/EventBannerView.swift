@@ -31,7 +31,7 @@ struct EventBannerView: View {
                                 .foregroundStyle(.white)
                                 .position(x: geometry.size.width - 20, y: 80)
                                 .onTapGesture {
-                                    print("tab")
+                                    print("bell tab go to notice")
                                 }
                             Text("Gambler")
                                 .foregroundStyle(.white)
@@ -41,7 +41,7 @@ struct EventBannerView: View {
                                 ForEach(Array(0 ..< banners.count), id: \.self) { index in
                                     Circle()
                                         .fill(self.eventBannerViewModel.currentIndex == index ? Color.red : Color.white)
-                                        .frame(width: 10, height: 10)
+                                        .frame(width: 8, height: 8)
                                 }
                             }
                             .position(x: 50, y: 370)
@@ -52,11 +52,9 @@ struct EventBannerView: View {
             }
         }
         .onAppear {
-            print("apear")
             eventBannerViewModel.startTimer()
         }
         .onDisappear {
-            print("disapear")
             eventBannerViewModel.stopTimer()
         }
     }

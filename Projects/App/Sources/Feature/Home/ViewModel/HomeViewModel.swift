@@ -21,27 +21,31 @@ final class HomeViewModel: ObservableObject {
     }
 
     func generateDummyData() {
+        let gameImageUrl: String =
+        "https://boardm.co.kr/upload/product/img4/img_largeupfilenm_1689313043_0.jpg?t=1682590618"
+        let shopImageUrl: String =
+        "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20201122_151%2F1606046564169SzUUi_JPEG%2FrkjG5CgJbjULKNT0NaPHKoHl.jpg"
         for num in 1...4 {
-            popularGames.append(Game(id: UUID().uuidString, gameName: "game\(num)", gameImage: "imagePath",
+            popularGames.append(Game(id: UUID().uuidString, gameName: "game\(num)", gameImage: gameImageUrl,
                                      gameIntroduction: GameIntroduction(difficulty: 3.1, minPlayerCount: 2 + num,
                                                                         maxPlayerCount: 4 + num, playTime: 2 + num,
                                                                         genre: .fantasy),
                                      descriptionImage: ["image\(num)"], gameLink: "link\(num)", createdDate: Date(),
                                      reviewCount: 1 + num, reviewRatingAverage: 3.5 + (0.1 * Double(num))))
             popularShops.append(Shop(id: UUID().uuidString, shopName: "shop\(num)", shopAddress: "address\(num)",
-                                     shopImage: "image\(num)", location: GeoPoint(latitude: 120.1, longitude: 140),
+                                     shopImage: shopImageUrl, location: GeoPoint(latitude: 120.1, longitude: 140),
                                      shopPhoneNumber: "010-5555", menu: ["커피": 1000],
                                      openingHour: "10시", amenity: ["주차"], shopDetailImage: ["detailImage\(num)"],
                                      createdDate: Date(), reviewCount: 3 + num,
                                      reviewRatingAverage: 3.5 + (0.1 * Double(num))))
-            newGames.append(Game(id: UUID().uuidString, gameName: "game\(num)", gameImage: "imagePath",
+            newGames.append(Game(id: UUID().uuidString, gameName: "game\(num)", gameImage: gameImageUrl,
                                      gameIntroduction: GameIntroduction(difficulty: 3.1, minPlayerCount: 2 + num,
                                                                         maxPlayerCount: 4 + num, playTime: 2 + num,
                                                                         genre: .fantasy),
                                      descriptionImage: ["image\(num)"], gameLink: "link\(num)", createdDate: Date(),
                                      reviewCount: 1 + num, reviewRatingAverage: 3.5 + (0.1 * Double(num))))
             newShops.append(Shop(id: UUID().uuidString, shopName: "shop\(num)", shopAddress: "address\(num)",
-                                     shopImage: "image\(num)", location: GeoPoint(latitude: 120.1, longitude: 140),
+                                     shopImage: shopImageUrl, location: GeoPoint(latitude: 120.1, longitude: 140),
                                      shopPhoneNumber: "010-5555", menu: ["커피": 1000],
                                      openingHour: "10시", amenity: ["주차"], shopDetailImage: ["detailImage\(num)"],
                                      createdDate: Date(), reviewCount: 4 + num,
@@ -84,11 +88,11 @@ final class HomeViewModel: ObservableObject {
         let popularGames = await firebaseManager.fetchOrderData(collectionName: "Games", objectType: Game.self,
                                              orderBy: "reviewCount", limit: 4)
         let popularShops = await firebaseManager.fetchOrderData(collectionName: "Shops", objectType: Shop.self,
-                                             orderBy: "reviewCount", limit: 4)
+                                             orderBy: "reviewCount", limit: 3)
         let newGames = await firebaseManager.fetchOrderData(collectionName: "Games", objectType: Game.self,
                                              orderBy: "createdDate", limit: 4)
         let newShops = await firebaseManager.fetchOrderData(collectionName: "Shops", objectType: Shop.self,
-                                             orderBy: "createdDate", limit: 4)
+                                             orderBy: "createdDate", limit: 3)
 
         self.popularGames = popularGames
         self.popularShops = popularShops

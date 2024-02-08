@@ -23,11 +23,13 @@ struct HomeView: View {
                     HomeGamesGridView(title: "신규 게임", games: homeViewModel.newGames)
                     HomeShopListView(path: $path, title: "신규 매장", shops: homeViewModel.newShops)
                 }
-                .background(.red)
                 .padding()
                 .navigationDestination(for: Shop.self) { _ in
                     ShopDetailView()
                 }
+//                .navigationDestination(for: Game.self) { _ in
+//                    GameDetailView()
+//                }
             }
             .frame(maxWidth: .infinity)
             .ignoresSafeArea()

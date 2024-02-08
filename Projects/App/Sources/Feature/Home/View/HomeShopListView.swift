@@ -10,19 +10,31 @@ import SwiftUI
 
 struct HomeShopListView: View {
     @Binding var path: NavigationPath
-    let title: String
+    let title: String?
     var shops: [Shop]
 
     var body: some View {
-        VStack {
-            Text(title)
-                .font(.title)
+        VStack(alignment: .leading) {
+            if let title {
+                HStack {
+                    Text(title)
+                        .font(.title2)
+                    Spacer()
+                    NavigationLink {
+                        Text("shopListView")
+                    } label: {
+                        Image(systemName: "greaterthan")
+                            .foregroundStyle(.black)
+                    }
+                }
+            }
             ForEach(shops) { shop in
                 NavigationLink(value: shop) {
-                    Text(shop.shopName)
+                    ShopCellView(shop: shop)
                 }
             }
         }
+        .padding()
     }
 }
 
