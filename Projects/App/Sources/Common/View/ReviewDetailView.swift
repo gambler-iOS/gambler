@@ -10,7 +10,7 @@ import SwiftUI
 import Kingfisher
 
 struct ReviewDetailView: View {
-    fileprivate let reviewData: Review
+    let reviewData: Review
     
     // 다른 파일로 빼는게 나을 것 같음
     static let dateformat: DateFormatter = {
