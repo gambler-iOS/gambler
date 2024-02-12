@@ -36,5 +36,5 @@ struct GameMiniGridItemView: View {
 }
 
 #Preview {
-    GameMiniGridItemView(imageURL: "https://postfiles.pstatic.net/MjAyMTExMjNfMjMz/MDAxNjM3NjUzMzU3MTQ4.jWJ1Z9yituqJ9pvKDHDv85UXYknSJBOzP88mAipXVZ0g.Y-Bm04PLKMxuwMThPYvG7zWQ9wehqvfNSOBF8gnVO0Ig.JPEG.roins-g/SE-c3eccf78-ef4f-489f-9835-c90ed0de6f47.jpg?type=w773", gameName: "한밤의 늑대")
+    GameMiniGridItemView(imageURL: "https://beziergames.com/cdn/shop/products/UltimateAccessoryPack_800x.png?v=1587055236", gameName: "한밤의 늑대")
 }
