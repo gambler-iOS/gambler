@@ -28,6 +28,9 @@ struct ShopListCellView: View {
                         .frame(width: 100, height: 100)
                         .clipShape(RoundedRectangle(cornerRadius: 8.0))
                         .scaledToFit()
+                } else {
+                    RoundedRectangle(cornerRadius: 8.0)
+                        .frame(width: 100, height: 100)
                 }
                 
                 VStack(alignment: .leading, spacing: 8) {
@@ -41,22 +44,13 @@ struct ShopListCellView: View {
                         HeartCellView(isLike: isLike)
                     }
 
-                    HStack(spacing: 4) {
-                        Group {
-                            GamblerAsset.star.swiftUIImage
-                                .resizable()
-                                .renderingMode(.template)
-                                .frame(width: 18, height: 18)
-                            
-                            Text(String(format: "%.1f", shop.reviewRatingAverage))
-                                .padding(.trailing, 4)
-                        }
-                        .font(.caption1M)
-                        .foregroundStyle(Color.primaryDefault)
-                    }
+                    ReviewRatingCellView(review: shop)
+                    
+                    Spacer()
                 }
                 .foregroundStyle(.black)
             }
+            .frame(height: 100)
         }
     }
 }
