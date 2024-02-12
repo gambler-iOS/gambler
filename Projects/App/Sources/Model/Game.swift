@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Game: AvailableFirebase, Hashable {
+struct Game: AvailableFirebase, AvailableAggregateReview, Hashable {
     static func == (lhs: Game, rhs: Game) -> Bool {
         lhs.id == rhs.id
     }
