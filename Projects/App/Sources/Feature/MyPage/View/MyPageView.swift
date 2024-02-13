@@ -19,27 +19,23 @@ struct MyPageView: View {
     var body: some View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
-                HStack {
-                        NavigationLink {
-                            ProfileEditView()
-                        } label: {
-                            if let profileImage =  myPageViewModel.user.profileImageURL {
-                                KFImage(URL(string: profileImage))
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 80, height: 80, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
-                                    .clipShape(Circle())
-                            } else {
-                                Image(systemName: "person.fill")
-                                    .resizable()
-                                    .frame(width: 80, height: 80)
-                                    .foregroundColor(.gray)
-                                    .clipShape(.circle)
-                                    .overlay(Circle().stroke(Color.green, lineWidth: 2))
-                            }
-                        }
-                        .padding()
-                    VStack(alignment: .leading) {
+                HStack(spacing: 8) {
+                    if let profileImage =  myPageViewModel.user.profileImageURL {
+                        KFImage(URL(string: profileImage))
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 64, height: 64, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+                            .clipShape(Circle())
+                    } else {
+                        Image(systemName: "person.fill")
+                            .resizable()
+                            .frame(width: 64, height: 64)
+                            .foregroundColor(.gray)
+                            .clipShape(.circle)
+                            .overlay(Circle().stroke(Color.green, lineWidth: 2))
+                    }
+
+                    VStack(alignment: .leading, spacing: 8) {
                         Text("이름")
                         Text("\(signInWith) 로그인 완료")
                             .padding(12)
@@ -86,22 +82,20 @@ struct MyPageView: View {
                         Spacer()
                     }
                 }
-                
-                setDetail()
+                listButton()
             }
-            
         }
         .padding(.horizontal)
     }
     
     @ViewBuilder
-    private func setDetail() -> some View {
+    private func listButton() -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 10) {
                 Text("사용자 설정")
                     .bold()
                 NavigationLink {
-                    ProfileEditView()
+                    ProfileEditView(user: $myPageViewModel.user)
                 } label: {
                     Text("프로필 수정")
                         .foregroundStyle(.black)
