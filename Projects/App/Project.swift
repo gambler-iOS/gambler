@@ -31,6 +31,6 @@ let project = Project.makeModule(
         .SPM.KakaoSDK
     ],
     resources: ["Resources/**"],
-    infoPlist: .default, // .file(path: "Support/Info.plist"),
+    infoPlist: .file(path: "Resources/gambler-Info.plist"),
     entitlements: "gambler.entitlements"
 )
