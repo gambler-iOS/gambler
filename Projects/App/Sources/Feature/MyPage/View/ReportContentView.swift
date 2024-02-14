@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct ReportDetailView: View {
+struct ReportContentView: View {
     
     enum Field: Hashable {
             case reasonForReporting
@@ -66,22 +66,10 @@ struct ReportDetailView: View {
                 }
                 .border(.secondary)
             }  // ZStack
-            
-            
-            Button {
-                /*
-                 1. 파이어베이스에 올림
-                 2. 알럿을 띄워서 신고하시겠습니까 문구
-                 3. 알럿에서 확인을 누르면 신고하기에서 나가서 마이페이지로 감
-                 */
-            } label: {
-                Text("작성 완료")
-            }
-            
         }
     }
 }
 
 #Preview {
-    ReportDetailView()
+    ReportContentView()
 }

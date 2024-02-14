@@ -107,15 +107,11 @@ struct MyPageView: View {
                     Text("알림 설정")
                         .foregroundStyle(.black)
                 }
-                .padding(.bottom, 15)
-                
-                Text("이용안내")
-                    .bold()
                 
                 NavigationLink {
-                    Text("신고하기 뷰")
+                    ReportView()
                 } label: {
-                    Text("신고하기")
+                    Text("고객센터")
                         .foregroundStyle(.black)
                 }
                 
