@@ -10,8 +10,9 @@ import SwiftUI
 import UIKit
 
 struct ItemButtonSet: View {
-    var type: DetailViewSegment = .shop
-    let phoneNumber = "tel://123456789"
+    let type: DetailViewSegment
+    let shop: Shop?
+    let game: Game?
     @State var heartState: Bool = false
     
     var body: some View {
@@ -51,7 +52,7 @@ struct ItemButtonSet: View {
     }
     
     private func tappedCall() {
-        if let phoneURL = URL(string: phoneNumber), UIApplication.shared.canOpenURL(phoneURL) {
+        if let phoneURL = URL(string: "tel://\(String(describing: shop?.shopPhoneNumber))"), UIApplication.shared.canOpenURL(phoneURL) {
             UIApplication.shared.open(phoneURL, options: [:], completionHandler: nil)
         }
     }
