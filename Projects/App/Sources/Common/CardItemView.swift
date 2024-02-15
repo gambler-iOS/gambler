@@ -12,11 +12,7 @@ import Kingfisher
 struct CardItemView: View {
     let game: Game
     var playerString: String {
-<<<<<<< HEAD
         "인원 \(game.gameIntroduction.minPlayerCount)~\(game.gameIntroduction.maxPlayerCount)명"
-=======
-        "인원 \(game.gameIntroduction.minPlayerCount) - \(game.gameIntroduction.maxPlayerCount)명"
->>>>>>> dev
     }
     
     var body: some View {
