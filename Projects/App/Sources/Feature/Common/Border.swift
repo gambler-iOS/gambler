@@ -9,10 +9,10 @@
 import Foundation
 import SwiftUI
 
-struct BoldDivider: View {
+struct Border: View {
     var body: some View {
         Rectangle()
             .fill(Color(red: 0.95, green: 0.95, blue: 0.95))
-            .frame(height: 5)
+            .frame(height: 4)
     }
 }

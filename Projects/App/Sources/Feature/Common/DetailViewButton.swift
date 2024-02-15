@@ -7,19 +7,25 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct DetailViewButton: View {
     var type: DetailViewSegment
+    let phoneNumber = "tel://123456789"
     
     var body: some View {
         HStack{
             switch type {
             case .shop:
                 Group{
-                    makeButton(image: "phone", buttonName: "전화")
+                    Button {
+                        makePhoneCall()
+                    } label: {
+                        makeButton(image: "phone", buttonName: "전화")
+                    }
                     makeButton(image: "heart.fill", buttonName: "찜하기")
                     makeButton(image: "square.and.pencil", buttonName: "리뷰")
-                }
+                }.foregroundStyle(.black)
                 
             case .game:
                 Group{
@@ -30,15 +36,22 @@ struct DetailViewButton: View {
         }
     }
     
+    
     private func makeButton(image: String, buttonName: String) -> some View {
         return
             HStack{
                 Image(systemName: image)
                 Text(buttonName)
-            }.padding(30)
+            }.padding(20)
+    }
+    
+    func makePhoneCall() {
+        if let phoneURL = URL(string: phoneNumber), UIApplication.shared.canOpenURL(phoneURL) {
+            UIApplication.shared.open(phoneURL, options: [:], completionHandler: nil)
+        }
     }
 }
 
 #Preview {
-    DetailViewButton(type: .game)
+    DetailViewButton(type: .shop)
 }

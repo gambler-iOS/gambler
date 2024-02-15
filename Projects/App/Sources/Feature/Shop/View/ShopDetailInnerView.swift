@@ -14,13 +14,12 @@ struct ShopDetailInnerView: View {
     
     var body: some View {
         VStack(alignment: .leading){
-            BoldDivider()
+            Border()
             ShopDetailInfo(shop: shop)
-            BoldDivider()
-            SummaryReviewView()
-            BoldDivider()
-            LocationMapView()
-            
+            Border()
+            ReviewListCellView()
+            Border()
+            ShopDetailMapView()
         }
         .padding(.bottom, 30)
     }

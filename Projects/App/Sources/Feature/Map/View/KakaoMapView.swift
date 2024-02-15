@@ -17,6 +17,7 @@ struct KakaoMapView: UIViewRepresentable {
     @Binding var userLongitude: Double
     @Binding var isShowingSheet: Bool
     var isMainMap: Bool
+    var detailMapPoint: GeoPoint?
 
     func makeUIView(context: Self.Context) -> KMViewContainer {
         let view: KMViewContainer = KMViewContainer()
@@ -56,6 +57,7 @@ struct KakaoMapView: UIViewRepresentable {
         var recentPoiId: String?
         private let locationManager = CLLocationManager()
         var isMainMap: Bool
+        var detailMapPoint: GeoPoint?
         @Binding var userLatitude: Double
         @Binding var userLongitude: Double
         @Binding var isShowingSheet: Bool
@@ -92,7 +94,7 @@ struct KakaoMapView: UIViewRepresentable {
                         createPoisOnMap()
                         createSpriteGUI()
                     } else {
-                        //디테일뷰 일때 띄울것
+                        detailViewPoi(MapPoint(longitude: detailMapPoint?.longitude ?? 0.0, latitude: detailMapPoint?.latitude ?? 0.0))
                     }
                 } else {
                     print("[Error: KakaoMap casting failure]")
@@ -301,6 +303,23 @@ struct KakaoMapView: UIViewRepresentable {
                     mapView.animateCamera(cameraUpdate: cameraUpdate, options: CameraAnimationOptions(autoElevation: false, consecutive: false, durationInMillis: 50))
                     print("[Get: Camera point] latitude = \(self.userLatitude), longitude = \(self.userLongitude)")
                 }
+            }
+        }
+        
+        func detailViewPoi(_ point: MapPoint) {
+            print("[Action: Create detailViewPoi]")
+            if let view = controller?.getView("mapview") as? KakaoMap{
+                let manager = view.getLabelManager()
+                let layer = manager.getLabelLayer(layerID: "PoiLayer")
+                let poiOption = PoiOptions(styleID: "pickPoiIconStyle")
+                poiOption.rank = 0
+                let markerPoint = MapPoint(from: point)
+                print("[Action: move to \(markerPoint)]")
+                let marker = layer?.addPoi(option: poiOption, at: markerPoint)
+                locationPoiID = marker?.itemID ?? ""
+                print("[Action: Create PoiID \(locationPoiID)]")
+                marker?.show()
+                moveCameraToFocus(point, zoomLevel: 23)
             }
         }
     }

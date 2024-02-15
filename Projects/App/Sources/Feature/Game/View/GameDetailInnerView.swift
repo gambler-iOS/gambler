@@ -13,9 +13,9 @@ struct GameDetailInnerView: View {
     
     var body: some View {
         VStack(alignment: .leading){
-            BoldDivider()
-            SummaryReviewView()
-            BoldDivider()
+            Border()
+            ReviewListCellView()
+            Border()
         }.padding(.bottom, 30)
     }
 }

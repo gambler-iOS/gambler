@@ -9,7 +9,7 @@
 import SwiftUI
 import Kingfisher
 
-struct SummaryReviewView: View {
+struct ReviewListCellView: View {
     var review: Review?
     var rating: String = "4.5"
     var reviewNum: Int = 10
@@ -64,5 +64,5 @@ struct SummaryReviewView: View {
 }
 
 #Preview {
-    SummaryReviewView()
+    ReviewListCellView()
 }

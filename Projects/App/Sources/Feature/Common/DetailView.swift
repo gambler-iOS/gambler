@@ -28,7 +28,7 @@ struct DetailView: View {
                 setOffset(offset: offset)
                 
                     /// 매장, 게임 이미지 넣는부분
-                    /// type == shop ? shop.Image : game.Image
+                    /// type == shop ? shop.shopImage : game.gameImage
                     KFImage(URL(string: testImage))
                         .resizable()
                         .aspectRatio(contentMode: .fill)
@@ -45,27 +45,39 @@ struct DetailView: View {
             }
             .frame(minHeight: mainImageHeight)
             LazyVStack(pinnedViews: [.sectionHeaders]) {
-                Section(header: HeaderView()) { //없앨까..? 굳이 필요없을지도
-                    /// 스크롤뷰
-                    VStack {
-                        HStack{
-                            if type == .shop {
-                                Text(shop?.shopAddress ?? "주소정보 없음")
-                            }
-                            Spacer()
-                        }.padding(EdgeInsets(top: 10, leading: 24, bottom: 20, trailing: 0))
-                        DetailViewButton(type: type)
-                            .padding(.bottom, -15)
-                        
-                        switch type {
-                        case .shop:
-                            ShopDetailInnerView(shop: shop)
-                        case .game:
-                            GameDetailInnerView(game: game)
-                        }
+                HStack{
+                    Text((type == .shop ? shop?.shopName : game?.gameName) ?? "타이틀")
+                        .font(.title2)
+                        .bold()
+                    Group{
+                        Image(systemName: "star.fill")
+                        Text(String(format: "%.1f", (type == .shop ? shop?.reviewRatingAverage : game?.reviewRatingAverage) ?? 0.0))
                     }
-                    ///
+                    .font(.subheadline)
+                        .foregroundColor(.pink)
+                    Spacer()
                 }
+                .padding(.top, 10)
+                .padding(.leading, 24)
+                /// 스크롤뷰
+                VStack {
+                    HStack{
+                        if type == .shop {
+                            Text(shop?.shopAddress ?? "주소정보 없음")
+                        }
+                        Spacer()
+                    }.padding(EdgeInsets(top: 10, leading: 24, bottom: 20, trailing: 0))
+                    DetailViewButton(type: type)
+                        .padding(.bottom, -15)
+                    
+                    switch type {
+                    case .shop:
+                        ShopDetailInnerView(shop: shop)
+                    case .game:
+                        GameDetailInnerView(game: game)
+                    }
+                }
+                
             }.background(.white)
         }
         .overlay(
@@ -93,34 +105,12 @@ struct DetailView: View {
         }
     }
     
-    
     private func setOffset(offset: CGFloat) -> some View {
         DispatchQueue.main.async {
             self.offsetY = offset
         }
         return EmptyView()
     }
-    
-    private struct HeaderView: View {
-        var body: some View {
-            HStack{
-                Text("레드버튼 선릉점")
-                    .font(.title2)
-                    .bold()
-                Group{
-                    Image(systemName: "star.fill")
-                    Text("4.5")
-                }.font(.subheadline)
-                    .foregroundColor(.pink)
-                    .padding(.leading, 8)
-                Spacer()
-            }
-            .padding(.top, 10)
-            .padding(.leading, 24)
-            .background(.white)
-        }
-    }
-    
 }
 
 #Preview {

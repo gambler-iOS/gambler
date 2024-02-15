@@ -17,6 +17,7 @@ struct ShopDetailInfo: View {
             makeInfoTable(title: "편의", content: shop?.amenity)
             makeInfoTable(title: "이용 가격", content: "이거 넣으려면 모델에 넣어야하는디!")
             makeInfoTable(title: "메뉴", content: shop?.menu)
+            
         }.padding(.vertical, 10)
             .padding(.horizontal, 10)
         
