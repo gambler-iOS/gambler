@@ -10,26 +10,43 @@ import SwiftUI
 
 struct SearchBarView: View {
     @Binding var searchText: String
-
+    @State private var isEditing = false
+    
     var body: some View {
         HStack {
-            GamblerAsset.tabSearch.swiftUIImage
-                .foregroundColor(.gray)
-
-            TextField("게임, 지역, 장르 등 검색", text: $searchText)
-                .foregroundColor(.primary)
-
-            Button(action: {
-                // Handle search action
-            }) {
-                Text("Search")
-                    .foregroundColor(.blue)
+            HStack(spacing: 8) {
+                GamblerAsset.tabSearch.swiftUIImage
+                    .resizable()
+                    .renderingMode(.template)
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(.gray300)
+                
+                TextField("게임, 지역, 장르 등 검색", text: $searchText, onEditingChanged: { _ in
+                    withAnimation(.interactiveSpring, {
+                        self.isEditing.toggle()
+                    })
+                })
+                .foregroundColor(.gray400)
+                
+            }
+            .ignoresSafeArea()
+            .padding(.horizontal, 16)
+            .padding(.vertical, 16)
+            .background(Color.gray50)
+            .frame(height: 44)
+            .cornerRadius(8)
+            
+            if !searchText.isEmpty {
+                Button {
+                    searchText = ""
+                    isEditing.toggle()
+                } label: {
+                    Text("취소")
+                        .foregroundColor(.blue)
+                }
+                .frame(width: 44, height: 44)
             }
         }
-        .padding()
-        .background(Color(.systemGray5))
-        .cornerRadius(10)
-        .padding(.horizontal)
     }
 }
 
