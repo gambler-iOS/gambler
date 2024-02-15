@@ -66,6 +66,7 @@ XCConfig/
 Secrets.xcconfig
 GoogleService-Info.plist
 *.DS_Store
+Derived/
 
 # Carthage
 #
