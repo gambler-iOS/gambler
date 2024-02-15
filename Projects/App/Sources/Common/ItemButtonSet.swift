@@ -11,8 +11,8 @@ import UIKit
 
 struct ItemButtonSet: View {
     let type: DetailViewSegment
-    let shop: Shop?
-    let game: Game?
+    var shop: Shop?
+    var game: Game?
     @State var heartState: Bool = false
     
     var body: some View {
