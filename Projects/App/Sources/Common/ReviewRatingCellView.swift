@@ -30,11 +30,5 @@ struct ReviewRatingCellView: View {
 }
 
 #Preview {
-    ReviewRatingCellView(review: Game(id: UUID().uuidString, gameName: "game",
-                                      gameImage: "https://weefun.co.kr/shopimages/weefun/007009000461.jpg?1596805186",
-                                  gameIntroduction: GameIntroduction(difficulty: 3.1, minPlayerCount: 2,
-                                                                     maxPlayerCount: 4, playTime: 2,
-                                                                     genre: .fantasy),
-                                  descriptionImage: ["image"], gameLink: "link", createdDate: Date(),
-                                      reviewCount: 5, reviewRatingAverage: 3.5))
+    ReviewRatingCellView(review: Game.dummyGame)
 }

@@ -12,7 +12,7 @@ import Kingfisher
 struct CardItemView: View {
     let game: Game
     var playerString: String {
-        "인원 \(game.gameIntroduction.minPlayerCount) - \(game.gameIntroduction.maxPlayerCount)명"
+        "인원 \(game.gameIntroduction.minPlayerCount)~\(game.gameIntroduction.maxPlayerCount)명"
     }
     
     var body: some View {
@@ -49,11 +49,5 @@ struct CardItemView: View {
 }
 
 #Preview {
-    CardItemView(game: Game(id: UUID().uuidString, gameName: "game",
-                            gameImage: "https://weefun.co.kr/shopimages/weefun/007009000461.jpg?1596805186",
-                            gameIntroduction: GameIntroduction(difficulty: 3.1, minPlayerCount: 2,
-                                                               maxPlayerCount: 4, playTime: 2,
-                                                               genre: .fantasy),
-                            descriptionImage: ["image"], gameLink: "link", createdDate: Date(),
-                            reviewCount: 5, reviewRatingAverage: 3.5))
+    CardItemView(game: Game.dummyGame)
 }

@@ -20,7 +20,7 @@ struct HeartCellView: View {
                     .frame(width: 24, height: 24)
                     .foregroundStyle(Color.primaryDefault)
             } else {
-                GamblerAsset.heartgray.swiftUIImage
+                GamblerAsset.heartGray.swiftUIImage
                     .resizable()
                     .renderingMode(.template)
                     .frame(width: 24, height: 24)
