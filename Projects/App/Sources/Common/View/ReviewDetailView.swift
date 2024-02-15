@@ -12,13 +12,6 @@ import Kingfisher
 struct ReviewDetailView: View {
     let reviewData: Review
     
-    // 다른 파일로 빼는게 나을 것 같음
-    static let dateformat: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "YYYY.MM.dd"
-        return formatter
-    }()
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("이름")  // Id로 이름 알아내는 메서드 사용하여 나타내기
@@ -32,7 +25,7 @@ struct ReviewDetailView: View {
                     .font(.caption1M)
                     .foregroundStyle(Color.primaryDefault)
                     .padding(.trailing, 4)
-                Text("\(reviewData.createdDate, formatter: Self.dateformat)")
+                Text(reviewData.createdDate.summary)
                     .font(.caption1M)
                     .foregroundStyle(Color.gray400)
             }

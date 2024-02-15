@@ -10,25 +10,23 @@ import SwiftUI
 import Kingfisher
 
 struct GameMiniGridItemView: View {
-    let imageURL: String
-    let gameName: String
+    let game: Game
     
     var body: some View {
-        gameMiniGridItemView(imageURL: self.imageURL, name: self.gameName)
-    }
-    
-    @ViewBuilder
-    func gameMiniGridItemView(imageURL: String, name: String) -> some View {
         VStack(alignment: .center, spacing: 16) {
-            KFImage(URL(string: imageURL))
-                .resizable()
-                .scaledToFill()
-                .frame(width: 100, height: 100)
-                .clipShape(.rect(cornerRadius: 8))
+            if let url = URL(string: game.gameImage) {
+                KFImage(url)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 100, height: 100)
+                    .clipShape(.rect(cornerRadius: 8))
+            } else {
+                RoundedRectangle(cornerRadius: 8)
+                    .frame(width: 100, height: 100)
+                    .foregroundStyle(Color.gray200)
+            }
             
-            // 이미지 로딩이 안될 때 대체 이미지 넣어야 할 듯
-            
-            Text("\(name)")
+            Text(game.gameName)
                 .font(.body2M)
                 .foregroundStyle(Color.gray700)
         }
@@ -36,5 +34,5 @@ struct GameMiniGridItemView: View {
 }
 
 #Preview {
-    GameMiniGridItemView(imageURL: "https://beziergames.com/cdn/shop/products/UltimateAccessoryPack_800x.png?v=1587055236", gameName: "한밤의 늑대")
+    GameMiniGridItemView(game: Game.dummyGame)
 }

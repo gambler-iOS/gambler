@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Game: AvailableFirebase, Hashable {
+struct Game: AvailableFirebase, AvailableAggregateReview, Hashable {
     static func == (lhs: Game, rhs: Game) -> Bool {
         lhs.id == rhs.id
     }
@@ -16,12 +16,30 @@ struct Game: AvailableFirebase, Hashable {
     var id: String
     let gameName: String
     let gameImage: String
-    let gameIntroduction: GameIntroduction
     var descriptionImage: [String]
     var gameLink: String
     let createdDate: Date
     var reviewCount: Int
     var reviewRatingAverage: Double
+    let gameIntroduction: GameIntroduction
+    
+    static let dummyGame = Game(
+        id: UUID().uuidString,
+        gameName: "아임 더 보스",
+        gameImage: "",
+//            "https://weefun.co.kr/shopimages/weefun/007009000461.jpg?1596805186",
+        descriptionImage: ["image"],
+        gameLink: "link",
+        createdDate: Date(),
+        reviewCount: 5,
+        reviewRatingAverage: 3.5,
+        gameIntroduction: GameIntroduction(
+            difficulty: 3.1,
+            minPlayerCount: 2,
+            maxPlayerCount: 4,
+            playTime: 2,
+            genre: .fantasy)
+        )
 }
 
 struct GameIntroduction: Codable, Hashable {
