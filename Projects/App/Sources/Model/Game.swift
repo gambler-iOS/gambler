@@ -26,8 +26,7 @@ struct Game: AvailableFirebase, AvailableAggregateReview, Hashable {
     static let dummyGame = Game(
         id: UUID().uuidString,
         gameName: "아임 더 보스",
-        gameImage: "",
-//            "https://weefun.co.kr/shopimages/weefun/007009000461.jpg?1596805186",
+        gameImage: "https://weefun.co.kr/shopimages/weefun/007009000461.jpg?1596805186",
         descriptionImage: ["image"],
         gameLink: "link",
         createdDate: Date(),
