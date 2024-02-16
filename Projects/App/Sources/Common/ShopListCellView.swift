@@ -44,7 +44,7 @@ struct ShopListCellView: View {
                         HeartCellView(isLike: isLike)
                     }
 
-                    ReviewRatingCellView(review: shop)
+                    ReviewRatingCellView(rating: shop.reviewRatingAverage)
                     
                     Spacer()
                 }
