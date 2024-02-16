@@ -34,7 +34,7 @@ struct ReviewListCellView: View {
             .padding(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 0))
             
         }
-        .frame(width: 252, height: 90)
+        .frame(height: 90)
         .padding(.horizontal, 8)
         .background(Color.gray50)
         .cornerRadius(8)
