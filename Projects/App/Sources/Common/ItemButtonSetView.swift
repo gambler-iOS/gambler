@@ -9,7 +9,7 @@
 import SwiftUI
 import UIKit
 
-struct ItemButtonSet: View {
+struct ItemButtonSetView: View {
     let type: DetailViewSegment
     var shop: Shop?
     var game: Game?
@@ -28,14 +28,14 @@ struct ItemButtonSet: View {
     
     private var ShopButtonSet: some View {
         return Group {
-            ItemButton(image: GamblerAsset.phone.swiftUIImage, buttonName: "전화") {
+            ItemButtonView(image: GamblerAsset.phone.swiftUIImage, buttonName: "전화") {
                 tappedCall()
             }
-            ItemButton(image: heartState ? GamblerAsset.heartRed.swiftUIImage :
+            ItemButtonView(image: heartState ? GamblerAsset.heartRed.swiftUIImage :
                         GamblerAsset.heartGray.swiftUIImage, buttonName: "찜하기") {
                 tappedHeart()
             }
-            ItemButton(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
+            ItemButtonView(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
                 tappedReview()
             }
         }.padding(.horizontal, 15)
@@ -43,11 +43,11 @@ struct ItemButtonSet: View {
     
     private var GameButtonSet: some View {
         Group {
-            ItemButton(image: heartState ? GamblerAsset.heartRed.swiftUIImage :
+            ItemButtonView(image: heartState ? GamblerAsset.heartRed.swiftUIImage :
                         GamblerAsset.heartGray.swiftUIImage, buttonName: "찜하기") {
                 tappedHeart()
             }
-            ItemButton(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
+            ItemButtonView(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
                 tappedReview()
             }
         }.padding(.horizontal, 40)
@@ -69,7 +69,7 @@ struct ItemButtonSet: View {
     }
 }
 
-struct ItemButton: View {
+struct ItemButtonView: View {
     let image: Image
     let buttonName: String
     let action: () -> Void
@@ -91,5 +91,5 @@ struct ItemButton: View {
 }
 
 #Preview {
-    ItemButtonSet(type: .shop, shop: Shop.dummyShop)
+    ItemButtonSetView(type: .shop, shop: Shop.dummyShop)
 }

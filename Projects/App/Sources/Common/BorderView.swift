@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct Border: View {
+struct BorderView: View {
     var body: some View {
         Rectangle()
             .foregroundStyle(Color.gray50)
@@ -17,5 +17,5 @@ struct Border: View {
 }
 
 #Preview {
-    Border()
+    BorderView()
 }

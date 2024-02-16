@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct SectionHeader: View {
+struct SectionHeaderView: View {
     var title: String
     var rating: String?
     
@@ -34,5 +34,5 @@ struct SectionHeader: View {
 }
 
 #Preview {
-    SectionHeader(title: "인기매장")
+    SectionHeaderView(title: "인기매장")
 }
