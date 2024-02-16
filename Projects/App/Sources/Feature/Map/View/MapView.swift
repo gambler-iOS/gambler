@@ -27,10 +27,11 @@ struct MapView: View {
                 }
             }
             .overlay{
-                if isShowingSheet {
-                    FlotingView()
-                        .offset(y: 250)
-                      
+                Group {
+                        if isShowingSheet {
+                            FlotingView()
+                                .offset(y: 250)
+                        }
                 }
             }
         

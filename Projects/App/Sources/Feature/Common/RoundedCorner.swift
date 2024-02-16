@@ -28,7 +28,6 @@ extension View {
 struct RoundSpecificCorners: View {
     var body: some View {
         Rectangle()
-            .font(.largeTitle)
             .foregroundColor(.white)
             .frame(width: UIScreen.main.bounds.width, height: 40)
             .roundedCorner(20, corners: [.topLeft, .topRight])
