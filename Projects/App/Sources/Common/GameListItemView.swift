@@ -49,7 +49,7 @@ struct GameListItemView: View {
                         HeartCellView(isLike: isLike)
                     }
 
-                    ReviewRatingCellView(review: game)
+                    ReviewRatingCellView(rating: game.reviewRatingAverage)
                     
                     Spacer()
                 }
