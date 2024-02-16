@@ -13,7 +13,7 @@ struct SectionHeader: View {
     var rating: String?
     
     var body: some View {
-        HStack(spacing: 0){
+        HStack(spacing: 0) {
             Text(title)
                 .font(.subHead1B)
                 .foregroundStyle(Color.gray700)

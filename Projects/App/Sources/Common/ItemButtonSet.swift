@@ -16,7 +16,7 @@ struct ItemButtonSet: View {
     @State var heartState: Bool = false
     
     var body: some View {
-        HStack(spacing: 0){
+        HStack(spacing: 0) {
             switch type {
             case .shop:
                 ShopButtonSet
@@ -27,11 +27,12 @@ struct ItemButtonSet: View {
     }
     
     private var ShopButtonSet: some View {
-        return Group{
+        return Group {
             ItemButton(image: GamblerAsset.phone.swiftUIImage, buttonName: "전화") {
                 tappedCall()
             }
-            ItemButton(image: heartState ? GamblerAsset.heartRed.swiftUIImage : GamblerAsset.heartGray.swiftUIImage, buttonName: "찜하기") {
+            ItemButton(image: heartState ? GamblerAsset.heartRed.swiftUIImage :
+                        GamblerAsset.heartGray.swiftUIImage, buttonName: "찜하기") {
                 tappedHeart()
             }
             ItemButton(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
@@ -41,8 +42,9 @@ struct ItemButtonSet: View {
     }
     
     private var GameButtonSet: some View {
-        Group{
-            ItemButton(image: heartState ? GamblerAsset.heartRed.swiftUIImage : GamblerAsset.heartGray.swiftUIImage, buttonName: "찜하기") {
+        Group {
+            ItemButton(image: heartState ? GamblerAsset.heartRed.swiftUIImage :
+                        GamblerAsset.heartGray.swiftUIImage, buttonName: "찜하기") {
                 tappedHeart()
             }
             ItemButton(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
@@ -52,7 +54,8 @@ struct ItemButtonSet: View {
     }
     
     private func tappedCall() {
-        if let phoneURL = URL(string: "tel://\(String(describing: shop?.shopPhoneNumber))"), UIApplication.shared.canOpenURL(phoneURL) {
+        if let phoneURL = URL(string: "tel://\(String(describing: shop?.shopPhoneNumber))"),
+           UIApplication.shared.canOpenURL(phoneURL) {
             UIApplication.shared.open(phoneURL, options: [:], completionHandler: nil)
         }
     }
@@ -75,7 +78,7 @@ struct ItemButton: View {
         return Button {
             action()
         } label: {
-            HStack{
+            HStack {
                 image
                     .resizable()
                     .frame(width: 23.1, height: 23.1)
