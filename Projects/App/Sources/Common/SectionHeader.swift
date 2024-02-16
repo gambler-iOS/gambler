@@ -32,3 +32,7 @@ struct SectionHeader: View {
         }.padding(24)
     }
 }
+
+#Preview {
+    SectionHeader(title: "인기매장")
+}

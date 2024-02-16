@@ -86,3 +86,7 @@ struct ItemButton: View {
         }.frame(width: 80)
     }
 }
+
+#Preview {
+    ItemButtonSet(type: .shop, shop: Shop.dummyShop)
+}
