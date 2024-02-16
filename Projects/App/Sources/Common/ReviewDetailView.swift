@@ -11,7 +11,6 @@ import Kingfisher
 
 struct ReviewDetailView: View {
     let reviewData: Review
-    let target: AvailableAggregateReview
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -20,8 +19,7 @@ struct ReviewDetailView: View {
                 .foregroundStyle(Color.gray700)
             
             HStack(spacing: 8) {
-                ReviewRatingCellView(review: target)
-                // target이 내가 준 평점으로 줘야하는데 가게의 평점을 줘야해서 ReviewRatingCellView로 하기에는 게임/샵 자체의 평점이 올라가기 때문에 문제가 있어보임
+                ReviewRatingCellView(rating: reviewData.reviewRating)
                 
                 Text(reviewData.createdDate.summary)
                     .foregroundStyle(Color.gray400)
@@ -57,5 +55,5 @@ struct ReviewDetailView: View {
 }
 
 #Preview {
-    ReviewDetailView(reviewData: Review.dummyReview, target: Game.dummyGame)
+    ReviewDetailView(reviewData: Review.dummyReview)
 }

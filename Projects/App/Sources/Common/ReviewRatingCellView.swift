@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct ReviewRatingCellView: View {
-    let review: AvailableAggregateReview
+    let rating: Double
     var textColor: Color = .primaryDefault
     
     var body: some View {
@@ -20,7 +20,7 @@ struct ReviewRatingCellView: View {
                     .renderingMode(.template)
                     .frame(width: 18, height: 18)
                 
-                Text(String(format: "%.1f", review.reviewRatingAverage))
+                Text(String(format: "%.1f", rating))
                     .foregroundStyle(textColor)
             }
             .foregroundStyle(Color.primaryDefault)
@@ -30,5 +30,5 @@ struct ReviewRatingCellView: View {
 }
 
 #Preview {
-    ReviewRatingCellView(review: Game.dummyGame)
+    ReviewRatingCellView(rating: 3.9)
 }
