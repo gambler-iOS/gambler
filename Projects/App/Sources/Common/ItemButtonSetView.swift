@@ -10,10 +10,10 @@ import SwiftUI
 import UIKit
 
 struct ItemButtonSetView: View {
-    let type: DetailViewSegment
+    let type: MyPageFilter
     var shop: Shop?
     var game: Game?
-    @State var heartState: Bool = false
+    @State private var heartState: Bool = false
     
     var body: some View {
         HStack(spacing: 0) {
