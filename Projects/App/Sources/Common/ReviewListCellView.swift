@@ -25,7 +25,7 @@ struct ReviewListCellView: View {
             }
             
             VStack(alignment: .leading, spacing: 0) {
-                ReviewRatingCellView(review: review.reviewRating)
+                ReviewRatingCellView(rating: review.reviewRating)
                     .padding(.bottom, 5)
                 Text(review.reviewContent)
                     .font(.caption1M)
