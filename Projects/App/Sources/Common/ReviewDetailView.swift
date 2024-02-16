@@ -10,6 +10,7 @@ import SwiftUI
 import Kingfisher
 
 struct ReviewDetailView: View {
+    
     let reviewData: Review
     
     var body: some View {
@@ -21,7 +22,7 @@ struct ReviewDetailView: View {
             HStack(spacing: 8) {
                 ReviewRatingCellView(rating: reviewData.reviewRating)
                 
-                Text(reviewData.createdDate.summary)
+                Text(GamblerDateFormatter.shared.calendarDateString(from: reviewData.createdDate))
                     .foregroundStyle(Color.gray400)
             }
             .font(.caption1M)
