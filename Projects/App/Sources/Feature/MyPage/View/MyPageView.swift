@@ -11,38 +11,44 @@ import Kingfisher
 
 struct MyPageView: View {
     @EnvironmentObject var myPageViewModel: MyPageViewModel
+    let loginPlatform: String = "카카오톡"
     
     var body: some View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    CircleImageView(imageURL: myPageViewModel.user.profileImageURL, size: 64)
-                    
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("이름")
-                        //                        Text("\(signInWith) 로그인 완료")
-                            .padding(12)
-                            .overlay(RoundedRectangle(cornerRadius: 25).stroke(.black, lineWidth: 1.0))
+                VStack(spacing: 0) {
+                    Group {
+                        HStack(spacing: 8) {
+                            CircleImageView(imageURL: myPageViewModel.user.profileImageURL, size: 64)
+                            
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(myPageViewModel.user.nickname)
+                                ChipView(label: "\(loginPlatform) 로그인 완료", size: .medium)
+                                    .foregroundStyle(Color.gray400)
+                            }
+                            Spacer()
+                        }
+                        .padding(.vertical, 16)
                     }
-                    Spacer()
+                    .padding(.bottom, 24)
+                    
+                    HStack {
+                        Spacer()
+                        navigationView(title: "나의 리뷰", destination: MyReviewsView(), count: myPageViewModel.numnberOfReviews)
+                        Spacer()
+                        Divider()
+                            .frame(width: 1, height: 44)
+                            .foregroundStyle(Color.gray200)
+                        Spacer()
+                        navigationView(title: "좋아요", destination: MyLikesView(), count: myPageViewModel.numberOfLikes)
+                        Spacer()
+                    }
+                    .frame(height: 140)
+                    .background(Color.gray50)
+                    .clipShape(.rect(cornerRadius: 8))
+                    
+                    ListItemView()
                 }
-                
-                HStack {
-                    Spacer()
-                    navigationView(title: "나의 리뷰", destination: MyReviewsView(), count: myPageViewModel.numnberOfReviews)
-                    Spacer()
-                    Divider()
-                        .frame(width: 1, height: 44)
-                        .foregroundStyle(Color.gray200)
-                    Spacer()
-                    navigationView(title: "좋아요", destination: MyLikesView(), count: myPageViewModel.numberOfLikes)
-                    Spacer()
-                }
-                .frame(height: 140)
-                .background(Color.gray50)
-                .clipShape(.rect(cornerRadius: 8))
-                
-                ListItemView()
             }
         }
         .padding(.horizontal)
@@ -63,7 +69,6 @@ struct MyPageView: View {
             }
         }
     }
-    
 }
 
 #Preview {
