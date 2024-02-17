@@ -12,7 +12,7 @@ struct CustomSheetView: View {
     
     var body: some View {
         VStack {
-            indicaterView
+            Indicater
                 .padding(.vertical, 12)
             Text("네비게이션")
                 .frame(height: 56)
@@ -25,7 +25,7 @@ struct CustomSheetView: View {
             .roundedCorner(16, corners: [.topLeft, .topRight])
     }
     
-    private var indicaterView: some View {
+    private var Indicater: some View {
         Rectangle()
             .foregroundStyle(Color.gray100)
             .frame(width: 48, height: 4)
