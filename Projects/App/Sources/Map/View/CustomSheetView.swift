@@ -19,8 +19,9 @@ struct CustomSheetView: View {
             
             ScrollView {
                 Text("매장 리스트 뷰")
-            }.frame(width: UIScreen.main.bounds.width)
-                . padding(.vertical, 12)
+                    .frame(width: UIScreen.main.bounds.width)
+            }
+            .padding(.vertical, 12)
         }.background(Color.white)
             .roundedCorner(16, corners: [.topLeft, .topRight])
     }
