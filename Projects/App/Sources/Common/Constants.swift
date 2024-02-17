@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 enum AppConstants {
     enum ChipSize {
@@ -20,7 +21,7 @@ enum AppConstants {
     enum CornerRadius {
         static let small: CGFloat = 8
         static let medium: CGFloat = 16
-    }
+    } 
     enum ImageFrame {
         static let reviewListCell: CGSize = CGSize(width: 64, height: 64)
         static let miniGridItem: CGSize = CGSize(width: 100, height: 100)
@@ -28,7 +29,16 @@ enum AppConstants {
         static let listCell: CGSize = CGSize(width: 100, height: 100)
         static let cardItem: CGSize = CGSize(width: 240, height: 300)
     }
-    
+    enum SheetHeight {
+        static let full = getSafeAreaTop()
+        static let middle = UIScreen.main.bounds.size.height * (1/2)
+        static let bottom = UIScreen.main.bounds.size.height * (6/7)
+    }
+    enum SheetBoundary {
+        static let high = UIScreen.main.bounds.size.height * (1/4)
+        static let low = UIScreen.main.bounds.size.height * (3/4)
+        static let button = UIScreen.main.bounds.size.height * (1/3)
+    }
     enum MyPageFilter: Int, CaseIterable, Identifiable, FilterType {
         case shop
         case game
@@ -73,3 +83,24 @@ extension AppConstants.SearchFilter: Sequence {
         return IndexingIterator(_elements: AppConstants.SearchFilter.allCases)
     }
 }
+
+func getSafeAreaTop() -> CGFloat {
+    let keyWindow = UIApplication.shared.connectedScenes
+        .filter({$0.activationState == .foregroundActive})
+        .map({$0 as? UIWindowScene})
+        .compactMap({$0})
+        .first?.windows
+        .filter({$0.isKeyWindow}).first
+    return (keyWindow?.safeAreaInsets.top)!
+}
+
+func getSafeAreaBottom() -> CGFloat {
+    let keyWindow = UIApplication.shared.connectedScenes
+        .filter({$0.activationState == .foregroundActive})
+        .map({$0 as? UIWindowScene})
+        .compactMap({$0})
+        .first?.windows
+        .filter({$0.isKeyWindow}).first
+    return (keyWindow?.safeAreaInsets.bottom)!
+}
+

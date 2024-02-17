@@ -24,7 +24,8 @@ struct TabBarView: View {
                 }
                 .tag(0)
             
-            Text("MapView")
+            MapView()
+                .background(Color.white)
                 .tabItem {
                     HStack {
                         (selectedTab == 1 ? GamblerAsset.tabMapSelected.swiftUIImage : GamblerAsset.tabMap.swiftUIImage)
