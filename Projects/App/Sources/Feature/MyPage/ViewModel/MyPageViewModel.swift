@@ -23,6 +23,25 @@ final class MyPageViewModel: ObservableObject {
     @Published var user: User = User.dummyUser
     var appVersion: String = "1.0.1"
     
+    var numnberOfReviews: String = ""
+    var numberOfLikes: String = ""
+    
+    init() {
+        self.numnberOfReviews = getNumberOfReviews()
+        self.numberOfLikes = getNumberOfLikes()
+    }
+    
+    private func getNumberOfReviews() -> String {
+        // 이거는 파이어베이스에서 읽어서 카운트 해야함
+        return "10"
+    }
+    
+    private func getNumberOfLikes() -> String{
+        let numberOfReviewInt = user.likeGameId.count + user.likeShopId.count
+        return "\(numberOfReviewInt)"
+    }
+    
+    
 //    @Published var selectedImage: PhotosPickerItem? {
 //            didSet { Task {try await loadImage(fromItem: selectedImage)} }
 //        }
