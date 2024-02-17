@@ -8,7 +8,7 @@
 
 import Foundation
 
-class GamblerDateFormatter {
+final class GamblerDateFormatter {
     static let shared = GamblerDateFormatter()
     
     private init() { }
