@@ -10,7 +10,7 @@ import SwiftUI
 import UIKit
 
 struct ItemButtonSetView: View {
-    let type: MyPageFilter
+    let type: AppConstants.MyPageFilter
     var shop: Shop?
     var game: Game?
     @State private var heartState: Bool = false
