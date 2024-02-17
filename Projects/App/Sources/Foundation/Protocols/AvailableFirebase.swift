@@ -11,3 +11,5 @@ import Foundation
 protocol AvailableFirebase: Codable, Identifiable {
     var id: String { get }
 }
+
+

@@ -47,7 +47,7 @@ struct GameGridItemView: View {
                 .foregroundStyle(Color.gray700)
             
             HStack(spacing: 8) {
-                ReviewRatingCellView(review: game)
+                ReviewRatingCellView(rating: game.reviewRatingAverage)
                 
                 Text(playerString)
                     .foregroundStyle(Color.gray400)

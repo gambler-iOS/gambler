@@ -30,7 +30,7 @@ struct CardItemView: View {
                                 .foregroundStyle(Color.gray50)
                             
                             HStack(spacing: 8) {
-                                ReviewRatingCellView(review: game, textColor: .gray50)
+                                ReviewRatingCellView(rating: game.reviewRatingAverage, textColor: .gray50)
                                 
                                 Text(playerString)
                                     .foregroundStyle(Color.gray50)
