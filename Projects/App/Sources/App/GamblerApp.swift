@@ -12,7 +12,7 @@ import SwiftUI
 struct GamblerApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TabBarView()
 //            MainView()
         }
     }

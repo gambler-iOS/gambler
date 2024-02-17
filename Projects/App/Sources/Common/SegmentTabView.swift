@@ -51,6 +51,6 @@ struct SegmentTabView<T: FilterType & Identifiable & Equatable>: View where T.Al
 }
 
 #Preview {
-//    SegmentTabView<AppConstants.MyPageFilter>()
-    SegmentTabView<AppConstants.SearchFilter>()
+    SegmentTabView<AppConstants.MyPageFilter>()
+//    SegmentTabView<AppConstants.SearchFilter>()
 }
