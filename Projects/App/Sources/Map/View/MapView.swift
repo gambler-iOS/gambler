@@ -18,7 +18,7 @@ struct MapView: View {
             // 맵뷰 추가 위치
             CustomSheetView()
                 .frame(height: UIScreen.main.bounds.size.height)
-                .offset(y: dragOffset > 0 ? dragOffset : AppConstants.SheetHeight.full)
+                .offset(y: dragOffset > 0 ? dragOffset :  AppConstants.SheetHeight.full)
                 .gesture( DragGesture()
                     .onChanged { gesture in
                         if !isShowingMapButton {
@@ -54,7 +54,7 @@ struct MapView: View {
             .frame(width: 97, height: 44)
             .onTapGesture {
                 withAnimation {
-                    isShowingMapButton.toggle()
+                    isShowingMapButton = false
                     dragOffset = AppConstants.SheetHeight.bottom
                     currentOffset = dragOffset
                 }
@@ -67,7 +67,7 @@ struct MapView: View {
                 .foregroundColor(.white)
                 .frame(height: getSafeAreaTop() + 20)
                 .edgesIgnoringSafeArea(.all)
-                .opacity(dragOffset < getSafeAreaTop() + 20 ? 1 : 0)
+                .opacity(dragOffset < AppConstants.SheetHeight.full + 20 ? 1 : 0)
         }
     }
     
