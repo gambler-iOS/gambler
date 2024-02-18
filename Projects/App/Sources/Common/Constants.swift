@@ -85,22 +85,23 @@ extension AppConstants.SearchFilter: Sequence {
 }
 
 func getSafeAreaTop() -> CGFloat {
-    let keyWindow = UIApplication.shared.connectedScenes
-        .filter({$0.activationState == .foregroundActive})
-        .map({$0 as? UIWindowScene})
-        .compactMap({$0})
-        .first?.windows
-        .filter({$0.isKeyWindow}).first
-    return (keyWindow?.safeAreaInsets.top)!
+    guard let keyWindow = UIApplication.shared.connectedScenes
+            .filter({ $0.activationState == .foregroundActive })
+            .compactMap({ $0 as? UIWindowScene })
+            .first?.windows
+            .filter({ $0.isKeyWindow }).first else {
+        return 0
+    }
+    return keyWindow.safeAreaInsets.top
 }
 
 func getSafeAreaBottom() -> CGFloat {
-    let keyWindow = UIApplication.shared.connectedScenes
-        .filter({$0.activationState == .foregroundActive})
-        .map({$0 as? UIWindowScene})
-        .compactMap({$0})
-        .first?.windows
-        .filter({$0.isKeyWindow}).first
-    return (keyWindow?.safeAreaInsets.bottom)!
+    guard let keyWindow = UIApplication.shared.connectedScenes
+            .filter({ $0.activationState == .foregroundActive })
+            .compactMap({ $0 as? UIWindowScene })
+            .first?.windows
+            .filter({ $0.isKeyWindow }).first else {
+        return 0
+    }
+    return keyWindow.safeAreaInsets.bottom
 }
-
