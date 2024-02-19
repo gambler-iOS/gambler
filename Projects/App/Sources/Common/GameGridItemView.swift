@@ -14,7 +14,7 @@ struct GameGridItemView: View {
     let likeGameIdArray: [String]
     
     var playerString: String {
-        "인원 \(game.gameIntroduction.minPlayerCount)~\(game.gameIntroduction.maxPlayerCount)명"
+        "인원 \(game.gameIntroduction.minPlayerCount) - \(game.gameIntroduction.maxPlayerCount)명"
     }
     
     var isLike: Bool {
