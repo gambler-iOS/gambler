@@ -18,10 +18,11 @@ struct CustomSheetView: View {
                 .frame(height: 56)
             
             ScrollView {
-                Text("매장 리스트 뷰")
-                    .frame(width: UIScreen.main.bounds.width)
+                LazyVStack {
+                   Text("매장 리스트")
+                }.padding(.vertical, 12)
+                .frame(minHeight: UIScreen.main.bounds.size.height - getSafeAreaTop())
             }
-            .padding(.vertical, 12)
         }.background(Color.white)
             .roundedCorner(16, corners: [.topLeft, .topRight])
     }
