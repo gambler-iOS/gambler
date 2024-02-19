@@ -18,7 +18,7 @@ struct GameDetailView: View {
             
             Spacer()
             #warning("GameDetail 더미, NavigationPath 동작 보여주기 위해 추가함")
-            HomeGamesGridView(title: "연관게임", games: HomeViewModel().popularGames)
+            HomeGameGridView(title: "연관게임", games: HomeViewModel().popularGames)
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {

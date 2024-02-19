@@ -16,7 +16,7 @@ struct HomeView: View {
         NavigationStack(path: $path) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 32) {
-                    HomeGamesGridView(title: "채영님이 좋아하실 인기게임", games: homeViewModel.popularGames)
+                    HomeGameGridView(title: "채영님이 좋아하실 인기게임", games: homeViewModel.popularGames)
                     BorderView()
                     HomeShopListView(title: "인기 매장", shops: homeViewModel.popularShops)
                     BorderView()

@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct HomeGamesGridView: View {
+struct HomeGameGridView: View {
     let title: String
     let games: [Game]
     let columns: [GridItem] = Array(repeating: .init(.fixed(155), spacing: 17, alignment: .leading), count: 2)
@@ -41,5 +41,5 @@ struct HomeGamesGridView: View {
 }
 
 #Preview {
-    HomeGamesGridView(title: "인기 게임", games: HomeViewModel().popularGames)
+    HomeGameGridView(title: "인기 게임", games: HomeViewModel().popularGames)
 }
