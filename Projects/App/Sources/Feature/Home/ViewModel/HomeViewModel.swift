@@ -20,7 +20,7 @@ final class HomeViewModel: ObservableObject {
 
     func generateDummyData() {
         let gameImageUrl: String =
-        "https://boardm.co.kr/upload/product/img4/img_largeupfilenm_1689313043_0.jpg?t=1682590618"
+        "https://weefun.co.kr/shopimages/weefun/007009000461.jpg?1596805186"
         let shopImageUrl: String =
         "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20201122_151%2F1606046564169SzUUi_JPEG%2FrkjG5CgJbjULKNT0NaPHKoHl.jpg"
         for num in 1...3 {
