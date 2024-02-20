@@ -28,6 +28,10 @@ struct EventBannerView: View {
                             .resizable()
                             .frame(minWidth: 300, maxWidth: .infinity, minHeight: 400, maxHeight: 400)
                             .scaledToFit()
+                            .overlay {
+                                Color.black
+                                    .opacity(0.6)
+                            }
                             .overlay(alignment: .bottomLeading) {
                                 VStack(alignment: .leading, spacing: 32) {
                                     Text("신규 게임을\n빠르게 만나보세요")

@@ -14,19 +14,8 @@ struct HomeGameCategoryHScrollView: View {
     
     var body: some View {
         VStack(spacing: 24) {
-            // TODO: SectionHeaderView 에서 패딩 제외해도 되는지 물어보고 사용하기
-            HStack {
-                Text(title)
-                    .font(.subHead1B)
-                    .foregroundStyle(Color.gray700)
-                Spacer()
-                GamblerAsset.arrowRight.swiftUIImage
-                    .resizable()
-                    .renderingMode(.template)
-                    .frame(width: 24, height: 24)
-                    .foregroundStyle(Color.gray400)
-            }
-            .padding(.trailing, 24)
+            SectionHeaderView(title: title)
+                .padding(.trailing, 24)
             
             ScrollView(.horizontal) {
                 HStack(spacing: 16) {

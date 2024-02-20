@@ -13,7 +13,7 @@ struct SectionHeaderView: View {
     var rating: String?
     
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: .zero) {
             Text(title)
                 .font(.subHead1B)
                 .foregroundStyle(Color.gray700)
@@ -23,13 +23,14 @@ struct SectionHeaderView: View {
                     .font(.body1B)
                     .foregroundStyle(Color.primaryDefault)
                     .padding(.leading, 8)
-           }
+            }
             
             Spacer()
+            
             GamblerAsset.arrowRight.swiftUIImage
                 .resizable()
                 .frame(width: 24, height: 24)
-        }.padding(24)
+        }
     }
 }
 
