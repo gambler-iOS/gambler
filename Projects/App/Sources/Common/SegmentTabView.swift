@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct SegmentTabView<T: FilterType & Identifiable & Equatable>: View where T.AllCases: RandomAccessCollection {
-    @State private var selectedFilter = T.allCases.first
+    @Binding var selectedFilter: T
     @Namespace var animation
     
     private var filterBarWidth: CGFloat {
@@ -52,5 +52,5 @@ struct SegmentTabView<T: FilterType & Identifiable & Equatable>: View where T.Al
 
 #Preview {
 //    SegmentTabView<AppConstants.MyPageFilter>()
-    SegmentTabView<AppConstants.SearchFilter>()
+    SegmentTabView<AppConstants.SearchFilter>(selectedFilter: .constant(AppConstants.SearchFilter.allCases.first ?? .genre))
 }

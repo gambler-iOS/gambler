@@ -21,6 +21,8 @@ final class MyPageViewModel: ObservableObject {
     }
     
     @Published var user: User = User.dummyUser
+    @Published var shopReviews: [Review] = []
+    @Published var gameReviews: [Review] = []
     var appVersion: String = "1.0.1"
     
     var numnberOfReviews: String = ""
@@ -29,6 +31,20 @@ final class MyPageViewModel: ObservableObject {
     init() {
         self.numnberOfReviews = getNumberOfReviews()
         self.numberOfLikes = getNumberOfLikes()
+        generateShopReviews()
+        generateGameReviews()
+    }
+    
+    private func generateShopReviews() {
+        for num in 1...4 {
+            shopReviews.append(Review.dummyShopReview)
+        }
+    }
+    
+    private func generateGameReviews() {
+        for num in 1...5 {
+            gameReviews.append(Review.dummyGameReview)
+        }
     }
     
     private func getNumberOfReviews() -> String {

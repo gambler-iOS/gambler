@@ -34,13 +34,13 @@ struct MyPageView: View {
                     
                     HStack {
                         Spacer()
-                        navigationView(title: "나의 리뷰", destination: MyReviewsView(), count: myPageViewModel.numnberOfReviews)
+                        navigationView(title: "나의 리뷰", destination: MyReviewsView(), count: "\(User.dummyUser.myReviewsCount)")
                         Spacer()
                         Divider()
                             .frame(width: 1, height: 44)
                             .foregroundStyle(Color.gray200)
                         Spacer()
-                        navigationView(title: "좋아요", destination: MyLikesView(), count: myPageViewModel.numberOfLikes)
+                        navigationView(title: "좋아요", destination: MyLikesView(), count: "\(User.dummyUser.myLikesCount)")
                         Spacer()
                     }
                     .frame(height: 140)
