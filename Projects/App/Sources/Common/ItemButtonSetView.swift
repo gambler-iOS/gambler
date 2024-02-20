@@ -23,7 +23,7 @@ struct ItemButtonSetView: View {
             case .game:
                 GameButtonSet
             }
-        }.padding(.horizontal, 25)
+        }.frame(width: 327, height: 72)
     }
     
     private var ShopButtonSet: some View {
@@ -38,7 +38,7 @@ struct ItemButtonSetView: View {
             ItemButtonView(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
                 tappedReview()
             }
-        }.padding(.horizontal, 15)
+        }.padding(.horizontal, 19)
     }
     
     private var GameButtonSet: some View {
