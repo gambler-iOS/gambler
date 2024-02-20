@@ -28,8 +28,8 @@ struct GameGridItemView: View {
             if let url = URL(string: game.gameImage) {
                 KFImage(url)
                     .resizable()
-                    .frame(minWidth: 124, idealWidth: 155, maxWidth: 180,
-                           minHeight: 124, idealHeight: 155, maxHeight: 180)
+                    .frame(minWidth: 124, idealWidth: 155, maxWidth: 200,
+                           minHeight: 124, idealHeight: 155, maxHeight: 200)
                     .clipShape(RoundedRectangle(cornerRadius: 8.0))
                     .scaledToFit()
                     .padding(.bottom, 8)

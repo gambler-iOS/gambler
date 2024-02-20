@@ -12,7 +12,7 @@ struct HomeGameGridView: View {
     let title: String
     let games: [Game]
     let columns: [GridItem] = Array(repeating:
-            .init(.flexible(minimum: 124, maximum: 180),
+            .init(.flexible(minimum: 124, maximum: 200),
                   spacing: 17, alignment: .leading), count: 2)
 
     var body: some View {
