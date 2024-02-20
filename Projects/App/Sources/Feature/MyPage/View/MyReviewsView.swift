@@ -16,9 +16,10 @@ struct MyReviewsView: View {
         VStack(spacing: 0) {
             SegmentTabView<AppConstants.MyPageFilter>(selectedFilter: self.$selectedFilter)
             
-            if selectedFilter == .shop {
+            switch selectedFilter {
+            case .shop:
                 reviewListView(reviewData: myPageViewModel.shopReviews)
-            } else {
+            case .game:
                 reviewListView(reviewData: myPageViewModel.gameReviews)
             }
         }
@@ -28,10 +29,13 @@ struct MyReviewsView: View {
     @ViewBuilder
     private func reviewListView(reviewData: [Review]) -> some View {
         List {
-            ForEach(reviewData, id: \.self) { review in
-                ReviewDetailView(reviewData: review)
-                    .padding(.top, 24)
+            Section {
+                ForEach(reviewData, id: \.self) { review in
+                    ReviewDetailView(reviewData: review)
+                        .padding(.top, 24)
+                }
             }
+            .listSectionSeparator(.hidden, edges: .bottom)
         }
         .scrollIndicators(.hidden)
         .listStyle(.plain)

@@ -10,10 +10,13 @@ import SwiftUI
 
 @main
 struct GamblerApp: App {
+//    @StateObject private var myPageViewModel = MyPageViewModel()
     var body: some Scene {
         WindowGroup {
             ContentView()
 //            MainView()
+//            MyPageView()
+//                .environmentObject(myPageViewModel)
         }
     }
 }

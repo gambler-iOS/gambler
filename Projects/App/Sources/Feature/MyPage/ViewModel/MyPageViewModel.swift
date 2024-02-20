@@ -23,6 +23,8 @@ final class MyPageViewModel: ObservableObject {
     @Published var user: User = User.dummyUser
     @Published var shopReviews: [Review] = []
     @Published var gameReviews: [Review] = []
+    @Published var likeShops: [Shop] = []
+    @Published var likeGames: [Game] = []
     var appVersion: String = "1.0.1"
     
     var numnberOfReviews: String = ""
@@ -31,19 +33,30 @@ final class MyPageViewModel: ObservableObject {
     init() {
         self.numnberOfReviews = getNumberOfReviews()
         self.numberOfLikes = getNumberOfLikes()
-        generateShopReviews()
-        generateGameReviews()
+        generateDummyData()
     }
     
-    private func generateShopReviews() {
-        for num in 1...4 {
+    private func generateDummyData() {
+        for _ in 1...4 {
             shopReviews.append(Review.dummyShopReview)
-        }
-    }
-    
-    private func generateGameReviews() {
-        for num in 1...5 {
             gameReviews.append(Review.dummyGameReview)
+            likeShops.append(Shop.dummyShop)
+            likeGames.append(Game(
+                id: UUID().uuidString,
+                gameName: "아임 더 보스",
+                gameImage: "https://weefun.co.kr/shopimages/weefun/007009000461.jpg?1596805186",
+                descriptionImage: ["image"],
+                gameLink: "link",
+                createdDate: Date(),
+                reviewCount: 5,
+                reviewRatingAverage: 3.5,
+                gameIntroduction: GameIntroduction(
+                    difficulty: 3.1,
+                    minPlayerCount: 2,
+                    maxPlayerCount: 4,
+                    playTime: 2,
+                    genre: .fantasy)
+                ))
         }
     }
     

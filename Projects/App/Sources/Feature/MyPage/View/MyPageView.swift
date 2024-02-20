@@ -11,6 +11,7 @@ import Kingfisher
 
 struct MyPageView: View {
     @EnvironmentObject var myPageViewModel: MyPageViewModel
+    #warning("로그인 플랫폼 로직 구현 필요")
     let loginPlatform: String = "카카오톡"
     
     var body: some View {
@@ -19,7 +20,7 @@ struct MyPageView: View {
                 VStack(spacing: 0) {
                     Group {
                         HStack(spacing: 8) {
-                            CircleImageView(imageURL: myPageViewModel.user.profileImageURL, size: 64)
+                            CircleImageView(imageURL: User.dummyUser.profileImageURL, size: 64)
                             
                             VStack(alignment: .leading, spacing: 8) {
                                 Text(myPageViewModel.user.nickname)
@@ -50,8 +51,8 @@ struct MyPageView: View {
                     ListItemView()
                 }
             }
+            .padding(.horizontal, 24)
         }
-        .padding(.horizontal)
     }
     
     @ViewBuilder
