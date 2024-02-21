@@ -125,7 +125,8 @@ struct KakaoMapView: UIViewRepresentable {
             print("[Action: Resizing Container]")
             if first {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    let cameraUpdate: CameraUpdate = CameraUpdate.make(target: MapPoint(longitude: 127.108678, latitude: 37.402001), zoomLevel: 15, mapView: mapView!)
+                    let cameraUpdate: CameraUpdate = CameraUpdate.make(target: 
+                                                                        MapPoint(longitude: self.userLongitude, latitude: self.userLatitude), zoomLevel: 15, mapView: mapView!)
                     mapView?.moveCamera(cameraUpdate)
                     print("[Get: Camera point] latitude = \(self.userLatitude), longitude = \(self.userLongitude)")
                 }
@@ -154,9 +155,7 @@ struct KakaoMapView: UIViewRepresentable {
                 
                 let red = PoiTextLineStyle(textStyle: TextStyle(fontSize: 20, 
                                                                 fontColor: UIColor.white, strokeThickness: 2, strokeColor: UIColor.red))
-                let blue = PoiTextLineStyle(textStyle: TextStyle(fontSize: 20, 
-                                                                 fontColor: UIColor.white, strokeThickness: 2, strokeColor: UIColor.blue))
-                let textStyle = PoiTextStyle(textLineStyles: [red, blue])
+                let textStyle = PoiTextStyle(textLineStyles: [red])
                 
                 let shopPoiStyle = PoiStyle(styleID: "PerLevelStyle", styles: [
                     PerLevelPoiStyle(iconStyle: shopPoiIconStyle, textStyle: textStyle, level: 8),
@@ -168,8 +167,8 @@ struct KakaoMapView: UIViewRepresentable {
                     PerLevelPoiStyle(iconStyle: pickPoiIconStyle, textStyle: textStyle, level: 18)
                 ])
                 let userLocationPoiStyle = PoiStyle(styleID: "UserLocationStyle", styles: [
-                    PerLevelPoiStyle(iconStyle: userLocationPoiIconStyle, textStyle: textStyle, level: 8),
-                    PerLevelPoiStyle(iconStyle: userLocationPoiIconStyle, textStyle: textStyle, level: 18)
+                    PerLevelPoiStyle(iconStyle: userLocationPoiIconStyle, level: 8),
+                    PerLevelPoiStyle(iconStyle: userLocationPoiIconStyle, level: 18)
                 ])
             
                 manager.addPoiStyle(shopPoiStyle)
