@@ -20,6 +20,10 @@ struct CardItemView: View {
             if let url = URL(string: game.gameImage) {
                 KFImage(url)
                     .resizable()
+                    // 디자인 Dim 수정 및 확인
+                    .overlay {
+                        LinearGradient(gradient: Gradient(colors: [.clear, .black]), startPoint: UnitPoint(x: 0.5, y: 0.33), endPoint: .bottom)
+                    }
                     .frame(width: 240, height: 300)
                     .clipShape(RoundedRectangle(cornerRadius: 16.0))
                     .scaledToFit()

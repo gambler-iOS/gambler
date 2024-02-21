@@ -49,7 +49,7 @@ struct ChipView_ExView: View {
     var body: some View {
         VStack {
             ChipView(label: "마피아 게임", size: .medium)
-            ChipView(label: "이름만 이렇게 추가하면 축축축추구 늘어나게", size: .small)
+            ChipView(label: "마피아 게임", size: .small)
             ChipView(label: "Programming", size: .medium)
         }
         .padding()

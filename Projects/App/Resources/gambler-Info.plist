@@ -3,7 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
+	<string>Launch</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>위치 정보를 사용하시겠습니까?</string>
+	<key>KAKAO_APP_KEY</key>
+	<string>$(KAKAO_APP_KEY)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -44,5 +48,7 @@
 		<string>Pretendard-Bold.otf</string>
 		<string>Pretendard-Medium.otf</string>
 	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>Launch</string>
 </dict>
 </plist>

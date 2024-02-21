@@ -24,6 +24,7 @@ struct GameCategoryCellView: View {
             } else {
                 Circle()
                     .frame(width: 80, height: 80)
+                    .foregroundStyle(Color.gray200)
             }
             
             Text(name)
@@ -34,5 +35,5 @@ struct GameCategoryCellView: View {
 }
 
 #Preview {
-    GameCategoryCellView(imageUrl: "", name: "전략")
+    GameCategoryCellView(imageUrl: "", name: "순발력")
 }

@@ -19,7 +19,6 @@ struct TabBarView: View {
                     HStack {
                         (selectedTab == 0 ? GamblerAsset.tabHomeSelected.swiftUIImage : GamblerAsset.tabHome.swiftUIImage)
                         Text("홈")
-                            .font(.caption2M)
                     }
                 }
                 .tag(0)
