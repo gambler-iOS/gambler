@@ -240,7 +240,7 @@ struct KakaoMapView: UIViewRepresentable {
                     
                     print("[Action: Tapped Poi] \npoi name : \(markerData.name)\npoi lo : \(markerData.longitude)\npoi la : \(markerData.latitude)")
                   
-                    moveCameraToFocus(MapPoint(longitude: Double(markerData.longitude), latitude: markerData.latitude), zoomLevel: 17)
+                    moveCameraToFocus(MapPoint(longitude: Double(markerData.longitude), latitude: markerData.latitude))
                     isShowingSheet = true
 
                     let tabMarker = layer?.getPoi(poiID: param.poiItem.itemID)
@@ -285,17 +285,17 @@ struct KakaoMapView: UIViewRepresentable {
         func guiDidTapped(_ gui: GuiBase, componentName: String) {
             NSLog("Gui: \(gui.name), Component: \(componentName) tapped")
             getUserLocation()
-            moveCameraToFocus(MapPoint(longitude: userLongitude, latitude: userLatitude), zoomLevel: 15)
+            moveCameraToFocus(MapPoint(longitude: userLongitude, latitude: userLatitude))
             newPositionUserPoi()
             gui.updateGui()
         }
         
         // 카메라 포커스
-        func moveCameraToFocus(_ point: MapPoint, zoomLevel: Int){
+        func moveCameraToFocus(_ point: MapPoint){
             if let mapView: KakaoMap = controller?.getView("mapview") as? KakaoMap{
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     let cameraUpdate: CameraUpdate = CameraUpdate
-                        .make(target: MapPoint(from: point), zoomLevel: zoomLevel, mapView: mapView)
+                        .make(target: MapPoint(from: point), zoomLevel: mapView.zoomLevel, mapView: mapView)
                     mapView.animateCamera(cameraUpdate: cameraUpdate, options: CameraAnimationOptions(autoElevation: false, consecutive: false, durationInMillis: 50))
                     print("[Get: Camera point] latitude = \(self.userLatitude), longitude = \(self.userLongitude)")
                 }
@@ -315,7 +315,7 @@ struct KakaoMapView: UIViewRepresentable {
                 locationPoiID = marker?.itemID ?? ""
                 print("[Action: Create PoiID \(locationPoiID)]")
                 marker?.show()
-                moveCameraToFocus(point, zoomLevel: 23)
+                moveCameraToFocus(point)
             }
         }
     }
