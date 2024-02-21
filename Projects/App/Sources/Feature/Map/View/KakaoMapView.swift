@@ -140,7 +140,7 @@ struct KakaoMapView: UIViewRepresentable {
                 let manager = view.getLabelManager()
                
                 let layerOption = LabelLayerOptions(layerID: "PoiLayer", competitionType: .none, competitionUnit: .symbolFirst, orderType: .rank, zOrder: 3000)
-                let _ = manager.addLabelLayer(option: layerOption)
+                manager.addLabelLayer(option: layerOption)
             }
         }
         
@@ -181,7 +181,7 @@ struct KakaoMapView: UIViewRepresentable {
         // Poi 맵에 찍기
         // 매장위치 Poi
         func createPoisOnMap() {
-            if let view = controller?.getView("mapview") as? KakaoMap{
+            if let view = controller?.getView("mapview") as? KakaoMap {
                 let manager = view.getLabelManager()
                 let layer = manager.getLabelLayer(layerID: "PoiLayer")
                 
@@ -196,7 +196,7 @@ struct KakaoMapView: UIViewRepresentable {
                     let markerPoint = MapPoint(longitude: Double(markerData.longitude), latitude: markerData.latitude)
                     let marker = layer?.addPoi(option: poiOption, at: markerPoint)
                     marker?.userObject = markerData as AnyObject
-                    let _ = marker?.addPoiTappedEventHandler(target: self , handler: KakaoMapCoordinator.poiDidTapped)
+                    let _ = marker?.addPoiTappedEventHandler(target: self, handler: KakaoMapCoordinator.poiDidTapped)
                     print("[Action: create Poi] markerData = \(markerData)")
                     marker?.show()
                 }
@@ -321,11 +321,3 @@ struct KakaoMapView: UIViewRepresentable {
     }
 }
 
-extension UIImage {
-    func resized(withSize size: CGSize) -> UIImage? {
-        UIGraphicsBeginImageContextWithOptions(size, false, scale)
-        defer { UIGraphicsEndImageContext() }
-        draw(in: CGRect(origin: .zero, size: size))
-        return UIGraphicsGetImageFromCurrentImageContext()
-    }
-}
