@@ -16,7 +16,7 @@ struct MyPageView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView(.vertical, showsIndicators: false) {
+            ScrollView {
                 VStack(spacing: 0) {
                     Group {
                         HStack(spacing: 8) {
@@ -52,6 +52,7 @@ struct MyPageView: View {
                 }
             }
             .padding(.horizontal, 24)
+            .scrollIndicators(.hidden)
         }
     }
     
