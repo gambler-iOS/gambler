@@ -13,8 +13,9 @@ struct MyReviewsView: View {
     @State private var selectedFilter = AppConstants.MyPageFilter.allCases.first ?? .shop
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 8) {
             SegmentTabView<AppConstants.MyPageFilter>(selectedFilter: self.$selectedFilter)
+                .padding(.top, 24)
             
             switch selectedFilter {
             case .shop:
@@ -28,17 +29,19 @@ struct MyReviewsView: View {
     
     @ViewBuilder
     private func reviewListView(reviewData: [Review]) -> some View {
-        List {
-            Section {
-                ForEach(reviewData, id: \.self) { review in
-                    ReviewDetailView(reviewData: review)
-                        .padding(.top, 24)
+        ScrollView {
+            ForEach(reviewData, id: \.self) { review in
+                ReviewDetailView(reviewData: review)
+                    .padding(.top, 24)
+                    .padding(.bottom)
+                
+                if review != reviewData.last {
+                    Divider()
                 }
             }
-            .listSectionSeparator(.hidden, edges: .bottom)
         }
+        .padding(.horizontal, 24)
         .scrollIndicators(.hidden)
-        .listStyle(.plain)
     }
 }
 
