@@ -47,6 +47,11 @@ struct KakaoMapView: UIViewRepresentable {
     
     // MARK: - 맵
     class KakaoMapCoordinator: NSObject, MapControllerDelegate, GuiEventDelegate, KakaoMapEventDelegate {
+        private let locationManager = CLLocationManager()
+        @Binding var userLatitude: Double
+        @Binding var userLongitude: Double
+        @Binding var isShowingSheet: Bool
+        
         var controller: KMController?
         var first: Bool
         var markerTestDataManager = MarkerTestDataManager()
@@ -54,10 +59,6 @@ struct KakaoMapView: UIViewRepresentable {
         var cameraStartHandler: DisposableEventHandler?
         var locationPoiID: String = ""
         var recentPoiId: String?
-        private let locationManager = CLLocationManager()
-        @Binding var userLatitude: Double
-        @Binding var userLongitude: Double
-        @Binding var isShowingSheet: Bool
 
         init(userLatitude: Binding<Double>, userLongitude: Binding<Double>, isShowingSheet: Binding<Bool>) {
             first = true
@@ -71,7 +72,6 @@ struct KakaoMapView: UIViewRepresentable {
             controller = KMController(viewContainer: view)
             controller?.delegate = self
         }
-        
         
         func addViews() {
             let defaultPosition: MapPoint = MapPoint(longitude: userLongitude, latitude: userLatitude)
@@ -125,8 +125,10 @@ struct KakaoMapView: UIViewRepresentable {
             print("[Action: Resizing Container]")
             if first {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    let cameraUpdate: CameraUpdate = CameraUpdate.make(target: 
-                                                                        MapPoint(longitude: self.userLongitude, latitude: self.userLatitude), zoomLevel: 15, mapView: mapView!)
+                    /*  let cameraUpdate: CameraUpdate = CameraUpdate.make(target:
+                     MapPoint(longitude: self.userLongitude, latitude: self.userLatitude), zoomLevel: 15, mapView: mapView!)*/
+                    let cameraUpdate: CameraUpdate = CameraUpdate.make(target:
+                                                                        MapPoint(longitude: 127.108678, latitude: 37.402001), zoomLevel: 15, mapView: mapView!)
                     mapView?.moveCamera(cameraUpdate)
                     print("[Get: Camera point] latitude = \(self.userLatitude), longitude = \(self.userLongitude)")
                 }
@@ -170,11 +172,9 @@ struct KakaoMapView: UIViewRepresentable {
                     PerLevelPoiStyle(iconStyle: userLocationPoiIconStyle, level: 8),
                     PerLevelPoiStyle(iconStyle: userLocationPoiIconStyle, level: 18)
                 ])
-            
                 manager.addPoiStyle(shopPoiStyle)
                 manager.addPoiStyle(pickPoiStyle)
                 manager.addPoiStyle(userLocationPoiStyle)
-            
             }
         }
         
@@ -239,18 +239,20 @@ struct KakaoMapView: UIViewRepresentable {
                     let layer = manager.getLabelLayer(layerID: "PoiLayer")
                     
                     print("[Action: Tapped Poi] \npoi name : \(markerData.name)\npoi lo : \(markerData.longitude)\npoi la : \(markerData.latitude)")
-                  
-                    moveCameraToFocus(MapPoint(longitude: Double(markerData.longitude), latitude: markerData.latitude))
-                    isShowingSheet = true
 
-                    let tabMarker = layer?.getPoi(poiID: param.poiItem.itemID)
-                    tabMarker?.changeStyle(styleID: "pickPoiIconStyle")
-                    
-                    if let recentMarkerId = recentPoiId {
-                        let recentMarker = layer?.getPoi(poiID: recentMarkerId)
-                        recentMarker?.changeStyle(styleID: "PerLevelStyle")
+                    if recentPoiId != param.poiItem.itemID {
+                        moveCameraToFocus(MapPoint(longitude: Double(markerData.longitude), latitude: markerData.latitude))
+                        isShowingSheet = true
+                        
+                        let tabMarker = layer?.getPoi(poiID: param.poiItem.itemID)
+                        tabMarker?.changeStyle(styleID: "pickPoiIconStyle")
+                        
+                        if let recentMarkerId = recentPoiId {
+                            let recentMarker = layer?.getPoi(poiID: recentMarkerId)
+                            recentMarker?.changeStyle(styleID: "PerLevelStyle")
+                        }
+                        recentPoiId = param.poiItem.itemID
                     }
-                    recentPoiId = param.poiItem.itemID
                 }
                
             }
