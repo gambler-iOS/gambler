@@ -7,13 +7,33 @@
 //
 
 import SwiftUI
+import CoreLocation
 
 @main
 struct GamblerApp: App {
+   
     var body: some Scene {
         WindowGroup {
             TabBarView()
+                .onAppear {
+                    Task {
+                        await startTask()
+                    }
+                }
 //            MainView()
+        }
+    }
+    
+    func startTask() async {
+        let locationManager = CLLocationManager()
+        let authorizationStatus = locationManager.authorizationStatus
+        if authorizationStatus == .denied {
+            DispatchQueue.main.async {
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+            }
+        }
+        else if authorizationStatus == .restricted || authorizationStatus == .notDetermined {
+            locationManager.requestWhenInUseAuthorization()
         }
     }
 }
