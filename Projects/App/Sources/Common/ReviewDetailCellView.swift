@@ -9,7 +9,7 @@
 import SwiftUI
 import Kingfisher
 
-struct ReviewDetailView: View {
+struct ReviewDetailCellView: View {
     
     let reviewData: Review
     
@@ -57,5 +57,5 @@ struct ReviewDetailView: View {
 }
 
 #Preview {
-    ReviewDetailView(reviewData: Review.dummyGameReview)
+    ReviewDetailCellView(reviewData: Review.dummyGameReview)
 }

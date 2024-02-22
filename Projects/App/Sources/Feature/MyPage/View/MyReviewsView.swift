@@ -37,7 +37,7 @@ struct MyReviewsView: View {
                     .padding(.bottom, 0)
                 
                 ForEach(reviewData, id: \.self) { review in
-                    ReviewDetailView(reviewData: review)
+                    ReviewDetailCellView(reviewData: review)
                         .padding(.bottom, -8)
                     
                     if review != reviewData.last {
