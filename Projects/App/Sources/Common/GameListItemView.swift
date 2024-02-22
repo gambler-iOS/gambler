@@ -12,10 +12,10 @@ import Kingfisher
 struct GameListItemView: View {
     
     let game: Game
-    let likeShopIdArray: [String]
+    let likeGameIdArray: [String]
     
     var isLike: Bool {
-        likeShopIdArray.contains { id in
+        likeGameIdArray.contains { id in
             id == game.id
         }
     }
@@ -69,5 +69,5 @@ struct GameListItemView: View {
 }
 
 #Preview {
-    GameListItemView(game: Game.dummyGame, likeShopIdArray: [])
+    GameListItemView(game: Game.dummyGame, likeGameIdArray: [])
 }
