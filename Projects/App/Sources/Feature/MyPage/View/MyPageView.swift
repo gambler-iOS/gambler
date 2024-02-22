@@ -11,14 +11,14 @@ import Kingfisher
 
 struct MyPageView: View {
     @EnvironmentObject var myPageViewModel: MyPageViewModel
-    #warning("로그인 플랫폼 로직 구현 필요")
+#warning("로그인 플랫폼 로직 구현 필요")
     let loginPlatform: String = "카카오톡"
     
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: .zero) {
-                        myPageHeaderView(imageURL: myPageViewModel.user.profileImageURL, nickname: myPageViewModel.user.nickname, loginPlatform: self.loginPlatform)
+                    myPageHeaderView(imageURL: myPageViewModel.user.profileImageURL, nickname: myPageViewModel.user.nickname, loginPlatform: self.loginPlatform)
                     
                     HStack {
                         Spacer()
@@ -40,6 +40,16 @@ struct MyPageView: View {
             }
             .padding(.horizontal, 24)
             .scrollIndicators(.hidden)
+//            .toolbar {
+//                ToolbarItem(placement: .navigationBarLeading) {
+//                    Button {
+//                        
+//                    } label: {
+//                        GamblerAsset.arrowLeft.swiftUIImage
+//                            .frame(width: 24, height: 24)
+//                    }
+//                }
+//            }
         }
 
     }

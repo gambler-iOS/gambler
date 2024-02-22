@@ -10,9 +10,12 @@ import SwiftUI
 
 @main
 struct GamblerApp: App {
+    @StateObject private var vm = MyPageViewModel()
     var body: some Scene {
         WindowGroup {
-            TabBarView()
+            MyPageView()
+                .environmentObject(vm)
+//            TabBarView()
 //            MainView()
         }
     }

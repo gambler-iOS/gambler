@@ -25,6 +25,16 @@ struct MyLikesView: View {
             }
         }
         .navigationTitle("좋아요")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    
+                } label: {
+                    GamblerAsset.arrowLeft.swiftUIImage
+                        .frame(width: 24, height: 24)
+                }
+            }
+        }
     }
     
     @ViewBuilder
@@ -37,7 +47,6 @@ struct MyLikesView: View {
                 
                 ForEach(shops) { shop in
                     ShopListCellView(shop: shop, likeShopIdArray: [])
-                        .padding(.bottom, -8)
                     
                     if shop != shops.last {
                         Divider()
@@ -51,14 +60,9 @@ struct MyLikesView: View {
     
     @ViewBuilder
     private func gameGridView(games: [Game]) -> some View {
-        #warning("flexible로 했을 때 SegmentTabView랑 너비가 다름")
-//        let columns: [GridItem] = Array(repeating:
-//                    .init(.flexible(minimum: 124, maximum: 200),
-//                          spacing: 17, alignment: .leading), count: 2)
-        
         let columns: [GridItem] = Array(repeating:
-                .init(.fixed((UIScreen.main.bounds.width - 48) / 2),
-                      spacing: 17, alignment: .center), count: 2)
+                    .init(.flexible(minimum: 124, maximum: 200),
+                          spacing: 17, alignment: .leading), count: 2)
         
         ScrollView {
             VStack(spacing: 24) {
