@@ -22,7 +22,7 @@ struct SearchBarView: View {
                     .foregroundColor(.gray300)
                 
                 TextField("게임, 지역, 장르 등 검색", text: $searchText, onEditingChanged: { _ in
-                    withAnimation(.interactiveSpring, {
+                    withAnimation(.interpolatingSpring, {
                         self.isEditing.toggle()
                     })
                 })
@@ -36,13 +36,13 @@ struct SearchBarView: View {
             .frame(height: 44)
             .cornerRadius(8)
             
-            if !searchText.isEmpty {
+            if isEditing {
                 Button {
                     searchText = ""
                     isEditing.toggle()
                 } label: {
                     Text("취소")
-                        .foregroundColor(.blue)
+                        .foregroundColor(.black)
                 }
                 .frame(width: 44, height: 44)
             }
