@@ -40,18 +40,7 @@ struct MyPageView: View {
             }
             .padding(.horizontal, 24)
             .scrollIndicators(.hidden)
-//            .toolbar {
-//                ToolbarItem(placement: .navigationBarLeading) {
-//                    Button {
-//                        
-//                    } label: {
-//                        GamblerAsset.arrowLeft.swiftUIImage
-//                            .frame(width: 24, height: 24)
-//                    }
-//                }
-//            }
         }
-
     }
     
     @ViewBuilder

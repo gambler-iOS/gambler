@@ -10,7 +10,10 @@ import SwiftUI
 
 struct CustomerServiceView: View {
     var body: some View {
-        Text("고객센터 뷰")
+        VStack {
+            Text("고객센터 뷰")
+        }
+        .modifier(BackButton())
     }
 }
 

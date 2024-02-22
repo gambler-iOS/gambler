@@ -10,7 +10,10 @@ import SwiftUI
 
 struct AboutDevelopersView: View {
     var body: some View {
-        Text("개발자 정보 뷰")
+        VStack {
+            Text("개발자 정보 뷰")
+        }
+        .modifier(BackButton())
     }
 }
 

@@ -25,16 +25,7 @@ struct MyLikesView: View {
             }
         }
         .navigationTitle("좋아요")
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    
-                } label: {
-                    GamblerAsset.arrowLeft.swiftUIImage
-                        .frame(width: 24, height: 24)
-                }
-            }
-        }
+        .modifier(BackButton())
     }
     
     @ViewBuilder

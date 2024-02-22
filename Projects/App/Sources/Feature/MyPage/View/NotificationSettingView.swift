@@ -10,7 +10,10 @@ import SwiftUI
 
 struct NotificationSettingView: View {
     var body: some View {
-        Text("알림 설정 뷰")
+        VStack {
+            Text("알림 설정 뷰")
+        }
+        .modifier(BackButton())
     }
 }
 

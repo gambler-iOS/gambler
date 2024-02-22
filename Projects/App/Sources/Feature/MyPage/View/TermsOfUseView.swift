@@ -10,7 +10,10 @@ import SwiftUI
 
 struct TermsOfUseView: View {
     var body: some View {
-        Text("이용약관 뷰")
+        VStack {
+            Text("이용약관 뷰")
+        }
+        .modifier(BackButton())
     }
 }
 

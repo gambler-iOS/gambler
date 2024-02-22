@@ -10,7 +10,10 @@ import SwiftUI
 
 struct AnnouncementsView: View {
     var body: some View {
-        Text("공지사항 뷰")
+        VStack {
+            Text("공지사항 뷰")
+        }
+        .modifier(BackButton())
     }
 }
 

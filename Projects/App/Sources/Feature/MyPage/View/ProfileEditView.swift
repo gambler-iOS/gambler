@@ -10,7 +10,10 @@ import SwiftUI
 
 struct ProfileEditView: View {
     var body: some View {
-        Text("프로필 수정 뷰")
+        VStack {
+            Text("프로필 수정 뷰")
+        }
+        .modifier(BackButton())
     }
 }
 

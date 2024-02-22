@@ -11,7 +11,7 @@ import SwiftUI
 struct MyReviewsView: View {
     @EnvironmentObject var myPageViewModel: MyPageViewModel
     @State private var selectedFilter = AppConstants.MyPageFilter.allCases.first ?? .shop
-
+    
     var body: some View {
         VStack(spacing: 6) {
             SegmentTabView<AppConstants.MyPageFilter>(selectedFilter: self.$selectedFilter)
@@ -25,6 +25,7 @@ struct MyReviewsView: View {
             }
         }
         .navigationTitle("나의 리뷰")
+        .modifier(BackButton())
     }
     
     @ViewBuilder
@@ -34,7 +35,7 @@ struct MyReviewsView: View {
                 Rectangle()
                     .frame(height: 0)
                     .padding(.bottom, 0)
-
+                
                 ForEach(reviewData, id: \.self) { review in
                     ReviewDetailView(reviewData: review)
                         .padding(.bottom, -8)
