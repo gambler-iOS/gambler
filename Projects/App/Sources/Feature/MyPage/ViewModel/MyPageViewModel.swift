@@ -35,7 +35,7 @@ final class MyPageViewModel: ObservableObject {
     }
     
     private func generateDummyData() {
-        for _ in 1...5 {
+        for _ in 1...7 {
             shopReviews.append(Review(id: UUID().uuidString,
                                       postId: UUID().uuidString,
                                       userId: UUID().uuidString,

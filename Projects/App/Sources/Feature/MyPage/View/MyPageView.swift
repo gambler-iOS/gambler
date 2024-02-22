@@ -17,21 +17,8 @@ struct MyPageView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 0) {
-                    Group {
-                        HStack(spacing: 8) {
-                            CircleImageView(imageURL: User.dummyUser.profileImageURL, size: 64)
-                            
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text(myPageViewModel.user.nickname)
-                                ChipView(label: "\(loginPlatform) 로그인 완료", size: .medium)
-                                    .foregroundStyle(Color.gray400)
-                            }
-                            Spacer()
-                        }
-                        .padding(.vertical, 16)
-                    }
-                    .padding(.bottom, 24)
+                VStack(spacing: .zero) {
+                        myPageHeaderView(imageURL: myPageViewModel.user.profileImageURL, nickname: myPageViewModel.user.nickname, loginPlatform: self.loginPlatform)
                     
                     HStack {
                         Spacer()
@@ -54,6 +41,22 @@ struct MyPageView: View {
             .padding(.horizontal, 24)
             .scrollIndicators(.hidden)
         }
+
+    }
+    
+    @ViewBuilder
+    private func myPageHeaderView(imageURL: String, nickname: String, loginPlatform: String) -> some View {
+        HStack(spacing: 8) {
+            CircleImageView(imageURL: imageURL, size: 64)
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text(nickname)
+                ChipView(label: "\(loginPlatform) 로그인 완료", size: .medium)
+                    .foregroundStyle(Color.gray400)
+            }
+            Spacer()
+        }
+        .padding(.vertical, 40)
     }
     
     @ViewBuilder

@@ -13,10 +13,10 @@ struct MyLikesView: View {
     @State private var selectedFilter = AppConstants.MyPageFilter.allCases.first ?? .shop
     
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 6) {
             SegmentTabView<AppConstants.MyPageFilter>(selectedFilter: self.$selectedFilter)
                 .padding(.top, 24)
-            
+
             switch selectedFilter {
             case .shop:
                 shopListView(shops: myPageViewModel.likeShops)
@@ -30,43 +30,51 @@ struct MyLikesView: View {
     @ViewBuilder
     private func shopListView(shops: [Shop]) -> some View {
         ScrollView {
-            ForEach(shops) { shop in
-                // NavigationLink(value: shop) {
-                ShopListCellView(shop: shop, likeShopIdArray: [])
-                // }
-                    .padding(.top, 24)
-                    .padding(.bottom)
+            VStack(spacing: 24) {
+                Rectangle()
+                    .frame(height: 0)
+                    .padding(.bottom, 0)
                 
-                if shop != shops.last {
-                    Divider()
+                ForEach(shops) { shop in
+                    ShopListCellView(shop: shop, likeShopIdArray: [])
+                        .padding(.bottom, -8)
+                    
+                    if shop != shops.last {
+                        Divider()
+                    }
                 }
             }
         }
         .padding(.horizontal, 24)
         .scrollIndicators(.hidden)
-        
     }
     
     @ViewBuilder
     private func gameGridView(games: [Game]) -> some View {
+        #warning("flexible로 했을 때 SegmentTabView랑 너비가 다름")
+//        let columns: [GridItem] = Array(repeating:
+//                    .init(.flexible(minimum: 124, maximum: 200),
+//                          spacing: 17, alignment: .leading), count: 2)
         
         let columns: [GridItem] = Array(repeating:
                 .init(.fixed((UIScreen.main.bounds.width - 48) / 2),
                       spacing: 17, alignment: .center), count: 2)
         
         ScrollView {
-            LazyVGrid(columns: columns, spacing: 24) {
-                ForEach(games) { game in
-                    // NavigationLink(value: game) {
-                    GameGridItemView(game: game, likeGameIdArray: [])
-                    // }
-                        .padding(.top, 24)
+            VStack(spacing: 24) {
+                Rectangle()
+                    .frame(height: 0)
+                    .padding(.bottom, 0)
+                
+                LazyVGrid(columns: columns, spacing: 24) {
+                    ForEach(games) { game in
+                        GameGridItemView(game: game, likeGameIdArray: [])
+                    }
                 }
             }
         }
         .padding(.horizontal, 24)
         .scrollIndicators(.hidden)
-        
     }
 }
 
