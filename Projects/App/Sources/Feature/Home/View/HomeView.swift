@@ -21,7 +21,7 @@ struct HomeView: View {
         NavigationStack(path: $path) {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 32) {
-                    EventBannerAnimationView()
+                    EventBannerView(eventBannerViewModel: eventBannerViewModel)
                     HomeGameGridView(title: "채영님이 좋아하실 인기게임", games: homeViewModel.popularGames)
                     BorderView()
                     HomeShopListView(title: "인기 매장", shops: homeViewModel.popularShops)
@@ -67,17 +67,6 @@ struct HomeView: View {
     }
     
     @ViewBuilder
-    func EventBannerAnimationView() -> some View {
-        GeometryReader { proxy in
-            let minY = proxy.frame(in: .named("HOMESCROLL")).minY
-         
-            EventBannerView(eventBannerViewModel: eventBannerViewModel)
-                .opacity(1.0 + (minY / 350))
-        }
-        .frame(height: 400)
-    }
-    
-    @ViewBuilder
     func HeaderView() -> some View {
         GeometryReader { proxy in
             let minY = proxy.frame(in: .named("HOMESCROLL")).minY
@@ -105,11 +94,11 @@ struct HomeView: View {
             .padding(.bottom, 16)
             .background(content: {
                 Color.white
-                    .opacity(-progress)
+                    .opacity(progress > -0.8 ? 0 : (-progress * 10) - 9)
             })
             .offset(y: -minY)
             .onChange(of: minY) {
-                if minY <= -300 {
+                if minY <= -295 {
                     isBannerDisappear = true
                 } else {
                     isBannerDisappear = false

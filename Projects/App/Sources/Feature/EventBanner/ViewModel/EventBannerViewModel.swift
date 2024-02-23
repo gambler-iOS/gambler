@@ -8,7 +8,7 @@
 
 import Foundation
 
-class EventBannerViewModel: ObservableObject {
+final class EventBannerViewModel: ObservableObject {
     @Published var eventBanners: [EventBanner] = []
     @Published var currentIndex = 0
     private var timer: Timer?
