@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Review: AvailableFirebase {
+struct Review: AvailableFirebase, Hashable {
     var id: String
     let postId: String
     let userId: String
