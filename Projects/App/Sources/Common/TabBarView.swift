@@ -14,7 +14,8 @@ struct TabBarView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             
-            Text("HomeView")
+            HomeView()
+                .environmentObject(HomeViewModel())
                 .tabItem {
                     HStack {
                         (selectedTab == 0 ? GamblerAsset.tabHomeSelected.swiftUIImage : GamblerAsset.tabHome.swiftUIImage)
