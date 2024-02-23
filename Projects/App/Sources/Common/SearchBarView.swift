@@ -27,7 +27,17 @@ struct SearchBarView: View {
                     })
                 })
                 .foregroundColor(.gray400)
+                .keyboardType(.webSearch)
                 
+                if !searchText.isEmpty {
+                    Button {
+                        searchText = ""
+                    } label: {
+                        Image(systemName: "multiply.circle.fill")
+                            .foregroundColor(.gray400)
+                            .frame(width: 24, height: 24)
+                    }
+                }
             }
             .ignoresSafeArea()
             .padding(.horizontal, 16)
@@ -35,17 +45,6 @@ struct SearchBarView: View {
             .background(Color.gray50)
             .frame(height: 44)
             .cornerRadius(8)
-            
-            if isEditing {
-                Button {
-                    searchText = ""
-                    isEditing.toggle()
-                } label: {
-                    Text("취소")
-                        .foregroundColor(.black)
-                }
-                .frame(width: 44, height: 44)
-            }
         }
     }
 }

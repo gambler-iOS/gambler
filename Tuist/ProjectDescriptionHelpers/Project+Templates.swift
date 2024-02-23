@@ -13,7 +13,7 @@ public extension Project {
             product: Product,
             organizationName: String = "gambler",
             packages: [Package] = [],
-            deploymentTarget: DeploymentTarget? = .iOS(targetVersion: "16.0", devices: [.iphone]),
+            deploymentTarget: DeploymentTarget? = .iOS(targetVersion: "17.0", devices: [.iphone]),
             dependencies: [TargetDependency] = [],
             sources: SourceFilesList = ["Sources/**"],
             resources: ResourceFileElements? = nil,

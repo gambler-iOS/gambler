@@ -20,6 +20,7 @@ struct ChipView: View {
                 .font(.caption2M)
                 .padding(.horizontal, AppConstants.ChipSize.small.width)
                 .padding(.vertical, AppConstants.ChipSize.small.height)
+//                .fixedSize(horizontal: false, vertical: true) // 수평으로 확장하지 않고, 수직으로만 확장
                 .background(
                     RoundedRectangle(cornerRadius: 10)
                         .stroke(Color.gray200)
@@ -31,6 +32,7 @@ struct ChipView: View {
                 .font(.caption1M)
                 .padding(.horizontal, AppConstants.ChipSize.medium.width)
                 .padding(.vertical, AppConstants.ChipSize.medium.height)
+                .fixedSize(horizontal: false, vertical: true) // 수평으로 확장하지 않고, 수직으로만 확장
                 .background(
                     RoundedRectangle(cornerRadius: 15)
                         .stroke(Color.gray200)
