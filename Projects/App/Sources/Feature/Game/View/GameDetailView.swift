@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct GameDetailView: View {
-    @Binding var path: NavigationPath
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
     let game: Game
     
     var body: some View {
@@ -20,16 +20,17 @@ struct GameDetailView: View {
             #warning("GameDetail 더미, NavigationPath 동작 보여주기 위해 추가함")
             HomeGameGridView(title: "연관게임", games: HomeViewModel().popularGames)
         }
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Back to List") {
-                    path = NavigationPath()
-                }
-            }
-        }
+//        .toolbar {
+//            ToolbarItem(placement: .navigationBarTrailing) {
+//                Button("Back to List") {
+//                    path = NavigationPath()
+//                }
+//            }
+//        }
     }
 }
 
 #Preview {
-    GameDetailView(path: .constant(NavigationPath()), game: Game.dummyGame)
+    GameDetailView(game: Game.dummyGame)
+        .environmentObject(AppNavigationPath())
 }

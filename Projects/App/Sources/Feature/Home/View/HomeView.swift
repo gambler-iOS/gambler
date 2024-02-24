@@ -10,6 +10,7 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject private var homeViewModel: HomeViewModel
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @ObservedObject private var eventBannerViewModel = EventBannerViewModel()
     @State private var path = NavigationPath()
     @State private var size: CGSize = .zero
@@ -18,7 +19,7 @@ struct HomeView: View {
     @State private var headerColor: Color = .white
     
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack(path: $appNavigationPath.homeViewPath) {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 32) {
                     EventBannerView(eventBannerViewModel: eventBannerViewModel)
@@ -42,7 +43,12 @@ struct HomeView: View {
                     ShopDetailView(shop: shop)
                 }
                 .navigationDestination(for: Game.self) { game in
-                    GameDetailView(path: $path, game: game)
+                    GameDetailView(game: game)
+                }
+                .navigationDestination(for: String.self) { title in
+                    if title.contains("게임") {
+                        GameListView(title: title)
+                    }
                 }
             }
             .coordinateSpace(name: "HOMESCROLL")
@@ -112,4 +118,5 @@ struct HomeView: View {
 #Preview {
     HomeView()
         .environmentObject(HomeViewModel())
+        .environmentObject(AppNavigationPath())
 }
