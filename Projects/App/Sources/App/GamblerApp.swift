@@ -11,6 +11,7 @@ import SwiftData
 
 @main
 struct GamblerApp: App {
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             SearchKeyword.self

@@ -10,6 +10,7 @@ import SwiftUI
 
 struct TabBarView: View {
     @State private var selectedTab = 0
+    @StateObject private var myPageViewModel = MyPageViewModel()
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -43,7 +44,8 @@ struct TabBarView: View {
                 }
                 .tag(2)
             
-            Text("MyProfileView")
+            MyPageView()
+                .environmentObject(myPageViewModel)
                 .tabItem {
                     HStack {
                         (selectedTab == 3 ? GamblerAsset.tabProfileSelected.swiftUIImage : GamblerAsset.tabProfile.swiftUIImage)
