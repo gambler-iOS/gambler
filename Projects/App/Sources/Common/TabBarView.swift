@@ -34,7 +34,7 @@ struct TabBarView: View {
                 }
                 .tag(1)
             
-            Text("SearchView")
+            SearchMainView()
                 .tabItem {
                     HStack {
                         (selectedTab == 2 ? GamblerAsset.tabSearchSelected.swiftUIImage : GamblerAsset.tabSearch.swiftUIImage)
