@@ -45,6 +45,7 @@ struct ReviewDetailView: View {
         .scrollIndicators(.hidden)
         .navigationTitle("리뷰 상세")
         .navigationBarTitleDisplayMode(.inline)
+        .modifier(BackButton())
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink {
@@ -53,7 +54,6 @@ struct ReviewDetailView: View {
                     Image("review")
                         .resizable()
                         .frame(width: 23.1, height: 23.1)
-                        .foregroundStyle(Color.gray400)
                 }
             }
         }

@@ -16,6 +16,8 @@ struct WriteReviewDetailView: View {
     @State private var rating = 0.0
     @State private var disabledButton: Bool = true
     @Binding var isPresentedDetailView: Bool
+    
+    let placeholder: String = "리뷰를 남겨주세요."
     let shop: Shop
     
     var body: some View {
@@ -31,19 +33,10 @@ struct WriteReviewDetailView: View {
                 }
             }
             .frame(height: 56)
+            //.ignoresSafeArea(edges: .top)  // safeArea 때문에 높이ㅋㅋㅋㅋㅋㅋ 아예 시계로 가넹
             
             HStack(spacing: 16) {
-                if let url = URL(string: shop.shopImage) {
-                    KFImage(url)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 64, height: 64)
-                        .clipShape(.rect(cornerRadius: 8))
-                } else {
-                    RoundedRectangle(cornerRadius: 8)
-                        .frame(width: 64, height: 64)
-                        .foregroundStyle(Color.gray200)
-                }
+                RectangleImageView(imageURL: shop.shopImage, frame: 64, cornerRadius: 8)
                 
                 Text(shop.shopName)
                     .font(.body1M)
@@ -58,9 +51,7 @@ struct WriteReviewDetailView: View {
                     .font(.subHead2B)
                 
                 StarRatingView($rating, maxRating: 5)
-                
-                TextEditorView(reviewContent: $reviewContent)
-                
+                TextEditorView(reviewContent: $reviewContent, placeholder: placeholder)
                 AddImageView()
             }
             Spacer()

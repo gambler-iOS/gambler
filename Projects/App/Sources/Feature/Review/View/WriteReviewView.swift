@@ -21,28 +21,18 @@ struct WriteReviewView: View {
                     
                     Divider()
                 }
-                
-                
             }
         }
         .padding(.horizontal, 24)
+        .modifier(BackButton())
+        .navigationTitle("리뷰 작성")
     }
     
     @ViewBuilder
     private func shopReviewCell(shop: Shop) -> some View {
         // 16, 48
         HStack(spacing: 16) {
-            if let url = URL(string: shop.shopImage) {
-                KFImage(url)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 64, height: 64)
-                    .clipShape(.rect(cornerRadius: 8))
-            } else {
-                RoundedRectangle(cornerRadius: 8)
-                    .frame(width: 64, height: 64)
-                    .foregroundStyle(Color.gray200)
-            }
+            RectangleImageView(imageURL: shop.shopImage, frame: 64, cornerRadius: 8)
             
             Text(shop.shopName)
                 .font(.body1M)
