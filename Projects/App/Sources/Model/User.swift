@@ -11,9 +11,23 @@ import Foundation
 struct User: AvailableFirebase {
     var id: String
     var nickname: String
-    var profileImage: String
+    var profileImageURL: String
     var apnsToken: String
     let createdDate: Date
     var likeGameId: [String]
     var likeShopId: [String]
+    var myReviewsCount: Int
+    var myLikesCount: Int
+    
+    static let dummyUser: User = User(
+        id: UUID().uuidString,
+        nickname: "성훈",
+        profileImageURL: "https://cdn-icons-png.flaticon.com/512/21/21104.png",
+        apnsToken: "카카오톡",
+        createdDate: Date(),
+        likeGameId: [],
+        likeShopId: [],
+        myReviewsCount: 12,
+        myLikesCount: 5
+    )
 }

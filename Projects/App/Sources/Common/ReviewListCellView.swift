@@ -44,5 +44,5 @@ struct ReviewListCellView: View {
 }
 
 #Preview {
-    ReviewListCellView(review: Review.dummyReview)
+    ReviewListCellView(review: Review.dummyGameReview)
 }

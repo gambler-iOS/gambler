@@ -10,11 +10,13 @@ import SwiftUI
 
 struct TabBarView: View {
     @State private var selectedTab = 0
+    @StateObject private var myPageViewModel = MyPageViewModel()
     
     var body: some View {
         TabView(selection: $selectedTab) {
             
-            Text("HomeView")
+            HomeView()
+                .environmentObject(HomeViewModel())
                 .tabItem {
                     HStack {
                         (selectedTab == 0 ? GamblerAsset.tabHomeSelected.swiftUIImage : GamblerAsset.tabHome.swiftUIImage)
@@ -33,7 +35,7 @@ struct TabBarView: View {
                 }
                 .tag(1)
             
-            Text("SearchView")
+            SearchMainView()
                 .tabItem {
                     HStack {
                         (selectedTab == 2 ? GamblerAsset.tabSearchSelected.swiftUIImage : GamblerAsset.tabSearch.swiftUIImage)
@@ -42,7 +44,8 @@ struct TabBarView: View {
                 }
                 .tag(2)
             
-            Text("MyProfileView")
+            MyPageView()
+                .environmentObject(myPageViewModel)
                 .tabItem {
                     HStack {
                         (selectedTab == 3 ? GamblerAsset.tabProfileSelected.swiftUIImage : GamblerAsset.tabProfile.swiftUIImage)
