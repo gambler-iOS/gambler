@@ -14,13 +14,13 @@ struct WriteReviewDetailView: View {
     @EnvironmentObject var reviewViewModel: ReviewViewModel
     @State private var reviewContent: String = ""
     @State private var rating = 0.0
+    @State private var disabledButton: Bool = true
     @Binding var isPresentedDetailView: Bool
     let shop: Shop
     
     var body: some View {
         
         VStack(alignment: .leading, spacing: .zero) {
-            // x 버튼
             VStack(spacing: .zero) {
                 Button {
                     isPresentedDetailView.toggle()
@@ -57,8 +57,6 @@ struct WriteReviewDetailView: View {
                 Text("소중한 후기를 들려주세요")
                     .font(.subHead2B)
                 
-//                Text("Rating: \(String(format: "%.1f", rating))")
-                // 수정하긴 해야 함
                 StarRatingView($rating, maxRating: 5)
                 
                 TextEditorView(reviewContent: $reviewContent)
@@ -68,13 +66,15 @@ struct WriteReviewDetailView: View {
             Spacer()
             
             // 완료버튼
+            CTAButton(disabled: $disabledButton, title: "완료") {
+                print("완료 버튼 눌림")
+                // 해당 리뷰를 파베에 올림
+            }
+            .padding(.bottom, 24)
         }
         .padding(.horizontal, 24)
     }
-    
 }
-
-
 
 #Preview {
     WriteReviewDetailView(isPresentedDetailView: .constant(true), shop: Shop.dummyShop)

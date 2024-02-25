@@ -12,9 +12,9 @@ struct CTAButton: View {
     @State private var isTapped: Bool = false
     @Binding var disabled: Bool
     
-    var onTapAction: (() -> Void)?  // 외부에서 전달되는 클로저 프로퍼티
     let title: String
-    
+    var onTapAction: (() -> Void)  // 외부에서 전달되는 클로저 프로퍼티
+
     private var drageGesture: some Gesture {
         DragGesture(minimumDistance: 0)
             .onChanged { _ in
@@ -22,6 +22,7 @@ struct CTAButton: View {
             }
             .onEnded { _ in
                 self.isTapped = false
+                onTapAction()
             }
     }
     
@@ -37,14 +38,11 @@ struct CTAButton: View {
         .background(disabled ? Color.primaryDisabled : (isTapped ? Color.primaryPressed :  Color.primaryDefault))
         .clipShape(.rect(cornerRadius: 8))
         .gesture(disabled ? nil : drageGesture)
-        .onTapGesture {
-            if !disabled {
-                onTapAction?()
-            }
-        }
     }
 }
 
 #Preview {
-    CTAButton(disabled: .constant(false), title: "다음")
+    CTAButton(disabled: .constant(false), title: "다음") {
+        print("버튼 눌림")
+    }
 }
