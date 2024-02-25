@@ -73,6 +73,17 @@ struct WriteReviewDetailView: View {
             .padding(.bottom, 24)
         }
         .padding(.horizontal, 24)
+        .onReceive([self.rating].publisher.first()) { _ in // rating이 변경될 때마다 호출
+            self.updateDisabledButton() // disabledButton 업데이트
+        }
+        .onReceive([self.reviewContent].publisher.first()) { _ in // reviewContent가 변경될 때마다 호출
+            self.updateDisabledButton() // disabledButton 업데이트
+        }
+        #warning("텍스트 에디터의 reviewContent가 바뀔 때마다 메서드를 호출하는 것은 안좋아 보임. 디바운싱이나 스로틀링을 적용하면 좋을 듯")
+    }
+    
+    private func updateDisabledButton() {
+        self.disabledButton = rating == 0.0 || reviewContent.isEmpty
     }
 }
 
