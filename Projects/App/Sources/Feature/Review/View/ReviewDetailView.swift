@@ -44,10 +44,25 @@ struct ReviewDetailView: View {
         .padding(.horizontal, 24)
         .scrollIndicators(.hidden)
         .navigationTitle("리뷰 상세")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
+                    WriteReviewView()
+                } label: {
+                    Image("review")
+                        .resizable()
+                        .frame(width: 23.1, height: 23.1)
+                        .foregroundStyle(Color.gray400)
+                }
+            }
+        }
     }
 }
 
 #Preview {
-    ReviewDetailView(reviewData: Shop.dummyShop)
-        .environmentObject(ReviewViewModel())
+    NavigationStack {
+        ReviewDetailView(reviewData: Shop.dummyShop)
+            .environmentObject(ReviewViewModel())
+    }
 }
