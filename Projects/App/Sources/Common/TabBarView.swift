@@ -19,6 +19,8 @@ struct TabBarView: View {
             HomeView()
                 .environmentObject(HomeViewModel())
                 .environmentObject(appNavigationPath)
+                .environmentObject(GameListViewModel())
+                .environmentObject(GameDetailViewModel())
                 .tabItem {
                     HStack {
                         (selectedTab == 0 ?

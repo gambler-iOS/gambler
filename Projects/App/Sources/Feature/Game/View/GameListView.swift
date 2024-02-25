@@ -9,9 +9,9 @@
 import SwiftUI
 
 struct GameListView: View {
-    @ObservedObject private var gameListViewModel = GameListViewModel()
+    @EnvironmentObject private var gameListViewModel: GameListViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
-    @Environment(\.dismiss) private var dismiss
+//    @Environment(\.dismiss) private var dismiss
     let title: String
     let columns: [GridItem] = Array(repeating:
             .init(.flexible(minimum: 124, maximum: 200),
@@ -19,7 +19,7 @@ struct GameListView: View {
     
     var body: some View {
         VStack(spacing: 12) {
-            headerView(title: "인기 게임", showGrid: gameListViewModel.showGrid)
+            headerView(title: title, showGrid: gameListViewModel.showGrid)
 
             ScrollView {
                 if gameListViewModel.showGrid == true {
@@ -56,8 +56,8 @@ struct GameListView: View {
                 .resizable()
                 .frame(width: 24, height: 24)
                 .onTapGesture {
-                    dismiss()
-//                    appNavigationPath.viewPath.removeLast()
+//                    dismiss()
+                    appNavigationPath.homeViewPath.removeLast()
                 }
             
             Spacer()
@@ -82,11 +82,12 @@ struct GameListView: View {
                 gameListViewModel.showGrid.toggle()
             }
         }
-        .frame(height: 40)
+        .frame(height: 30)
     }
 }
 
 #Preview {
     GameListView(title: "인기 게임")
         .environmentObject(AppNavigationPath())
+        .environmentObject(GameListViewModel())
 }
