@@ -13,7 +13,7 @@ struct GameDetailInfoView: View {
     let game: Game
     
     var body: some View {
-        VStack {
+        VStack(spacing: 32) {
             TagLayout {
                 ChipView(label: "👥 3 - 10명", size: .medium)
                 ChipView(label: "🕛 10분 내외", size: .medium)
