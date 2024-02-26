@@ -23,31 +23,43 @@ struct MapView: View {
             .onAppear {
                 self.draw = true
             }
+            .onDisappear(perform: {
+                self.draw = false
+            })
             .overlay {
                 Group {
                     if isShowingSheet {
-                        FlotingView()
+                        FloatingView(shop: Shop.dummyShop, isShowingSheet: $isShowingSheet)
+                            .frame(width: 327, height: 182)
                             .offset(y: 250)
+                        
+                        
                     }
                 }
             }
-        
-        /*.onDisappear(perform: {
-         self.draw = false
-         })*/
-            .edgesIgnoringSafeArea(.top)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        /*
+            .fullScreenCover(isPresented: $isShowingSheet) {
+                MapSheetView()
+                    .overlay {
+                        showMapButton
+                            .offset(y: 250)
+                    }
+            }*/
+    
+        .edgesIgnoringSafeArea(.top)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-
-    private struct FlotingView: View {
-        var body: some View{
-            HStack{
-                Text("FlotingView")
-            }.frame(width: 327, height: 132)
-                .background(Color.white)
-                .cornerRadius(16)
+    
+    private var showMapButton: some View {
+            GamblerAsset.showMap.swiftUIImage
+                .resizable()
+                .frame(width: 97, height: 44)
+                .onTapGesture {
+                    withAnimation {
+                        isShowingSheet = false
+                    }
+                }
         }
-    }
     
 }
 

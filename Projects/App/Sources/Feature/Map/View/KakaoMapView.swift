@@ -17,7 +17,7 @@ struct KakaoMapView: UIViewRepresentable {
     @Binding var userLongitude: Double
     @Binding var isShowingSheet: Bool
     var isMainMap: Bool
-
+    
     func makeUIView(context: Self.Context) -> KMViewContainer {
         let view: KMViewContainer = KMViewContainer()
         view.sizeToFit()
@@ -25,13 +25,13 @@ struct KakaoMapView: UIViewRepresentable {
         context.coordinator.controller?.initEngine()
         return view
     }
-
+    
     func updateUIView(_ uiView: KMViewContainer, context: Self.Context) {
         if draw {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 context.coordinator.controller?.startEngine()
                 context.coordinator.controller?.startRendering()}
-        }else {
+        } else {
             context.coordinator.controller?.stopRendering()
             // context.coordinator.controller?.stopEngine()
         }
@@ -40,9 +40,9 @@ struct KakaoMapView: UIViewRepresentable {
     func makeCoordinator() -> KakaoMapCoordinator {
         return KakaoMapCoordinator(userLatitude: $userLatitude, userLongitude: $userLongitude, isShowingSheet: $isShowingSheet)
     }
-
+    
     static func dismantleUIView(_ uiView: KMViewContainer, coordinator: KakaoMapCoordinator) {
-
+        
     }
     
     // MARK: - 맵
@@ -51,6 +51,7 @@ struct KakaoMapView: UIViewRepresentable {
         @Binding var userLatitude: Double
         @Binding var userLongitude: Double
         @Binding var isShowingSheet: Bool
+        @State private var isTappingPoi: Bool = false
         
         var controller: KMController?
         var first: Bool
@@ -59,7 +60,7 @@ struct KakaoMapView: UIViewRepresentable {
         var cameraStartHandler: DisposableEventHandler?
         var locationPoiID: String = ""
         var recentPoiId: String?
-
+        
         init(userLatitude: Binding<Double>, userLongitude: Binding<Double>, isShowingSheet: Binding<Bool>) {
             first = true
             self._userLatitude = userLatitude
@@ -67,7 +68,7 @@ struct KakaoMapView: UIViewRepresentable {
             self._isShowingSheet = isShowingSheet
             super.init()
         }
-    
+        
         func createController(_ view: KMViewContainer) {
             controller = KMController(viewContainer: view)
             controller?.delegate = self
@@ -104,8 +105,9 @@ struct KakaoMapView: UIViewRepresentable {
         
         func onCameraStopped(_ param: CameraActionEventParam) {
             if (param.by == .notUserAction) {
-                    cameraStoppedHandler?.dispose()
+                cameraStoppedHandler?.dispose()
             }
+        
         }
         
         func getUserLocation() {
@@ -121,14 +123,14 @@ struct KakaoMapView: UIViewRepresentable {
         func containerDidResized(_ size: CGSize) {
             let mapView: KakaoMap? = controller?.getView("mapview") as? KakaoMap
             mapView?.viewRect = CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: size)
-           
+            
             print("[Action: Resizing Container]")
             if first {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    /*  let cameraUpdate: CameraUpdate = CameraUpdate.make(target:
-                     MapPoint(longitude: self.userLongitude, latitude: self.userLatitude), zoomLevel: 15, mapView: mapView!)*/
-                    let cameraUpdate: CameraUpdate = CameraUpdate.make(target:
-                                                                        MapPoint(longitude: 127.108678, latitude: 37.402001), zoomLevel: 15, mapView: mapView!)
+                     let cameraUpdate: CameraUpdate = CameraUpdate.make(target:
+                     MapPoint(longitude: self.userLongitude, latitude: self.userLatitude), zoomLevel: 15, mapView: mapView!)
+                   /* let cameraUpdate: CameraUpdate = CameraUpdate.make(target:
+                                                                        MapPoint(longitude: 127.108678, latitude: 37.402001), zoomLevel: 15, mapView: mapView!)*/
                     mapView?.moveCamera(cameraUpdate)
                     print("[Get: Camera point] latitude = \(self.userLatitude), longitude = \(self.userLongitude)")
                 }
@@ -140,9 +142,12 @@ struct KakaoMapView: UIViewRepresentable {
         func createLabelLayer() {
             if let view = controller?.getView("mapview") as? KakaoMap{
                 let manager = view.getLabelManager()
-               
-                let layerOption = LabelLayerOptions(layerID: "PoiLayer", competitionType: .none, competitionUnit: .symbolFirst, orderType: .rank, zOrder: 3000)
-                manager.addLabelLayer(option: layerOption)
+                
+                let markerLayerOption = LabelLayerOptions(layerID: "PoiLayer", competitionType: .none, competitionUnit: .symbolFirst, orderType: .rank, zOrder: 5000)
+                manager.addLabelLayer(option: markerLayerOption)
+                
+                let myLocationLayerOption =  LabelLayerOptions(layerID: "myLocationLayer", competitionType: .none, competitionUnit: .symbolFirst, orderType: .rank, zOrder: 5001)
+                manager.addLabelLayer(option: myLocationLayerOption)
             }
         }
         
@@ -150,12 +155,12 @@ struct KakaoMapView: UIViewRepresentable {
         func createPoiStyle() {
             if let view = controller?.getView("mapview") as? KakaoMap {
                 let manager = view.getLabelManager()
-        
+                
                 let shopPoiIconStyle = PoiIconStyle(symbol: UIImage(named: "markDefault")?.resized(withSize: CGSize(width: 45, height: 63)))
                 let pickPoiIconStyle = PoiIconStyle(symbol: UIImage(named: "markPressed")?.resized(withSize: CGSize(width: 60, height: 84)))
                 let userLocationPoiIconStyle = PoiIconStyle(symbol: UIImage(named: "myLocation")?.resized(withSize: CGSize(width: 150, height: 150)))
                 
-                let red = PoiTextLineStyle(textStyle: TextStyle(fontSize: 20, 
+                let red = PoiTextLineStyle(textStyle: TextStyle(fontSize: 20,
                                                                 fontColor: UIColor.white, strokeThickness: 2, strokeColor: UIColor.red))
                 let textStyle = PoiTextStyle(textLineStyles: [red])
                 
@@ -163,7 +168,7 @@ struct KakaoMapView: UIViewRepresentable {
                     PerLevelPoiStyle(iconStyle: shopPoiIconStyle, textStyle: textStyle, level: 8),
                     PerLevelPoiStyle(iconStyle: shopPoiIconStyle, textStyle: textStyle, level: 18)
                 ])
-        
+                
                 let pickPoiStyle = PoiStyle(styleID: "pickPoiIconStyle", styles: [
                     PerLevelPoiStyle(iconStyle: pickPoiIconStyle, textStyle: textStyle, level: 8),
                     PerLevelPoiStyle(iconStyle: pickPoiIconStyle, textStyle: textStyle, level: 18)
@@ -172,6 +177,7 @@ struct KakaoMapView: UIViewRepresentable {
                     PerLevelPoiStyle(iconStyle: userLocationPoiIconStyle, level: 8),
                     PerLevelPoiStyle(iconStyle: userLocationPoiIconStyle, level: 18)
                 ])
+                
                 manager.addPoiStyle(shopPoiStyle)
                 manager.addPoiStyle(pickPoiStyle)
                 manager.addPoiStyle(userLocationPoiStyle)
@@ -206,15 +212,15 @@ struct KakaoMapView: UIViewRepresentable {
         
         // 내위치 Poi
         func createUserLocationPoi() {
-            if let view = controller?.getView("mapview") as? KakaoMap{
+            if let view = controller?.getView("mapview") as? KakaoMap {
                 let manager = view.getLabelManager()
-                let layer = manager.getLabelLayer(layerID: "PoiLayer")
+                let layer = manager.getLabelLayer(layerID: "myLocationLayer")
                 let poiOption = PoiOptions(styleID: "UserLocationStyle")
                 
                 poiOption.rank = 0
                 poiOption.transformType = .decal
                 poiOption.clickable = true
-                poiOption.addText(PoiText(text: "내위치", styleIndex: 1))
+                
                 let markerPoint = MapPoint(longitude: userLongitude, latitude: userLatitude)
                 let marker = layer?.addPoi(option: poiOption, at: markerPoint)
                 locationPoiID = marker?.itemID ?? ""
@@ -224,9 +230,9 @@ struct KakaoMapView: UIViewRepresentable {
         }
         
         func newPositionUserPoi() {
-            if let view = controller?.getView("mapview") as? KakaoMap{
+            if let view = controller?.getView("mapview") as? KakaoMap {
                 let manager = view.getLabelManager()
-                let layer = manager.getLabelLayer(layerID: "PoiLayer")
+                let layer = manager.getLabelLayer(layerID: "myLocationLayer")
                 let marker = layer?.getPoi(poiID: locationPoiID)
                 marker?.position = MapPoint(longitude: userLongitude, latitude: userLatitude)
             }
@@ -234,14 +240,14 @@ struct KakaoMapView: UIViewRepresentable {
         
         func poiDidTapped(_ param: PoiInteractionEventParam) {
             if let markerData = param.poiItem.userObject as? MarkerTestData {
-                if let view = controller?.getView("mapview") as? KakaoMap{
+                if let view = controller?.getView("mapview") as? KakaoMap {
                     let manager = view.getLabelManager()
                     let layer = manager.getLabelLayer(layerID: "PoiLayer")
                     
                     print("[Action: Tapped Poi] \npoi name : \(markerData.name)\npoi lo : \(markerData.longitude)\npoi la : \(markerData.latitude)")
-
+                    
                     if recentPoiId != param.poiItem.itemID {
-                        moveCameraToFocus(MapPoint(longitude: Double(markerData.longitude), latitude: markerData.latitude))
+                        self.moveCameraToFocus(MapPoint(longitude: Double(markerData.longitude), latitude: markerData.latitude))
                         isShowingSheet = true
                         
                         let tabMarker = layer?.getPoi(poiID: param.poiItem.itemID)
@@ -253,8 +259,13 @@ struct KakaoMapView: UIViewRepresentable {
                         }
                         recentPoiId = param.poiItem.itemID
                     }
+                    
+                    let point1 = Location(latitude: userLatitude, longitude: userLongitude)
+                    let point2 = Location(latitude: markerData.latitude, longitude: markerData.longitude)
+
+                    let distance = calculateDistanceBetweenPoints(point1: point1, point2: point2)
+                    print("두 지점 간의 거리: \(distance) km")
                 }
-               
             }
         }
         
@@ -269,7 +280,7 @@ struct KakaoMapView: UIViewRepresentable {
                 spriteGui.splitLineColor = UIColor.white
                 
                 spriteGui.origin = GuiAlignment(vAlign: .top, hAlign: .right)
-                spriteGui.position = CGPoint(x: 50, y: 180)
+                spriteGui.position = CGPoint(x: getSafeAreaTop(), y: mapView.viewRect.height*2/10*9)
                 
                 let gpsButton = GuiButton("GPS Button")
                 gpsButton.image = UIImage(named: "location")?
@@ -280,12 +291,11 @@ struct KakaoMapView: UIViewRepresentable {
                 guiManager.spriteGuiLayer.addSpriteGui(spriteGui)
                 spriteGui.delegate = self
                 spriteGui.show()
-
             }
         }
         
         func guiDidTapped(_ gui: GuiBase, componentName: String) {
-            NSLog("Gui: \(gui.name), Component: \(componentName) tapped")
+            print("Gui: \(gui.name), Component: \(componentName) tapped")
             getUserLocation()
             moveCameraToFocus(MapPoint(longitude: userLongitude, latitude: userLatitude))
             newPositionUserPoi()
@@ -293,12 +303,13 @@ struct KakaoMapView: UIViewRepresentable {
         }
         
         // 카메라 포커스
-        func moveCameraToFocus(_ point: MapPoint){
-            if let mapView: KakaoMap = controller?.getView("mapview") as? KakaoMap{
+        func moveCameraToFocus(_ point: MapPoint) {
+            if let mapView: KakaoMap = controller?.getView("mapview") as? KakaoMap {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     let cameraUpdate: CameraUpdate = CameraUpdate
                         .make(target: MapPoint(from: point), zoomLevel: mapView.zoomLevel, mapView: mapView)
-                    mapView.animateCamera(cameraUpdate: cameraUpdate, options: CameraAnimationOptions(autoElevation: false, consecutive: false, durationInMillis: 50))
+                    mapView.animateCamera(cameraUpdate: cameraUpdate, options: CameraAnimationOptions(autoElevation: false,
+                                                                                                      consecutive: false, durationInMillis: 50))
                     print("[Get: Camera point] latitude = \(self.userLatitude), longitude = \(self.userLongitude)")
                 }
             }
@@ -306,7 +317,7 @@ struct KakaoMapView: UIViewRepresentable {
         
         func detailViewPoi(_ point: MapPoint) {
             print("[Action: Create detailViewPoi]")
-            if let view = controller?.getView("mapview") as? KakaoMap{
+            if let view = controller?.getView("mapview") as? KakaoMap {
                 let manager = view.getLabelManager()
                 let layer = manager.getLabelLayer(layerID: "PoiLayer")
                 let poiOption = PoiOptions(styleID: "pickPoiIconStyle")
@@ -322,4 +333,3 @@ struct KakaoMapView: UIViewRepresentable {
         }
     }
 }
-

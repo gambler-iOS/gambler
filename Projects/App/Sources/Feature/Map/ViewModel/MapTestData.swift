@@ -24,4 +24,10 @@ class MarkerTestDataManager {
             MarkerTestData(name: "판교3", longitude: 127.11000802973668, latitude: 37.395889599947324)
         ]
     }
+    
+  
+    
+    
+    
+    
 }
