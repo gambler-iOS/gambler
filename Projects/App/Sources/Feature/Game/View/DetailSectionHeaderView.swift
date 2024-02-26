@@ -22,7 +22,7 @@ struct DetailSectionHeaderView: View {
             if let reviewInfo {
                 Text(reviewInfo)
                     .font(.body1B)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(Color.primaryDefault)
                     .padding(.leading, 8)
             }
             
