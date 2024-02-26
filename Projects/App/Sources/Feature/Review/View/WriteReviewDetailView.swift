@@ -13,7 +13,7 @@ import PhotosUI
 struct WriteReviewDetailView: View {
     @EnvironmentObject var reviewViewModel: ReviewViewModel
     @State private var reviewContent: String = ""
-    @State private var rating = 0.0
+    @State private var rating: Double = 0.0
     @State private var disabledButton: Bool = true
     @Binding var isPresentedDetailView: Bool
     
@@ -50,13 +50,12 @@ struct WriteReviewDetailView: View {
                 Text("소중한 후기를 들려주세요")
                     .font(.subHead2B)
                 
-                StarRatingView($rating, maxRating: 5)
+                RatingView(rating: $rating, count: .constant(5))
                 TextEditorView(reviewContent: $reviewContent, placeholder: placeholder)
                 AddImageView()
             }
             Spacer()
             
-            // 완료버튼
             CTAButton(disabled: $disabledButton, title: "완료") {
                 print("완료 버튼 눌림")
                 // 해당 리뷰를 파베에 올림

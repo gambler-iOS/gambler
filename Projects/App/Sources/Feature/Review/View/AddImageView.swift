@@ -13,9 +13,11 @@ struct AddImageView: View {
     @State private var selectedItems: [PhotosPickerItem] = []
     @State private var selectedPhotosData: [Data] = []
     
+    // 해결해야 하는 사항
+    // 사진을 선택했을 때, 선택한 사항이 남음
+    
     var body: some View {
         HStack(spacing: 8) {
-            // maxSelection이라는 매개변수에 값을 5로 설정하면 사용자가 최대 5장의 사진을 지원할 수 있다.
             if selectedPhotosData.count < 4  {
                 PhotosPicker(selection: $selectedItems, maxSelectionCount: 1, matching: .images) {
                     VStack {
@@ -28,9 +30,7 @@ struct AddImageView: View {
                     .background(Color.gray100)
                     .clipShape(.rect(cornerRadius: 8))
                 }
-                // onChange 클로저에서 두 개 이상의 사진을 캡처할 수 있다.
-                // 각 사진 항목을 로드하여 데이터 배열에 추가함
-                .onChange(of: selectedItems) { newItems in
+                .onChange(of: selectedItems) { _, newItems in
                     for newItem in newItems {
                         Task {
                             if let data = try? await newItem.loadTransferable(type: Data.self) {
@@ -41,11 +41,9 @@ struct AddImageView: View {
                 }
             }
             
-            ForEach(selectedPhotosData, id: \.self) { photoData in
-                if let image = UIImage(data: photoData) {
-                    
-                    ZStack(alignment: .topTrailing) {
-                        
+            ForEach(selectedPhotosData.indices, id: \.self) { index in
+                if let image = UIImage(data: selectedPhotosData[index]) {
+                    ZStack {
                         Image(uiImage: image)
                             .resizable()
                             .scaledToFill()
@@ -53,16 +51,17 @@ struct AddImageView: View {
                             .clipShape(.rect(cornerRadius: 8))
                         
                         Button {
-                            // removeAll로 하니까 다 지워짐
-                            selectedPhotosData.removeAll { $0 == photoData }
+                            selectedPhotosData.remove(at: index)
                         } label: {
                             Image(systemName: "x.circle.fill")
                                 .foregroundColor(.red)
-                                .padding(4)
                         }
-                        .offset(x: 4, y: -4)
+                        .offset(x: 32, y: -32)
                     }
                 }
+            }
+            .onDelete { indexSet in
+                selectedPhotosData.remove(atOffsets: indexSet)
             }
             Spacer()
         }
