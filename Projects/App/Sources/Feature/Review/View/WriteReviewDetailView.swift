@@ -22,6 +22,7 @@ struct WriteReviewDetailView: View {
     
     var body: some View {
         
+        #warning("backButton의 위치가 navigation toolbar Item 위치가 다름")
         VStack(alignment: .leading, spacing: .zero) {
             VStack(spacing: .zero) {
                 Button {
@@ -33,7 +34,6 @@ struct WriteReviewDetailView: View {
                 }
             }
             .frame(height: 56)
-            //.ignoresSafeArea(edges: .top)  // safeArea 때문에 높이ㅋㅋㅋㅋㅋㅋ 아예 시계로 가넹
             
             HStack(spacing: 16) {
                 RectangleImageView(imageURL: shop.shopImage, frame: 64, cornerRadius: 8)

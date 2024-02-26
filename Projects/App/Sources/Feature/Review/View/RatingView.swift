@@ -24,9 +24,9 @@ struct RatingView: View {
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 48, height: 48)
                     .onTapGesture(coordinateSpace: .local) { location in
-                        print(location.x)
                         handleTap(at: doubleIndex, location: location)
                     }
+                #warning("onTapGesture(coordinateSpace: .local) - Deprecated")
             }
         }
     }
