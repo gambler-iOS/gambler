@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct MapSheetView: View {
+    // 데이터 연결시 수정
     @ObservedObject var shopStore: ShopStore
     
     var body: some View {

@@ -32,12 +32,12 @@ extension KakaoMapView.KakaoMapCoordinator {
     
     func moveCameraToFocus(_ point: MapPoint) {
         if let mapView: KakaoMap = controller?.getView("mapview") as? KakaoMap {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.async {
                 let cameraUpdate: CameraUpdate = CameraUpdate
                     .make(target: MapPoint(from: point), zoomLevel: mapView.zoomLevel, mapView: mapView)
                 mapView.animateCamera(cameraUpdate: cameraUpdate, 
                                       options: CameraAnimationOptions(autoElevation: false,
-                                                                      consecutive: false, durationInMillis: 50))
+                                                                      consecutive: false, durationInMillis: 200))
                 print("[Get: Camera point] latitude = \(self.userLocate.latitude), longitude = \(self.userLocate.longitude)")
             }
         }
@@ -50,18 +50,21 @@ extension KakaoMapView.KakaoMapCoordinator {
                 let layer = manager.getLabelLayer(layerID: "PoiLayer")
                 
                 if recentPoiId != param.poiItem.itemID {
-                    self.moveCameraToFocus(MapPoint(longitude: Double(markerData.location.longitude),
-                                                    latitude: markerData.location.latitude))
-                    
-                    let tabMarker = layer?.getPoi(poiID: param.poiItem.itemID)
-                    tabMarker?.changeStyle(styleID: "pickPoiIconStyle")
-                    
-                    if let recentMarkerId = recentPoiId {
-                        let recentMarker = layer?.getPoi(poiID: recentMarkerId)
-                        recentMarker?.changeStyle(styleID: "shopPoiIconStyle")
+                    Task {
+                        self.moveCameraToFocus(MapPoint(longitude: Double(markerData.location.longitude),
+                                                        latitude: markerData.location.latitude))
+                        
+                        let tabMarker = layer?.getPoi(poiID: param.poiItem.itemID)
+                        tabMarker?.changeStyle(styleID: "pickPoiIconStyle")
+                        
+                        if let recentMarkerId = recentPoiId {
+                            let recentMarker = layer?.getPoi(poiID: recentMarkerId)
+                            recentMarker?.changeStyle(styleID: "shopPoiIconStyle")
+                        }
+                        
+                        recentPoiId = param.poiItem.itemID
+                        selectedShop = markerData
                     }
-                    recentPoiId = param.poiItem.itemID
-                    selectedShop = markerData
                 }
             }
         }
