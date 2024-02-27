@@ -11,16 +11,16 @@ import Kingfisher
 
 struct FloatingCellView: View {
     let shop: Shop
-    //let likeShopIdArray: [String]
+    let likeShopIdArray: [String]
     
-    /*var isLike: Bool {
+    var isLike: Bool {
         likeShopIdArray.contains { id in
             id == shop.id
         }
-    }*/
+    }
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             HStack(spacing: 16) {
                 if let url = URL(string: shop.shopImage) {
                     KFImage(url)
@@ -34,6 +34,7 @@ struct FloatingCellView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 8) {
+                    Spacer()
                     HStack {
                         Text("\(shop.shopName)")
                             .font(.body1M)
@@ -41,14 +42,17 @@ struct FloatingCellView: View {
                         
                         Spacer()
                         
-                       // HeartCellView(isLike: isLike)
+                        HeartCellView(isLike: isLike)
                     }
+                    
                     ReviewRatingCellView(rating: shop.reviewRatingAverage)
-
                     Text("\(shop.shopAddress)")
                         .font(.body2M)
                         .foregroundStyle(Color.gray400)
+                        .frame(height: 42, alignment: .top)
+                      
                     Spacer()
+                    
                 }
                 .foregroundStyle(.black)
             }
@@ -58,5 +62,5 @@ struct FloatingCellView: View {
 }
 
 #Preview {
-    FloatingCellView(shop: Shop.dummyShop)
+    FloatingCellView(shop: Shop.dummyShop, likeShopIdArray: ["1"])
 }

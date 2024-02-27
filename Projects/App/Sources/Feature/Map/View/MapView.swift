@@ -12,14 +12,17 @@ import KakaoMapsSDK
 import CoreLocation
 
 struct MapView: View {
-    @State var draw: Bool = false
-    @State private var userLatitude: Double = 37.402001
-    @State private var userLongitude: Double = 127.108678
-    @State var isShowingSheet: Bool = false
-    @State var detent: PresentationDetent = .medium
+    
+    @State private var draw: Bool = false
+    @State private var userLocate: GeoPoint = GeoPoint(latitude: 37.402001, longitude: 127.108678)
+    @State private var isShowingSheet: Bool = false
+    @State private var detent: PresentationDetent = .medium
+    @State private var selectedShop: Shop = Shop.dummyShop
+    @StateObject var shopStore = ShopStore()
     
     var body: some View {
-        KakaoMapView(draw: $draw, userLatitude: $userLatitude, userLongitude: $userLongitude, isShowingSheet: $isShowingSheet, isMainMap: true)
+        KakaoMapView(draw: $draw, userLocate: $userLocate,
+                     isShowingSheet: $isShowingSheet, selectedShop: $selectedShop)
             .onAppear {
                 self.draw = true
             }
@@ -28,41 +31,36 @@ struct MapView: View {
             })
             .overlay {
                 Group {
-                    if isShowingSheet {
-                        FloatingView(shop: Shop.dummyShop, isShowingSheet: $isShowingSheet)
-                            .frame(width: 327, height: 182)
-                            .offset(y: 250)
-                        
-                        
-                    }
+                    FloatingView(shopStore: shopStore, selectedShop: $selectedShop, 
+                                 isShowingSheet: $isShowingSheet, userLocate: $userLocate)
+                        .frame(width: 327, height: 182)
+                        .offset(y: 250)
                 }
             }
-        /*
             .fullScreenCover(isPresented: $isShowingSheet) {
-                MapSheetView()
+                MapSheetView(shopStore: shopStore)
                     .overlay {
                         showMapButton
-                            .offset(y: 250)
+                            .offset(y: UIScreen.main.bounds.height/3)
                     }
-            }*/
-    
-        .edgesIgnoringSafeArea(.top)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .edgesIgnoringSafeArea(.top)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     private var showMapButton: some View {
-            GamblerAsset.showMap.swiftUIImage
-                .resizable()
-                .frame(width: 97, height: 44)
-                .onTapGesture {
-                    withAnimation {
-                        isShowingSheet = false
-                    }
+        GamblerAsset.showMap.swiftUIImage
+            .resizable()
+            .frame(width: 97, height: 44)
+            .onTapGesture {
+                withAnimation {
+                    isShowingSheet = false
                 }
-        }
-    
+            }
+    }
 }
 
 #Preview {
-    KakaoMapView(draw: .constant(true), userLatitude: .constant(13.0000), userLongitude: .constant(13.0000), isShowingSheet: .constant(false), isMainMap: true)
+    KakaoMapView(draw: .constant(true), userLocate: .constant(GeoPoint(latitude: 13.0000, longitude: 13.0000)),
+                 isShowingSheet: .constant(false), selectedShop: .constant(Shop.dummyShop))
 }
