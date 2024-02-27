@@ -1,5 +1,5 @@
 //
-//  WriteReviewView.swift
+//  WriteReviewDetailView.swift
 //  gambler
 //
 //  Created by 박성훈 on 2/23/24.
@@ -8,52 +8,91 @@
 
 import SwiftUI
 import Kingfisher
+import PhotosUI
 
 struct WriteReviewView: View {
     @EnvironmentObject var reviewViewModel: ReviewViewModel
-    @State var isPresentedDetailView = false
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var reviewContent: String = ""
+    @State private var rating: Double = 0.0
+    @State private var disabledButton: Bool = true
+    
+    let placeholder: String = "리뷰를 남겨주세요."
+    let reviewableItem: AvailableAggregateReview
+    
+    // 여기서 받을게 게임인지 샵인지 내가 어떻게 알아
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                ForEach(reviewViewModel.dummyShops, id: \.self) { shop in
-                    shopReviewCell(shop: shop)
+        VStack(spacing: .zero) {
+            HStack(spacing: 16) {
+                if let game = reviewableItem as? Game {
+                    RectangleImageView(imageURL: game.gameImage, frame: 64, cornerRadius: 8)
                     
-                    Divider()
+                    Text(game.gameName)
+                        .font(.body1M)
+                        .foregroundStyle(Color.gray700)
+
+                } else if let shop = reviewableItem as? Shop {
+                    RectangleImageView(imageURL: shop.shopImage, frame: 64, cornerRadius: 8)
+                    
+                    Text(shop.shopName)
+                        .font(.body1M)
+                        .foregroundStyle(Color.gray700)
                 }
+                
+                Spacer()
             }
-        }
-        .padding(.horizontal, 24)
-        .modifier(BackButton())
-        .navigationTitle("리뷰 작성")
-    }
-    
-    @ViewBuilder
-    private func shopReviewCell(shop: Shop) -> some View {
-        // 16, 48
-        HStack(spacing: 16) {
-            RectangleImageView(imageURL: shop.shopImage, frame: 64, cornerRadius: 8)
+            .padding(.bottom, 24)
             
-            Text(shop.shopName)
-                .font(.body1M)
-                .foregroundStyle(Color.gray700)
+            VStack(spacing: 16) {
+                Text("소중한 후기를 들려주세요")
+                    .font(.subHead2B)
+                
+                RatingView(rating: $rating, count: .constant(5))
+                
+                TextEditorView(text: $reviewContent, placeholder: placeholder)
+                
+            }
+            AddImageView(topPadding: .constant(16))
             
             Spacer()
             
-            Button {
-                isPresentedDetailView.toggle()
-            } label: {
-                ChipView(label: "리뷰 작성하기", size: .medium)
-                    .foregroundStyle(Color.gray400)
+            CTAButton(disabled: $disabledButton, title: "완료") {
+                print("완료 버튼 눌림")
+                // 해당 리뷰를 파베에 올림
             }
-            .fullScreenCover(isPresented: $isPresentedDetailView) {
-                WriteReviewDetailView(isPresentedDetailView: $isPresentedDetailView, shop: shop)
+            .padding(.bottom, 24)
+        }
+        .padding(.horizontal, 24)
+        .onReceive([self.rating].publisher.first()) { _ in
+            self.updateDisabledButton()
+        }
+        .onReceive([self.reviewContent].publisher.first()) { _ in
+            self.updateDisabledButton()
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image("closed")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
             }
         }
+        #warning("텍스트 에디터의 reviewContent가 바뀔 때마다 메서드를 호출하는 것은 안좋아 보임. 디바운싱이나 스로틀링을 적용하면 좋을 듯")
+    }
+    
+    private func updateDisabledButton() {
+        self.disabledButton = rating == 0.0 || reviewContent.isEmpty
     }
 }
 
 #Preview {
-    WriteReviewView()
+    WriteReviewView(reviewableItem: Shop.dummyShop)
         .environmentObject(ReviewViewModel())
 }

@@ -10,50 +10,63 @@ import SwiftUI
 
 struct TextEditorView: View {
     @FocusState private var focusedField: Field?
-    @Binding var reviewContent: String
+    @Binding var text: String
     let placeholder: String
-    let limitChar: Int = 200
+    let maxLength: Int = 500
     let height: CGFloat = 200
     
     // 포커스필드를 위한 열거형
     enum Field: Hashable {
-        case reasonForReporting
+        case textEditor
     }
     
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            TextEditor(text: $reviewContent)
-                .foregroundColor(Color.gray700)
-                .lineSpacing(10)
-                .padding(EdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10))
-                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray300, lineWidth: 1.0))
-                .focused($focusedField, equals: .reasonForReporting)
-                .onChange(of: self.reviewContent) { _, newValue in
-                    if newValue.count > limitChar {
-                        self.reviewContent = String(newValue.prefix(limitChar))
+        GeometryReader { proxy in
+            VStack(spacing: .zero) {
+                ZStack(alignment: .topLeading) {
+                    if text.isEmpty {
+                        Text(placeholder)
+                            .font(.body2M)
+                            .foregroundColor(Color.gray300)
+                            .padding(16)
+                            .zIndex(1)
+                            .onTapGesture {
+                                self.focusedField = .textEditor
+                            }
                     }
+                    
+                    TextEditor(text: $text)
+                        .font(.body2M)
+                        .foregroundColor(Color.gray700)
+                        .lineSpacing(8)
+                        .frame(height: (proxy.size.height - 48) * 0.9)
+                        .padding(EdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10))
+                        .focused($focusedField, equals: .textEditor)
                 }
-                .onTapGesture {
-                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                // 글자 수 제한
+                HStack {
+                    Spacer()
+                    Text("\(text.count) / \(maxLength)")
+                        .font(.caption2M)
+                        .foregroundStyle(text.count  >= maxLength ? Color.primaryDefault : Color.gray300)
                 }
-            
-            if reviewContent.isEmpty {
-                Text(placeholder)
-                    .lineSpacing(10)
-                    .foregroundColor(Color.gray300)
-                    .padding(16)
-                    .zIndex(1)
-                    .onTapGesture {
-                        self.focusedField = .reasonForReporting
-                    }
+                .frame(height: (proxy.size.height - 48) * 0.1)
+                .padding(16)
             }
         }
         .frame(height: height)
-        .font(.body2M)
-        
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray300, lineWidth: 1.0))
+        .onChange(of: self.text) { _, newValue in
+            if newValue.count > maxLength {
+                self.text = String(newValue.prefix(maxLength))
+            }
+        }
+        .onTapGesture {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        }
     }
 }
 
 #Preview {
-    TextEditorView(reviewContent: .constant(""), placeholder: "리뷰를 남겨주세요.")
+    TextEditorView(text: .constant(""), placeholder: "리뷰를 남겨주세요.")
 }

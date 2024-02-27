@@ -11,10 +11,10 @@ import SwiftUI
 struct ReviewDetailView: View {
     @EnvironmentObject var reviewViewModel: ReviewViewModel
     
-    let reviewData: AvailableAggregateReview
+    let reviewableItem: AvailableAggregateReview
     
     var reviewRatingCount: String {
-        "\(String(format: "%.1f", reviewData.reviewRatingAverage))(\(reviewData.reviewCount))"
+        "\(String(format: "%.1f", reviewableItem.reviewRatingAverage))(\(reviewableItem.reviewCount))"
     }
     
     var body: some View {
@@ -49,11 +49,12 @@ struct ReviewDetailView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink {
-                    WriteReviewView()
+                    WriteReviewView(reviewableItem: reviewableItem)
                 } label: {
                     Image("review")
                         .resizable()
-                        .frame(width: 23.1, height: 23.1)
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 24, height: 24)
                 }
             }
         }
@@ -62,7 +63,7 @@ struct ReviewDetailView: View {
 
 #Preview {
     NavigationStack {
-        ReviewDetailView(reviewData: Shop.dummyShop)
+        ReviewDetailView(reviewableItem: Shop.dummyShop)
             .environmentObject(ReviewViewModel())
     }
 }

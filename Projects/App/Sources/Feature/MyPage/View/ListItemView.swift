@@ -20,7 +20,7 @@ struct ListItemView: View {
                 
                 Group {
 //                    listBodyView(title: "프로필 수정", destination: ProfileEditView())
-                    listBodyView(title: "프로필 수정", destination: ReviewDetailView( reviewData: Shop.dummyShop)
+                    listBodyView(title: "프로필 수정", destination: ReviewDetailView( reviewableItem: Shop.dummyShop)
                         .environmentObject(reviewViewModel))
                     
                     listBodyView(title: "알림 설정", destination: NotificationSettingView())
