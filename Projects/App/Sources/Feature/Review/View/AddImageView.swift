@@ -52,7 +52,7 @@ struct AddImageView: View {
                             Button {
                                 selectedPhotosData.remove(at: index)
                             } label: {
-                                Image("searchClosed")
+                                Image("searchClosedPrimary")
                                     .resizable()
                                     .frame(width: 24, height: 24)
                             }
