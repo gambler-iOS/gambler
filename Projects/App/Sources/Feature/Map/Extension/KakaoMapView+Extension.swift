@@ -16,8 +16,8 @@ extension KakaoMapView.KakaoMapCoordinator {
         locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
         locationManager.distanceFilter = 20
         let coordinate = locationManager.location?.coordinate
-        userLocate.latitude = coordinate?.latitude ?? 37.402001
-        userLocate.longitude = coordinate?.longitude ?? 37.402001
+        userLocate.latitude = coordinate?.latitude ?? GeoPoint.defaultPoint.latitude
+        userLocate.longitude = coordinate?.longitude ?? GeoPoint.defaultPoint.longitude
         print("[Get: MyLocation] latitude = \(userLocate.latitude), longitude = \(userLocate.longitude)")
     }
     
@@ -42,7 +42,7 @@ extension KakaoMapView.KakaoMapCoordinator {
             }
         }
     }
-    
+
     func poiDidTapped(_ param: PoiInteractionEventParam) {
         if let markerData = param.poiItem.userObject as? Shop {
             if let view = controller?.getView("mapview") as? KakaoMap {
@@ -52,7 +52,7 @@ extension KakaoMapView.KakaoMapCoordinator {
                 if recentPoiId != param.poiItem.itemID {
                     self.moveCameraToFocus(MapPoint(longitude: Double(markerData.location.longitude),
                                                     latitude: markerData.location.latitude))
-
+                    
                     let tabMarker = layer?.getPoi(poiID: param.poiItem.itemID)
                     tabMarker?.changeStyle(styleID: "pickPoiIconStyle")
                     
@@ -83,6 +83,7 @@ extension KakaoMapView.KakaoMapCoordinator {
         if let view = controller?.getView("mapview") as? KakaoMap {
             let manager = view.getLabelManager()
             let layer = manager.getLabelLayer(layerID: "PoiLayer")
+            
             
             for markerData in Shop.dummyShopList {
                 let poiOption = PoiOptions(styleID: "shopPoiIconStyle")
@@ -118,7 +119,7 @@ extension KakaoMapView.KakaoMapCoordinator {
             marker?.show()
         }
     }
-   
+    
     func createPoiStyle() {
         if let view = controller?.getView("mapview") as? KakaoMap {
             let manager = view.getLabelManager()
@@ -154,7 +155,8 @@ extension KakaoMapView.KakaoMapCoordinator {
             spriteGui.splitLineColor = UIColor.white
             
             spriteGui.origin = GuiAlignment(vAlign: .top, hAlign: .right)
-            spriteGui.position = CGPoint(x: getSafeAreaTop(), y: mapView.viewRect.height + mapView.viewRect.height/6)
+            spriteGui.position = CGPoint(x: getSafeAreaTop(), 
+                                         y: UIScreen.main.bounds.height + 50)
             
             let gpsButton = GuiButton("GPS Button")
             gpsButton.image = UIImage(named: "location")?
@@ -177,10 +179,11 @@ extension KakaoMapView.KakaoMapCoordinator {
                                                       competitionUnit: .symbolFirst,
                                                       orderType: .rank, zOrder: 5000)
             manager.addLabelLayer(option: markerLayerOption)
+            
             let myLocationLayerOption =  LabelLayerOptions(layerID: "myLocationLayer"
                                                            ,competitionType: .none, 
                                                            competitionUnit: .symbolFirst,
-                                                           orderType: .rank, zOrder: 6000)
+                                                           orderType: .rank, zOrder: 7000)
             manager.addLabelLayer(option: myLocationLayerOption)
         }
     }

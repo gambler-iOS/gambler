@@ -47,6 +47,8 @@ struct Shop: AvailableFirebase, AvailableAggregateReview, Hashable {
 struct GeoPoint: Codable, Hashable {
     var latitude: Double
     var longitude: Double
+    
+    static let defaultPoint = GeoPoint(latitude: 37.402001, longitude: 127.108678)
 }
 
 /// map dummy

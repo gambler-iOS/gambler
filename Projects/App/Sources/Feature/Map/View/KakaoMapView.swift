@@ -15,6 +15,7 @@ struct KakaoMapView: UIViewRepresentable {
     @Binding var userLocate: GeoPoint
     @Binding var isShowingSheet: Bool
     @Binding var selectedShop: Shop
+    @Binding var isLoading: Bool
     
     func makeUIView(context: Self.Context) -> KMViewContainer {
         let view: KMViewContainer = KMViewContainer()
@@ -37,7 +38,7 @@ struct KakaoMapView: UIViewRepresentable {
     
     func makeCoordinator() -> KakaoMapCoordinator {
         return KakaoMapCoordinator(userLocate: $userLocate,
-                                   isShowingSheet: $isShowingSheet, tappedShop: $selectedShop)
+                                   isShowingSheet: $isShowingSheet, tappedShop: $selectedShop, isLoading: $isLoading)
     }
     
     static func dismantleUIView(_ uiView: KMViewContainer, coordinator: KakaoMapCoordinator) {
@@ -49,6 +50,7 @@ struct KakaoMapView: UIViewRepresentable {
         @Binding var isShowingSheet: Bool
         @Binding var selectedShop: Shop
         @State private var isTappingPoi: Bool = false
+        @Binding var isLoading: Bool
         
         var controller: KMController?
         let locationManager = CLLocationManager()
@@ -58,11 +60,13 @@ struct KakaoMapView: UIViewRepresentable {
         var locationPoiID: String = ""
         var recentPoiId: String?
         
-        init (userLocate: Binding<GeoPoint>, isShowingSheet: Binding<Bool>, tappedShop: Binding<Shop>) {
+        init (userLocate: Binding<GeoPoint>, isShowingSheet: Binding<Bool>,
+              tappedShop: Binding<Shop>, isLoading: Binding<Bool>) {
             first = true
             self._userLocate = userLocate
             self._isShowingSheet = isShowingSheet
             self._selectedShop = tappedShop
+            self._isLoading = isLoading
             super.init()
         }
         
@@ -78,6 +82,7 @@ struct KakaoMapView: UIViewRepresentable {
             
             if controller?.addView(mapviewInfo) == Result.OK {
                 settingMap()
+                isLoading  = false
             }
         }
         
