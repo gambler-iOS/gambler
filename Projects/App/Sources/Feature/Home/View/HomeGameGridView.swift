@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct HomeGameGridView: View {
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
     let title: String
     let games: [Game]
     let columns: [GridItem] = Array(repeating:
@@ -18,6 +19,9 @@ struct HomeGameGridView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             SectionHeaderView(title: title)
+            .onTapGesture {
+                appNavigationPath.homeViewPath.append(title)
+            }
             
             LazyVGrid(columns: columns, spacing: 24, content: {
                 ForEach(games) { game in
@@ -33,4 +37,5 @@ struct HomeGameGridView: View {
 
 #Preview {
     HomeGameGridView(title: "인기 게임", games: HomeViewModel().popularGames)
+        .environmentObject(AppNavigationPath())
 }
