@@ -20,10 +20,9 @@ struct AddImageView: View {
                 if selectedPhotosData.count < 4 {
                     PhotosPicker(selection: $selectedItems, maxSelectionCount: 1, matching: .images) {
                         VStack {
-                            Image(systemName: "plus")
+                            Image("Plus")
                                 .resizable()
                                 .frame(width: 24, height: 24)
-                                .foregroundStyle(Color.gray400)
                         }
                         .frame(width: 64, height: 64)
                         .background(Color.gray100)
