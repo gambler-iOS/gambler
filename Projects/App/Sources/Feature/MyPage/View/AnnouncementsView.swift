@@ -9,10 +9,30 @@
 import SwiftUI
 
 struct AnnouncementsView: View {
+    @State var showingWebSheet: Bool = false
+    
     var body: some View {
-        VStack {
-            Text("공지사항 뷰")
+        List(0..<5, id: \.self) { _ in
+            VStack(alignment: .leading, spacing: .zero) {
+                Text(Notice.dummyNotice.noticeTitle)
+                    .font(.body1M)
+                    .padding(.vertical, 8)
+                    .foregroundStyle(Color.gray900)
+                Text("\(Notice.dummyNotice.createdDate)")
+                    .font(.body2M)
+                    .padding(.vertical, 8)
+                    .foregroundStyle(Color.gray400)
+            }
+            .frame(height: 85)
+            .onTapGesture {
+                showingWebSheet = true
+            }
         }
+        .sheet(isPresented: $showingWebSheet) {
+            // webView(url: Notice.dummyNotice.noticeLink)
+        }
+        .listStyle(.plain)
+        .navigationTitle("공지사항")
         .modifier(BackButton())
     }
 }
