@@ -42,12 +42,12 @@ struct TextEditorView: View {
                                 HStack {
                                     EmptyView()
                                         .frame(maxWidth: .infinity, alignment: .leading)
-                                    
+
                                     Button {
                                         isInputActive = false
                                     } label: {
                                         Text("완료")
-                                            .foregroundStyle(Color.white)
+                                            .foregroundStyle(Color.gray700)
                                     }
                                 }
                                 .frame(maxWidth: .infinity, alignment: .trailing)
