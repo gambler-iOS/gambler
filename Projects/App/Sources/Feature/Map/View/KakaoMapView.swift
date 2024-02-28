@@ -11,10 +11,10 @@ import KakaoMapsSDK
 import CoreLocation
 
 struct KakaoMapView: UIViewRepresentable {
-    @Binding var draw: Bool
     @Binding var userLocate: GeoPoint
-    @Binding var isShowingSheet: Bool
     @Binding var selectedShop: Shop
+    @Binding var draw: Bool
+    @Binding var isShowingSheet: Bool
     @Binding var isLoading: Bool
     
     func makeUIView(context: Self.Context) -> KMViewContainer {
@@ -47,13 +47,12 @@ struct KakaoMapView: UIViewRepresentable {
     
     final class KakaoMapCoordinator: NSObject, MapControllerDelegate, GuiEventDelegate, KakaoMapEventDelegate {
         @Binding var userLocate: GeoPoint
-        @Binding var isShowingSheet: Bool
         @Binding var selectedShop: Shop
-        @State private var isTappingPoi: Bool = false
+        @Binding var isShowingSheet: Bool
         @Binding var isLoading: Bool
         
-        var controller: KMController?
         let locationManager = CLLocationManager()
+        var controller: KMController?
         var first: Bool
         var cameraStoppedHandler: DisposableEventHandler?
         var cameraStartHandler: DisposableEventHandler?

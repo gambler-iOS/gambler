@@ -12,18 +12,16 @@ import KakaoMapsSDK
 import CoreLocation
 
 struct MapView: View {
-    
+    @StateObject private var shopStore = ShopStore()
     @State private var draw: Bool = false
-    @State private var userLocate: GeoPoint = GeoPoint.defaultPoint
-    @State private var isShowingSheet: Bool = false
     @State private var isLoading: Bool = true
-    @State private var detent: PresentationDetent = .medium
+    @State private var isShowingSheet: Bool = false
     @State private var selectedShop: Shop = Shop.dummyShop
-    @StateObject var shopStore = ShopStore()
+    @State private var userLocate: GeoPoint = GeoPoint.defaultPoint
     
     var body: some View {
-        KakaoMapView(draw: $draw, userLocate: $userLocate,
-                     isShowingSheet: $isShowingSheet, selectedShop: $selectedShop, isLoading: $isLoading)
+        KakaoMapView(userLocate: $userLocate, selectedShop: $selectedShop,
+                     draw: $draw, isShowingSheet: $isShowingSheet, isLoading: $isLoading)
             .onAppear {
                 self.draw = true
             }
@@ -58,7 +56,7 @@ struct MapView: View {
     private var showMapButton: some View {
         GamblerAsset.showMap.swiftUIImage
             .resizable()
-            .frame(width: 97, height: 44)
+            .frame(width: 97, height: 48)
             .onTapGesture {
                 withAnimation {
                     isShowingSheet = false
@@ -68,6 +66,6 @@ struct MapView: View {
 }
 
 #Preview {
-    KakaoMapView(draw: .constant(true), userLocate: .constant(GeoPoint.defaultPoint),
-                 isShowingSheet: .constant(false), selectedShop: .constant(Shop.dummyShop), isLoading: .constant(true))
+    KakaoMapView(userLocate: .constant(GeoPoint.defaultPoint), selectedShop: .constant(Shop.dummyShop),
+                 draw: .constant(true), isShowingSheet: .constant(false), isLoading: .constant(false))
 }

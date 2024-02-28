@@ -84,5 +84,3 @@ func getSafeAreaTop() -> CGFloat {
     }
     return keyWindow.safeAreaInsets.top
 }
-
-

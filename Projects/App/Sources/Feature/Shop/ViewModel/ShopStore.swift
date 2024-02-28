@@ -24,7 +24,7 @@ final class ShopStore: ObservableObject {
         userAreaShopList = []
         
         for shop in shopList 
-        where boundary > calculateDistanceBetweenPoints(point1: userPoint,
+        where boundary >= calculateDistanceBetweenPoints(point1: userPoint,
                                                         point2: GeoPoint(latitude: shop.location.latitude, 
                                                                          longitude: shop.location.longitude)) {
             userAreaShopList.append(shop)

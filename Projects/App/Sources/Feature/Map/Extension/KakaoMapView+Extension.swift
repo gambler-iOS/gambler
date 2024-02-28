@@ -42,7 +42,7 @@ extension KakaoMapView.KakaoMapCoordinator {
             }
         }
     }
-
+    
     func poiDidTapped(_ param: PoiInteractionEventParam) {
         if let markerData = param.poiItem.userObject as? Shop {
             if let view = controller?.getView("mapview") as? KakaoMap {
@@ -50,26 +50,24 @@ extension KakaoMapView.KakaoMapCoordinator {
                 let layer = manager.getLabelLayer(layerID: "PoiLayer")
                 
                 if recentPoiId != param.poiItem.itemID {
-                    Task {
-                        self.moveCameraToFocus(MapPoint(longitude: Double(markerData.location.longitude),
-                                                        latitude: markerData.location.latitude))
-                        
-                        let tabMarker = layer?.getPoi(poiID: param.poiItem.itemID)
-                        tabMarker?.changeStyle(styleID: "pickPoiIconStyle")
-                        
-                        if let recentMarkerId = recentPoiId {
-                            let recentMarker = layer?.getPoi(poiID: recentMarkerId)
-                            recentMarker?.changeStyle(styleID: "shopPoiIconStyle")
-                        }
-                        
-                        recentPoiId = param.poiItem.itemID
-                        selectedShop = markerData
+                    self.moveCameraToFocus(MapPoint(longitude: Double(markerData.location.longitude),
+                                                    latitude: markerData.location.latitude))
+                    
+                    let tabMarker = layer?.getPoi(poiID: param.poiItem.itemID)
+                    tabMarker?.changeStyle(styleID: "pickPoiIconStyle")
+                    
+                    if let recentMarkerId = recentPoiId {
+                        let recentMarker = layer?.getPoi(poiID: recentMarkerId)
+                        recentMarker?.changeStyle(styleID: "shopPoiIconStyle")
                     }
+                    
+                    recentPoiId = param.poiItem.itemID
+                    selectedShop = markerData
                 }
             }
         }
     }
-
+    
     func guiDidTapped(_ gui: GuiBase, componentName: String) {
         print("Gui: \(gui.name), Component: \(componentName) tapped")
         getUserLocation()
@@ -87,7 +85,6 @@ extension KakaoMapView.KakaoMapCoordinator {
             let manager = view.getLabelManager()
             let layer = manager.getLabelLayer(layerID: "PoiLayer")
             
-            
             for markerData in Shop.dummyShopList {
                 let poiOption = PoiOptions(styleID: "shopPoiIconStyle")
                 poiOption.rank = 0
@@ -98,7 +95,8 @@ extension KakaoMapView.KakaoMapCoordinator {
                                            latitude: markerData.location.latitude)
                 let marker = layer?.addPoi(option: poiOption, at: markerPoint)
                 marker?.userObject = markerData as AnyObject
-                marker?.addPoiTappedEventHandler(target: self, handler: KakaoMapView.KakaoMapCoordinator.poiDidTapped)
+                _ = marker?.addPoiTappedEventHandler(target: self,
+                                                         handler: KakaoMapView.KakaoMapCoordinator.poiDidTapped)
                 print("[Action: create Poi] markerData = \(markerData)")
                 marker?.show()
             }
@@ -132,7 +130,7 @@ extension KakaoMapView.KakaoMapCoordinator {
             let pickPoiIconStyle = PoiIconStyle(symbol: UIImage(named: "markPressed")?
                 .resized(withSize: CGSize(width: 60, height: 84)))
             let userLocationPoiIconStyle = PoiIconStyle(symbol: UIImage(named: "myLocation")?
-                .resized(withSize: CGSize(width: 150, height: 150)))
+                .resized(withSize: CGSize(width: 200, height: 200)))
             let shopPoiStyle = PoiStyle(styleID: "shopPoiIconStyle", styles: [
                 PerLevelPoiStyle(iconStyle: shopPoiIconStyle, level: 1)
             ])
@@ -181,13 +179,13 @@ extension KakaoMapView.KakaoMapCoordinator {
                                                       ,competitionType: .none,
                                                       competitionUnit: .symbolFirst,
                                                       orderType: .rank, zOrder: 5000)
-            manager.addLabelLayer(option: markerLayerOption)
+            _ = manager.addLabelLayer(option: markerLayerOption)
             
             let myLocationLayerOption =  LabelLayerOptions(layerID: "myLocationLayer"
                                                            ,competitionType: .none, 
                                                            competitionUnit: .symbolFirst,
                                                            orderType: .rank, zOrder: 7000)
-            manager.addLabelLayer(option: myLocationLayerOption)
+            _ = manager.addLabelLayer(option: myLocationLayerOption)
         }
     }
 }
