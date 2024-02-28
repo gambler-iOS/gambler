@@ -12,12 +12,13 @@ struct User: AvailableFirebase {
     var id: String
     var nickname: String
     var profileImageURL: String
-    var apnsToken: String
+    var apnsToken: String?
     let createdDate: Date
-    var likeGameId: [String]
-    var likeShopId: [String]
+    var likeGameId: [String]?
+    var likeShopId: [String]?
     var myReviewsCount: Int
     var myLikesCount: Int
+    var loginPlatform: LoginPlatform
     
     static let dummyUser: User = User(
         id: UUID().uuidString,
@@ -28,6 +29,24 @@ struct User: AvailableFirebase {
         likeGameId: [],
         likeShopId: [],
         myReviewsCount: 12,
-        myLikesCount: 5
+        myLikesCount: 5, 
+        loginPlatform: .kakakotalk
     )
+}
+
+enum LoginPlatform: Codable {
+    case kakakotalk
+    case apple
+    case google
+    
+    var description: String {
+        switch self {
+        case .kakakotalk:
+            return "카카오톡"
+        case .apple:
+            return "애플"
+        case .google:
+            return "구글"
+        }
+    }
 }
