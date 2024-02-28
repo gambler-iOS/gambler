@@ -39,7 +39,6 @@ struct RatingView: View {
     private func starType(_ index: Int) -> String {
         let roundedRating = Int(ceil(rating))
         
-        #warning("halfStar 이미지 수정 후 Asset에 다시 올릴 예정")
         if index <= roundedRating {
             if index <= Int(rating) {
                 return "star"
