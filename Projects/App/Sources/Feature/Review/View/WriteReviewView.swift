@@ -65,51 +65,9 @@ struct WriteReviewView: View {
                 }
             }
         }
-//        VStack(spacing: .zero) {
-//            headerView(reviewableItem: reviewableItem)
-//                .padding(.bottom, 24)
-//            
-//            VStack(spacing: 16) {
-//                Text("소중한 후기를 들려주세요")
-//                    .font(.subHead2B)
-//                
-//                RatingView(rating: $rating, count: .constant(5))
-//                TextEditorView(text: $reviewContent, placeholder: placeholder)
-//            }
-//            
-//            AddImageView(topPadding: .constant(16))
-//            Spacer()
-//            CTAButton(disabled: $disabledButton, title: "완료") {
-//                print("완료 버튼 눌림")
-//                // 해당 리뷰를 파베에 올림
-//            }
-//            .padding(.bottom, 24)
-//            
-//        }
-//        .ignoresSafeArea(.keyboard)
-//        .padding(.horizontal, 24)
-////        .ignoresSafeArea(.keyboard)  // keyboard avoidance 기능을 Disable
-//        .onReceive([self.rating].publisher.first()) { _ in
-//            self.updateDisabledButton()
-//        }
-//        .onReceive([self.reviewContent].publisher.first()) { _ in
-//            self.updateDisabledButton()
-//        }
-//        .navigationBarBackButtonHidden(true)
-//        .toolbar {
-//            ToolbarItem(placement: .navigationBarLeading) {
-//                Button {
-//                    dismiss()
-//                } label: {
-//                    Image("closed")
-//                        .resizable()
-//                        .scaledToFit()
-//                        .frame(width: 24, height: 24)
-//                }
-//            }
-//        }
-#warning("텍스트 에디터의 reviewContent가 바뀔 때마다 메서드를 호출하는 것은 안좋아 보임. 디바운싱이나 스로틀링을 적용하면 좋을 듯")
     }
+    
+#warning("텍스트 에디터의 reviewContent가 바뀔 때마다 메서드를 호출하는 것은 안좋아 보임. 디바운싱이나 스로틀링을 적용하면 좋을 듯 (onReceive)")
     
     @ViewBuilder
     private func headerView(reviewableItem: AvailableAggregateReview) -> some View {
