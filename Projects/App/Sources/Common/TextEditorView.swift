@@ -9,16 +9,12 @@
 import SwiftUI
 
 struct TextEditorView: View {
-    @FocusState private var focusedField: Field?
+    @FocusState var isInputActive: Bool
+    
     @Binding var text: String
     let placeholder: String
     let maxLength: Int = 500
     let height: CGFloat = 200
-    
-    // 포커스필드를 위한 열거형
-    enum Field: Hashable {
-        case textEditor
-    }
     
     var body: some View {
         GeometryReader { proxy in
@@ -31,7 +27,7 @@ struct TextEditorView: View {
                             .padding(16)
                             .zIndex(1)
                             .onTapGesture {
-                                self.focusedField = .textEditor
+                                isInputActive ? (isInputActive = false) : (isInputActive = true)
                             }
                     }
                     
@@ -41,8 +37,24 @@ struct TextEditorView: View {
                         .lineSpacing(8)
                         .frame(height: (proxy.size.height - 48) * 0.9)
                         .padding(EdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10))
+                        .toolbar {
+                            ToolbarItem(placement: .keyboard) {
+                                HStack {
+                                    EmptyView()
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    
+                                    Button {
+                                        isInputActive = false
+                                    } label: {
+                                        Text("완료")
+                                            .foregroundStyle(Color.white)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                            }
+                        }
                         .disableAutocorrection(true)
-                        .focused($focusedField, equals: .textEditor)
+                        .focused($isInputActive)
                 }
                 // 글자 수 제한
                 HStack {
