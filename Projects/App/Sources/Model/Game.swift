@@ -27,7 +27,8 @@ struct Game: AvailableFirebase, AvailableAggregateReview, Hashable {
         id: UUID().uuidString,
         gameName: "아임 더 보스",
         gameImage: "https://weefun.co.kr/shopimages/weefun/007009000461.jpg?1596805186",
-        descriptionImage: ["image"],
+        descriptionImage: [
+            "https://boardm5.godohosting.com/goods/2024/02/dt01.png"],
         gameLink: "link",
         createdDate: Date(),
         reviewCount: 5,
