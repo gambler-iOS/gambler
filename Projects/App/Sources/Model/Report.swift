@@ -8,11 +8,11 @@
 
 import Foundation
 
-struct Report: AvailableFirebase {
-    var id: String
-    let reviewId: String
-    let userId: String
-    let reportTitle: String
-    let reportContent: String
-    let reportCategory: String
-}
+//struct Report: AvailableFirebase {
+//    var id: String
+//    let reviewId: String
+//    let userId: String
+//    let reportTitle: String
+//    let reportContent: String
+//    let reportCategory: String
+//}

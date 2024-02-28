@@ -12,4 +12,6 @@ struct EventBanner: AvailableFirebase {
     var id: String
     let bannerImage: String
     let linkURL: String
+    #warning("광고 문구 추가하기")
+//    let Catchphrase: String
 }

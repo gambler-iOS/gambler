@@ -16,6 +16,9 @@ struct Game: AvailableFirebase, AvailableAggregateReview, Hashable {
     var id: String
     let gameName: String
     let gameImage: String
+    #warning("게임설명 나중에 추가하기")
+    // var description: String  게임설명 나중에 추가하기
+    #warning("옵셔널로 바꾸기")
     var descriptionImage: [String]
     var gameLink: String
     let createdDate: Date
@@ -50,6 +53,7 @@ struct GameIntroduction: Codable, Hashable {
     let genre: Genre
 }
 
+// bgg category 데이터 매핑
 enum Genre: String, Codable {
     case fantasy
 }
