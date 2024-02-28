@@ -8,10 +8,24 @@
 
 import SwiftUI
 import CoreLocation
+import SwiftData
 
 @main
 struct GamblerApp: App {
-   
+
+    var sharedModelContainer: ModelContainer = {
+        let schema = Schema([
+            SearchKeyword.self
+        ])
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+
+        do {
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+        } catch {
+            fatalError("Could not create ModelContainer: \(error)")
+        }
+    }()
+    
     var body: some Scene {
         WindowGroup {
             TabBarView()
@@ -22,6 +36,7 @@ struct GamblerApp: App {
                 }
 //            MainView()
         }
+        .modelContainer(sharedModelContainer)
     }
     
     func startTask() async {

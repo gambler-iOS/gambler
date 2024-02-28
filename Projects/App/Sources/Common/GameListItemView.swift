@@ -12,10 +12,10 @@ import Kingfisher
 struct GameListItemView: View {
     
     let game: Game
-    let likeShopIdArray: [String]
+    let likeGameIdArray: [String]
     
     var isLike: Bool {
-        likeShopIdArray.contains { id in
+        likeGameIdArray.contains { id in
             id == game.id
         }
     }
@@ -51,15 +51,13 @@ struct GameListItemView: View {
 
                     ReviewRatingCellView(rating: game.reviewRatingAverage)
                     
-                    HStack {
+                    TagLayout {
                         ChipView(label: "👥 3 - 10명", size: .small)
                         ChipView(label: "🕛 10분 내외", size: .small)
                         ChipView(label: "📖 마피아", size: .small)
-                    }
-                    HStack {
                         ChipView(label: "🟡 난이도 하", size: .small)
                     }
-                    Spacer()
+//                    Spacer()
                 }
                 .foregroundStyle(.black)
             }
@@ -69,5 +67,5 @@ struct GameListItemView: View {
 }
 
 #Preview {
-    GameListItemView(game: Game.dummyGame, likeShopIdArray: [])
+    GameListItemView(game: Game.dummyGame, likeGameIdArray: [])
 }

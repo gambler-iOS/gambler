@@ -11,6 +11,13 @@ import SwiftUI
 struct ReviewRatingCellView: View {
     let rating: Double
     var textColor: Color = .primaryDefault
+    private var formattedReviewRating: String {
+        if rating == 0 {
+            return "0"
+        } else {
+            return String(format: "%.1f", rating)
+        }
+    }
     
     var body: some View {
         HStack(spacing: 4) {
@@ -20,7 +27,7 @@ struct ReviewRatingCellView: View {
                     .renderingMode(.template)
                     .frame(width: 18, height: 18)
                 
-                Text(String(format: "%.1f", rating))
+                Text("\(formattedReviewRating)")
                     .foregroundStyle(textColor)
             }
             .foregroundStyle(Color.primaryDefault)
@@ -30,5 +37,5 @@ struct ReviewRatingCellView: View {
 }
 
 #Preview {
-    ReviewRatingCellView(rating: 3.9)
+    ReviewRatingCellView(rating: 4.2)
 }

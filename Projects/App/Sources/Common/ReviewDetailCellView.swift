@@ -9,12 +9,13 @@
 import SwiftUI
 import Kingfisher
 
-struct ReviewDetailView: View {
+struct ReviewDetailCellView: View {
     
     let reviewData: Review
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
+            #warning("id를 이름으로 바꿔줘야 함")
             Text(reviewData.id)
                 .font(.body1M)
                 .foregroundStyle(Color.gray700)
@@ -56,5 +57,5 @@ struct ReviewDetailView: View {
 }
 
 #Preview {
-    ReviewDetailView(reviewData: Review.dummyReview)
+    ReviewDetailCellView(reviewData: Review.dummyGameReview)
 }

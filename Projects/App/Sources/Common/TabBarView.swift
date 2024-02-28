@@ -10,14 +10,22 @@ import SwiftUI
 
 struct TabBarView: View {
     @State private var selectedTab = 0
+    @StateObject private var myPageViewModel = MyPageViewModel()
+    @StateObject private var reviewViewModel = ReviewViewModel()
+    @StateObject private var appNavigationPath = AppNavigationPath()
     
     var body: some View {
         TabView(selection: $selectedTab) {
             
-            Text("HomeView")
+            HomeView()
+                .environmentObject(HomeViewModel())
+                .environmentObject(appNavigationPath)
+                .environmentObject(GameListViewModel())
+                .environmentObject(GameDetailViewModel())
                 .tabItem {
                     HStack {
-                        (selectedTab == 0 ? GamblerAsset.tabHomeSelected.swiftUIImage : GamblerAsset.tabHome.swiftUIImage)
+                        (selectedTab == 0 ?
+                         GamblerAsset.tabHomeSelected.swiftUIImage : GamblerAsset.tabHome.swiftUIImage)
                         Text("홈")
                     }
                 }
@@ -26,26 +34,31 @@ struct TabBarView: View {
             Text("MapView")
                 .tabItem {
                     HStack {
-                        (selectedTab == 1 ? GamblerAsset.tabMapSelected.swiftUIImage : GamblerAsset.tabMap.swiftUIImage)
+                        (selectedTab == 1 ?
+                         GamblerAsset.tabMapSelected.swiftUIImage : GamblerAsset.tabMap.swiftUIImage)
                         Text("내 주변")
                         
                     }
                 }
                 .tag(1)
             
-            Text("SearchView")
+            SearchMainView()
                 .tabItem {
                     HStack {
-                        (selectedTab == 2 ? GamblerAsset.tabSearchSelected.swiftUIImage : GamblerAsset.tabSearch.swiftUIImage)
+                        (selectedTab == 2 ?
+                         GamblerAsset.tabSearchSelected.swiftUIImage : GamblerAsset.tabSearch.swiftUIImage)
                         Text("검색")
                     }
                 }
                 .tag(2)
             
-            Text("MyProfileView")
+            MyPageView()
+                .environmentObject(myPageViewModel)
+                .environmentObject(reviewViewModel)
                 .tabItem {
                     HStack {
-                        (selectedTab == 3 ? GamblerAsset.tabProfileSelected.swiftUIImage : GamblerAsset.tabProfile.swiftUIImage)
+                        (selectedTab == 3 ?
+                         GamblerAsset.tabProfileSelected.swiftUIImage : GamblerAsset.tabProfile.swiftUIImage)
                         Text("마이")
                     }
                 }

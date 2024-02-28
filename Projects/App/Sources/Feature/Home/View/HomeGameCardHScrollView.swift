@@ -9,24 +9,17 @@
 import SwiftUI
 
 struct HomeGameCardHScrollView: View {
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
     let title: String
     var games: [Game]
     
     var body: some View {
         VStack(spacing: 24) {
-            // TODO: SectionHeaderView 에서 패딩 제외해도 되는지 물어보고 사용하기
-            HStack {
-                Text(title)
-                    .font(.subHead1B)
-                    .foregroundStyle(Color.gray700)
-                Spacer()
-                GamblerAsset.arrowRight.swiftUIImage
-                    .resizable()
-                    .renderingMode(.template)
-                    .frame(width: 24, height: 24)
-                    .foregroundStyle(Color.gray400)
-            }
-            .padding(.trailing, 24)
+            SectionHeaderView(title: title)
+                .onTapGesture {
+                    appNavigationPath.homeViewPath.append(title)
+                }
+                .padding(.trailing, 24)
             
             ScrollView(.horizontal) {
                 HStack(spacing: 16) {
@@ -44,4 +37,5 @@ struct HomeGameCardHScrollView: View {
 
 #Preview {
     HomeGameCardHScrollView(title: "흥미진진 신규게임", games: HomeViewModel().newGames)
+        .environmentObject(AppNavigationPath())
 }
