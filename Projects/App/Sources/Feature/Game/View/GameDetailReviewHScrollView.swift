@@ -8,16 +8,25 @@
 
 import SwiftUI
 
-struct GameDetailReviewHScorllView: View {
+struct GameDetailReviewHScrollView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @EnvironmentObject private var gameDetailViewModel: GameDetailViewModel
     private var game: Game {
         gameDetailViewModel.game
     }
     
+    private var formattedReviewRatingAverage: String {
+        if game.reviewRatingAverage == 0 {
+            return "0"
+        } else {
+            return String(format: "%.1f", game.reviewRatingAverage)
+        }
+    }
+    
     var body: some View {
         VStack(spacing: 24) {
-            DetailSectionHeaderView(title: "리뷰", reviewInfo: "\(game.reviewRatingAverage)(\(game.reviewCount))") {
+            DetailSectionHeaderView(title: "리뷰",
+                                    reviewInfo: "\(formattedReviewRatingAverage)(\(game.reviewCount))") {
                 appNavigationPath.homeViewPath.append("리뷰")
             }
             .padding(.trailing, 24)
@@ -36,7 +45,7 @@ struct GameDetailReviewHScorllView: View {
 }
 
 #Preview {
-    GameDetailReviewHScorllView()
+    GameDetailReviewHScrollView()
         .environmentObject(AppNavigationPath())
         .environmentObject(GameDetailViewModel())
 }

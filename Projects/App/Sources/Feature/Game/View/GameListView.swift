@@ -11,7 +11,6 @@ import SwiftUI
 struct GameListView: View {
     @EnvironmentObject private var gameListViewModel: GameListViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
-//    @Environment(\.dismiss) private var dismiss
     let title: String
     let columns: [GridItem] = Array(repeating:
             .init(.flexible(minimum: 124, maximum: 200),
@@ -30,6 +29,7 @@ struct GameListView: View {
                             }
                         }
                     })
+                    .padding(.top, 24)
                 } else {
                     VStack(spacing: 24) {
                         ForEach(gameListViewModel.games) { game in
@@ -41,7 +41,7 @@ struct GameListView: View {
                             }
                         }
                     }
-                    
+                    .padding(.top, 24)
                 }
             }
         }
@@ -56,7 +56,6 @@ struct GameListView: View {
                 .resizable()
                 .frame(width: 24, height: 24)
                 .onTapGesture {
-//                    dismiss()
                     appNavigationPath.homeViewPath.removeLast()
                 }
             

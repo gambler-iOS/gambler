@@ -71,7 +71,7 @@ struct GameDetailView: View {
                 BorderView()
                 
                 /// 리뷰 스크롤뷰
-                GameDetailReviewHScorllView()
+                GameDetailReviewHScrollView()
                 
                 BorderView()
                 
@@ -104,31 +104,6 @@ struct GameDetailView: View {
             self.offsetY = offset
         }
         return EmptyView()
-    }
-
-    @ViewBuilder
-    func headerView(title: String, reviewInfo: String? = nil, navigationPath: @escaping () -> Void) -> some View {
-        HStack(spacing: .zero) {
-            Text(title)
-                .font(.subHead1B)
-                .foregroundStyle(.black)
-            
-            if let reviewInfo {
-                Text(reviewInfo)
-                    .font(.body1B)
-                    .foregroundStyle(.black)
-                    .padding(.leading, 8)
-            }
-            
-            Spacer()
-            
-            GamblerAsset.arrowRight.swiftUIImage
-                .resizable()
-                .frame(width: 24, height: 24)
-                .onTapGesture {
-                    navigationPath()
-                }
-        }
     }
 }
 
