@@ -22,8 +22,8 @@ extension KakaoMapView.KakaoMapCoordinator {
     }
     
     func newPositionUserPoi() {
-        if let view = controller?.getView("mapview") as? KakaoMap {
-            let manager = view.getLabelManager()
+        if let mapView = controller?.getView("mapview") as? KakaoMap {
+            let manager = mapView.getLabelManager()
             let layer = manager.getLabelLayer(layerID: "myLocationLayer")
             let marker = layer?.getPoi(poiID: locationPoiID)
             marker?.position =  MapPoint(longitude: userLocate.longitude, latitude: userLocate.latitude)
@@ -31,7 +31,7 @@ extension KakaoMapView.KakaoMapCoordinator {
     }
     
     func moveCameraToFocus(_ point: MapPoint) {
-        if let mapView: KakaoMap = controller?.getView("mapview") as? KakaoMap {
+        if let mapView = controller?.getView("mapview") as? KakaoMap {
             DispatchQueue.main.async {
                 let cameraUpdate: CameraUpdate = CameraUpdate
                     .make(target: MapPoint(from: point), zoomLevel: mapView.zoomLevel, mapView: mapView)
@@ -45,8 +45,8 @@ extension KakaoMapView.KakaoMapCoordinator {
     
     func poiDidTapped(_ param: PoiInteractionEventParam) {
         if let markerData = param.poiItem.userObject as? Shop {
-            if let view = controller?.getView("mapview") as? KakaoMap {
-                let manager = view.getLabelManager()
+            if let mapView = controller?.getView("mapview") as? KakaoMap {
+                let manager = mapView.getLabelManager()
                 let layer = manager.getLabelLayer(layerID: "PoiLayer")
                 
                 if recentPoiId != param.poiItem.itemID {
@@ -81,8 +81,8 @@ extension KakaoMapView.KakaoMapCoordinator {
 extension KakaoMapView.KakaoMapCoordinator {
     
     func createPoisOnMap() {
-        if let view = controller?.getView("mapview") as? KakaoMap {
-            let manager = view.getLabelManager()
+        if let mapView = controller?.getView("mapview") as? KakaoMap {
+            let manager = mapView.getLabelManager()
             let layer = manager.getLabelLayer(layerID: "PoiLayer")
             
             for markerData in Shop.dummyShopList {
@@ -104,8 +104,8 @@ extension KakaoMapView.KakaoMapCoordinator {
     }
     
     func createUserLocationPoi() {
-        if let view = controller?.getView("mapview") as? KakaoMap {
-            let manager = view.getLabelManager()
+        if let mapView = controller?.getView("mapview") as? KakaoMap {
+            let manager = mapView.getLabelManager()
             let layer = manager.getLabelLayer(layerID: "myLocationLayer")
             let poiOption = PoiOptions(styleID: "UserLocationStyle")
             
@@ -122,8 +122,8 @@ extension KakaoMapView.KakaoMapCoordinator {
     }
     
     func createPoiStyle() {
-        if let view = controller?.getView("mapview") as? KakaoMap {
-            let manager = view.getLabelManager()
+        if let mapView = controller?.getView("mapview") as? KakaoMap {
+            let manager = mapView.getLabelManager()
             
             let shopPoiIconStyle = PoiIconStyle(symbol: UIImage(named: "markDefault")?
                 .resized(withSize: CGSize(width: 45, height: 63)))
@@ -172,8 +172,8 @@ extension KakaoMapView.KakaoMapCoordinator {
     }
     
     func createLabelLayer() {
-        if let view = controller?.getView("mapview") as? KakaoMap {
-            let manager = view.getLabelManager()
+        if let mapView = controller?.getView("mapview") as? KakaoMap {
+            let manager = mapView.getLabelManager()
             
             let markerLayerOption = LabelLayerOptions(layerID: "PoiLayer"
                                                       ,competitionType: .none,

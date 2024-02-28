@@ -78,11 +78,12 @@ struct KakaoMapView: UIViewRepresentable {
             let defaultPosition: MapPoint = MapPoint(longitude: userLocate.longitude, latitude: userLocate.latitude)
             let mapviewInfo: MapviewInfo =
             MapviewInfo(viewName: "mapview", viewInfoName: "map", defaultPosition: defaultPosition)
-            
-            if controller?.addView(mapviewInfo) == Result.OK {
-                settingMap()
-                isLoading  = false
-            }
+            controller?.addView(mapviewInfo)
+        }
+        
+        func addViewSucceeded(_ viewName: String, viewInfoName: String) {
+            settingMap()
+            isLoading  = false
         }
         
         func settingMap() {
@@ -115,17 +116,18 @@ struct KakaoMapView: UIViewRepresentable {
         }
         
         func containerDidResized(_ size: CGSize) {
-            let mapView: KakaoMap? = controller?.getView("mapview") as? KakaoMap
-            mapView?.viewRect = CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: size)
-            if first {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                     let cameraUpdate: CameraUpdate = CameraUpdate
-                        .make(target: MapPoint(longitude: self.userLocate.longitude, 
-                                               latitude: self.userLocate.latitude),
-                                                  zoomLevel: 15, mapView: mapView!)
-                    mapView?.moveCamera(cameraUpdate)
+            if let mapView = controller?.getView("mapview") as? KakaoMap {
+                mapView.viewRect = CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: size)
+                if first {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        let cameraUpdate: CameraUpdate = CameraUpdate
+                            .make(target: MapPoint(longitude: self.userLocate.longitude,
+                                                   latitude: self.userLocate.latitude),
+                                  zoomLevel: 15, mapView: mapView)
+                        mapView.moveCamera(cameraUpdate)
+                    }
+                    first = false
                 }
-                first = false
             }
         }
     }
