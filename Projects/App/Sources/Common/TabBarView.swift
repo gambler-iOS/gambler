@@ -11,6 +11,7 @@ import SwiftUI
 struct TabBarView: View {
     @State private var selectedTab = 0
     @StateObject private var myPageViewModel = MyPageViewModel()
+    @StateObject private var reviewViewModel = ReviewViewModel()
     @StateObject private var appNavigationPath = AppNavigationPath()
     
     var body: some View {
@@ -53,6 +54,7 @@ struct TabBarView: View {
             
             MyPageView()
                 .environmentObject(myPageViewModel)
+                .environmentObject(reviewViewModel)
                 .tabItem {
                     HStack {
                         (selectedTab == 3 ?

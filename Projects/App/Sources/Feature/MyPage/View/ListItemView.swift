@@ -10,7 +10,8 @@ import SwiftUI
 
 struct ListItemView: View {
     @EnvironmentObject var myPageViewModel: MyPageViewModel
-
+    @EnvironmentObject var reviewViewModel: ReviewViewModel
+    
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 0) {
@@ -18,7 +19,9 @@ struct ListItemView: View {
                     .font(.subHead2B)
                 
                 Group {
-                    listBodyView(title: "프로필 수정", destination: ProfileEditView())
+//                    listBodyView(title: "프로필 수정", destination: ProfileEditView())
+                    listBodyView(title: "프로필 수정", destination: ReviewDetailView( reviewableItem: Shop.dummyShop)
+                        .environmentObject(reviewViewModel))
                     
                     listBodyView(title: "알림 설정", destination: NotificationSettingView())
                     
@@ -77,4 +80,5 @@ struct ListItemView: View {
 #Preview {
     ListItemView()
         .environmentObject(MyPageViewModel())
+        .environmentObject(ReviewViewModel())
 }
