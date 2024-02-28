@@ -14,14 +14,11 @@ struct User: AvailableFirebase {
     var profileImageURL: String
     var apnsToken: String?
     let createdDate: Date
-    #warning("옵셔널로 바꾸기")
-    var likeGameId: [String]
-    #warning("옵셔널로 바꾸기")
-    var likeShopId: [String]
+    var likeGameId: [String]?
+    var likeShopId: [String]?
     var myReviewsCount: Int
     var myLikesCount: Int
-    #warning("enum 처리 추가")
-    //var social: Social
+    var loginPlatform: LoginPlatform
     
     static let dummyUser: User = User(
         id: UUID().uuidString,
@@ -32,6 +29,24 @@ struct User: AvailableFirebase {
         likeGameId: [],
         likeShopId: [],
         myReviewsCount: 12,
-        myLikesCount: 5
+        myLikesCount: 5, 
+        loginPlatform: .kakakotalk
     )
+}
+
+enum LoginPlatform: Codable {
+    case kakakotalk
+    case apple
+    case google
+    
+    var description: String {
+        switch self {
+        case .kakakotalk:
+            return "카카오톡"
+        case .apple:
+            return "애플"
+        case .google:
+            return "구글"
+        }
+    }
 }

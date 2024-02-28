@@ -93,8 +93,11 @@ final class MyPageViewModel: ObservableObject {
         return "10"
     }
     
-    private func getNumberOfLikes() -> String{
-        let numberOfReviewInt = user.likeGameId.count + user.likeShopId.count
+    private func getNumberOfLikes() -> String {
+        let likeGames = user.likeGameId ?? []
+        let likeShops = user.likeShopId ?? []
+        
+        let numberOfReviewInt = likeGames.count + likeShops.count
         return "\(numberOfReviewInt)"
     }
 }
