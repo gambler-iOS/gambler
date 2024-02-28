@@ -26,7 +26,7 @@ struct MapView: View {
                 self.draw = true
             }
             .onDisappear(perform: {
-                self.draw = false
+               // self.draw = false
                 isLoading = false
             })
             .overlay {

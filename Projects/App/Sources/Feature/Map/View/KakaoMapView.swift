@@ -32,8 +32,8 @@ struct KakaoMapView: UIViewRepresentable {
                 context.coordinator.controller?.startRendering()}
         } else {
             context.coordinator.controller?.stopRendering()
-            context.coordinator.controller?.stopEngine()
         }
+        // context.coordinator.controller?.stopEngine()
     }
     
     func makeCoordinator() -> KakaoMapCoordinator {
