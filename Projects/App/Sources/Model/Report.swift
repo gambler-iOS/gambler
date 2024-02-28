@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// 추후에 앱 심사 시 사용할 수도 있어서 주석 처리 함
 //struct Report: AvailableFirebase {
 //    var id: String
 //    let reviewId: String

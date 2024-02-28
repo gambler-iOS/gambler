@@ -41,4 +41,3 @@ enum ComplainCategory: CaseIterable, Codable {
         }
     }
 }
-

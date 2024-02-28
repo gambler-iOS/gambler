@@ -21,6 +21,7 @@ final class GameListViewModel: ObservableObject {
         "https://weefun.co.kr/shopimages/weefun/007009000461.jpg?1596805186"
         for num in 1...5 {
             games.append(Game(id: UUID().uuidString, gameName: "game\(num)", gameImage: gameImageUrl,
+                              descriptionContent: "게임 상세 설명",
                               descriptionImage: ["https://boardm5.godohosting.com/goods/2024/02/dt01.png"],
                               gameLink: "link\(num)", createdDate: Date(),
                               reviewCount: 1 + num, reviewRatingAverage: 3.5 + (0.1 * Double(num)),

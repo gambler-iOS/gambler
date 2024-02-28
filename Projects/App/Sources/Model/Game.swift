@@ -16,10 +16,8 @@ struct Game: AvailableFirebase, AvailableAggregateReview, Hashable {
     var id: String
     let gameName: String
     let gameImage: String
-    #warning("게임설명 나중에 추가하기")
-    // var description: String  게임설명 나중에 추가하기
-    #warning("옵셔널로 바꾸기")
-    var descriptionImage: [String]
+    var descriptionContent: String
+    var descriptionImage: [String]?
     var gameLink: String
     let createdDate: Date
     var reviewCount: Int
@@ -30,6 +28,7 @@ struct Game: AvailableFirebase, AvailableAggregateReview, Hashable {
         id: UUID().uuidString,
         gameName: "아임 더 보스",
         gameImage: "https://weefun.co.kr/shopimages/weefun/007009000461.jpg?1596805186",
+        descriptionContent: "게임 상세 설명",
         descriptionImage: [
             "https://boardm5.godohosting.com/goods/2024/02/dt01.png"],
         gameLink: "link",
