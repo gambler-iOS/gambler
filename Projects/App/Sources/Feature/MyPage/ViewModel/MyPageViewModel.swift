@@ -72,6 +72,7 @@ final class MyPageViewModel: ObservableObject {
                 id: UUID().uuidString,
                 gameName: "아임 더 보스",
                 gameImage: "https://weefun.co.kr/shopimages/weefun/007009000461.jpg?1596805186",
+                descriptionContent: "게임 상세 설명",
                 descriptionImage: ["image"],
                 gameLink: "link",
                 createdDate: Date(),
