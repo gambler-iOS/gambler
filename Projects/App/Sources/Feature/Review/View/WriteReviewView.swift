@@ -45,25 +45,26 @@ struct WriteReviewView: View {
                 
             }
             .padding(.horizontal, 24)
-            .onReceive([self.rating].publisher.first()) { _ in
-                self.updateDisabledButton()
-            }
-            .onReceive([self.reviewContent].publisher.first()) { _ in
-                self.updateDisabledButton()
-            }
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
                         dismiss()
                     } label: {
-                        Image("closed")
+                        Image("Closed")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 24, height: 24)
                     }
                 }
             }
+            .onReceive([self.rating].publisher.first()) { _ in
+                self.updateDisabledButton()
+            }
+            .onReceive([self.reviewContent].publisher.first()) { _ in
+                self.updateDisabledButton()
+            }
+            
         }
     }
     
