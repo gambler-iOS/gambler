@@ -41,6 +41,7 @@ struct TextEditorView: View {
                         .lineSpacing(8)
                         .frame(height: (proxy.size.height - 48) * 0.9)
                         .padding(EdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10))
+                        .disableAutocorrection(true)
                         .focused($focusedField, equals: .textEditor)
                 }
                 // 글자 수 제한
@@ -53,6 +54,7 @@ struct TextEditorView: View {
                 .frame(height: (proxy.size.height - 48) * 0.1)
                 .padding(16)
             }
+            .onAppear(perform: UIApplication.shared.hideKeyboard)
         }
         .frame(height: height)
         .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray300, lineWidth: 1.0))
@@ -60,9 +62,6 @@ struct TextEditorView: View {
             if newValue.count > maxLength {
                 self.text = String(newValue.prefix(maxLength))
             }
-        }
-        .onTapGesture {
-            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
     }
 }
