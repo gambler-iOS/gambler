@@ -1,32 +1,32 @@
 //
-//  HomeGameCardHScrollView.swift
+//  GameSimilarHScrollView.swift
 //  gambler
 //
-//  Created by Hyo Myeong Ahn on 2/18/24.
+//  Created by Hyo Myeong Ahn on 2/25/24.
 //  Copyright © 2024 gambler. All rights reserved.
 //
 
 import SwiftUI
 
-struct HomeGameCardHScrollView: View {
+struct GameSimilarHScrollView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     let title: String
-    var games: [Game]
+    let games: [Game]
     
     var body: some View {
         VStack(spacing: 24) {
-            SectionHeaderView(title: title)
-                .onTapGesture {
-                    appNavigationPath.homeViewPath.append(title)
-                }
-                .padding(.trailing, 24)
+            DetailSectionHeaderView(title: title) {
+                appNavigationPath.homeViewPath.append(title)
+            }
+            .padding(.trailing, 24)
             
             ScrollView(.horizontal) {
                 HStack(spacing: 16) {
                     ForEach(games) { game in
                         NavigationLink(value: game) {
-                            CardItemView(game: game)
+                            GameMiniGridItemView(game: game)
                         }
+                        .focusEffectDisabled()
                     }
                 }
             }
@@ -36,6 +36,6 @@ struct HomeGameCardHScrollView: View {
 }
 
 #Preview {
-    HomeGameCardHScrollView(title: "흥미진진 신규게임", games: HomeViewModel().newGames)
+    GameSimilarHScrollView(title: "비슷한 장르 게임", games: [])
         .environmentObject(AppNavigationPath())
 }
