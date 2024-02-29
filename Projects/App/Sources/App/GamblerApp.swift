@@ -9,10 +9,17 @@
 import SwiftUI
 import CoreLocation
 import SwiftData
+import KakaoMapsSDK
 
 @main
 struct GamblerApp: App {
-
+    
+    init() {
+        let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_APP_KEY"] ?? ""
+        print(#fileID, #function, #line, "- kakaoAppKey: \(kakaoAppKey) ")
+        SDKInitializer.InitSDK(appKey: "\(kakaoAppKey)")
+    }
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             SearchKeyword.self
