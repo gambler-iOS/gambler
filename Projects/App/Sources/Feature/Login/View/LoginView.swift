@@ -9,6 +9,8 @@
 import SwiftUI
 
 struct LoginView: View {
+    @EnvironmentObject var loginViewModel: LoginViewModel
+    
     var body: some View {
         VStack(spacing: .zero) {
             HStack {
@@ -22,13 +24,14 @@ struct LoginView: View {
             
             Spacer()
             
+            #warning("로그인 버튼은 공식 이미지 받아서 하는게 어떤지")
             VStack(spacing: 16) {
                 Image("Kakao")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(height: 60)
                     .onTapGesture {
-                        // 카카오 로그인
+                        loginViewModel.kakaoAuthSignIn()
                     }
                 
                 Image("Apple")

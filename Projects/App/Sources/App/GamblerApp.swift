@@ -8,16 +8,30 @@
 
 import SwiftUI
 import SwiftData
+import KakaoSDKCommon
+import KakaoSDKAuth
 
 @main
 struct GamblerApp: App {
-
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    
+    init() {
+        // kakaoAppKey에 번들 메인 리소스 infoDictionary에서 키 이름으로 가져와서 할당
+//        let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] ?? ""
+        let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_APP_KEY"] ?? ""
+   
+        print(#fileID, #function, #line, "- kakaoAppKey: \(kakaoAppKey) ")
+        
+        // Kakao SDK 초기화
+        KakaoSDK.initSDK(appKey: kakaoAppKey as? String ?? "")
+    }
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             SearchKeyword.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
+        
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
@@ -28,7 +42,7 @@ struct GamblerApp: App {
     var body: some Scene {
         WindowGroup {
             TabBarView()
-//            MainView()
+            //            MainView()
         }
         .modelContainer(sharedModelContainer)
     }

@@ -27,7 +27,8 @@ let project = Project.makeModule(
         .SPM.FirebaseStorage,
         .SPM.FirebaseFirestore,
         .SPM.FirebaseFirestoreSwift,
-        .SPM.FirebaseMessaging
+        .SPM.FirebaseMessaging,
+        .SPM.KakaoSDK
     ],
     resources: ["Resources/**"],
     infoPlist: .file(path: "Resources/gambler-Info.plist"),
