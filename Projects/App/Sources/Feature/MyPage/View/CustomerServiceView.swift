@@ -23,8 +23,8 @@ struct CustomerServiceView: View {
             TitleAndBoxView(title: "항목")
                 .padding(.vertical, 16)
             TextEditorView(text: $serviceContent, placeholder: "내용을 적어주세요")
-                .padding(.vertical, 16)
-            AddImageView(topPadding: .constant(0))
+                .padding(.top, 16)
+            AddImageView(topPadding: .constant(16))
             Spacer()
             CTAButton(disabled: $disabledButton, title: "완료") {
                 print("완료 버튼 눌림")

@@ -14,7 +14,7 @@ struct ProfileEditView: View {
         ScrollView {
             VStack {
                 profileView
-                    .padding(24)
+                    .padding(32)
                 BorderView()
                 defaultInfoView
                     .padding(24)
@@ -22,7 +22,7 @@ struct ProfileEditView: View {
                 pluginView
                     .padding(24)
             }
-            .padding(.vertical, 127)
+            .padding(.bottom, 60)
         }
         .navigationTitle("프로필 수정")
         .modifier(BackButton())
@@ -37,8 +37,10 @@ struct ProfileEditView: View {
     private var profileView: some View {
         VStack {
             CircleImageView(imageURL: User.dummyUser.profileImageURL, size: 64)
+                .padding(.bottom, 16)
             ChipView(label: "프로필 사진 수정", size: .medium)
                 .foregroundStyle(Color.gray400)
+                
         }
     }
     
@@ -55,32 +57,34 @@ struct ProfileEditView: View {
 
     private var pluginView: some View {
         VStack(alignment: .leading) {
-            Text("기본 정보")
-                .padding(.bottom, 24)
+            Text("연결된 소셜 로그인")
                 .font(.subHead1B)
                 .foregroundStyle(Color.gray700)
-            VStack {
-                pluginCellView(image: User.dummyUser.profileImageURL, socialName: "카카오톡")
-                    .padding(.horizontal, 16)
-                pluginCellView(image: User.dummyUser.profileImageURL, socialName: "Apple")
-                    .padding(.horizontal, 16)
-                pluginCellView(image: User.dummyUser.profileImageURL, socialName: "Google")
-                    .padding(.horizontal, 16)
-            }
-            .padding(.vertical, 24)
-            .background {
-                Rectangle()
-                    .stroke(lineWidth: 1)
-                    .cornerRadius(8)
-                    .foregroundColor(Color.gray100)
-                    .frame(height: 216)
-            }
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.gray100)
+                .frame(height: 216)
+                .padding(.vertical, 24)
+                .overlay {
+                    VStack {
+                        pluginCellView(image: GamblerAsset.kakaotalkLogo.swiftUIImage, socialName: "카카오톡")
+                            .padding(.horizontal, 16)
+                        pluginCellView(image: GamblerAsset.appleLogo.swiftUIImage, socialName: "Apple")
+                            .padding(.horizontal, 16)
+                        pluginCellView(image: GamblerAsset.googleLogo.swiftUIImage, socialName: "Google")
+                            .padding(.horizontal, 16)
+                    }
+                }
+            Rectangle()
+                .frame(width: 57, height: 30)
+                .cornerRadius(8)
         }
     }
     
-    private func pluginCellView(image: String, socialName: String) -> some View {
+    private func pluginCellView(image: Image, socialName: String) -> some View {
         HStack {
-            CircleImageView(imageURL: image, size: 40)
+            image
+                .resizable()
+                .frame(width: 40, height: 40)
             Text(socialName)
             Spacer()
             Rectangle()
