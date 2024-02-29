@@ -16,30 +16,28 @@ struct NotificationSettingView: View {
     
     var body: some View {
         VStack {
-            Toggle("푸시 알림 받기", isOn: $push)
-                .padding(.vertical, 16)
-                .padding(.horizontal, 24)
+            toggleCellView(title: "푸시 알림 받기", toggleState: $push)
             BorderView()
                 .padding(.vertical, 24)
-            Toggle("공지사항/새소식", isOn: $notice)
-                .padding(.vertical, 16)
-                .padding(.horizontal, 24)
+            toggleCellView(title: "공지사항/새소식", toggleState: $notice)
             Divider()
-            Toggle("새 댓글", isOn: $reply)
-                .padding(.vertical, 16)
-                .padding(.horizontal, 24)
+            toggleCellView(title: "새 댓글", toggleState: $reply)
             Divider()
-            Toggle("추천 글/정보", isOn: $info)
-                .padding(.vertical, 16)
-                .padding(.horizontal, 24)
+            toggleCellView(title: "추천 글/정보", toggleState: $info)
             Divider()
             Spacer()
         }
         .padding(.top, 24)
-        .toggleStyle(SwitchToggleStyle(tint: Color.primaryDefault))
-        .font(.body1B)
         .navigationTitle("알림 설정")
         .modifier(BackButton())
+    }
+    
+    private func toggleCellView(title: String, toggleState: Binding<Bool>) -> some View {
+        Toggle(title, isOn: toggleState)
+            .padding(.vertical, 16)
+            .padding(.horizontal, 24)
+            .toggleStyle(SwitchToggleStyle(tint: Color.primaryDefault))
+            .font(.body1B)
     }
 }
 

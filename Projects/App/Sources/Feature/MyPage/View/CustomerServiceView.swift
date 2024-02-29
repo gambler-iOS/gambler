@@ -11,6 +11,9 @@ import SwiftUI
 struct CustomerServiceView: View {
     @State private var serviceContent: String = ""
     @State private var disabledButton: Bool = true
+    @State private var selectedOption = 0
+    @State private var tap = false
+    let options = ["Option 1", "Option 2", "Option 3"]
     
     var body: some View {
         VStack(alignment: .leading, spacing: .zero) {
@@ -29,7 +32,7 @@ struct CustomerServiceView: View {
             .padding(.bottom, 24)
         }
         .padding(.horizontal, 24)
-        .navigationTitle("프로필 수정")
+        .navigationTitle("고객 센터")
         .modifier(BackButton())
     }
     
@@ -43,6 +46,8 @@ struct CustomerServiceView: View {
                 .padding(.top, 10)
         }
     }
+    
+    
 }
 
 #Preview {
