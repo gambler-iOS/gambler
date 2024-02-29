@@ -29,7 +29,7 @@ struct AnnouncementsView: View {
             }
         }
         .sheet(isPresented: $showingWebSheet) {
-            // webView(url: Notice.dummyNotice.noticeLink)
+            WebView(siteURL: "")
         }
         .listStyle(.plain)
         .navigationTitle("공지사항")
