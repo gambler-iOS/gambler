@@ -13,24 +13,30 @@ struct AnnouncementsView: View {
     @State var urlLink: String = ""
     
     var body: some View {
-        ScrollView {
-            ForEach(0..<5, id: \.self) { _ in
-                announcementsCellView(title: Notice.dummyNotice.noticeTitle,
-                                      createdDate: Notice.dummyNotice.createdDate)
-                .padding(8)
-                .padding(.horizontal, 8)
-                .onTapGesture {
-                    showingWebSheet = true
-                    urlLink = Notice.dummyNotice.noticeLink
+        if Notice.dummyNotice.isEmpty {
+            Text("공지사항이 없습니다.")
+        } else {
+            ScrollView {
+                
+                ForEach(Notice.dummyNotice) { notice in
+                    announcementsCellView(title: notice.noticeTitle,
+                                          createdDate: notice.createdDate)
+                    .padding(8)
+                    .padding(.horizontal, 8)
+                    .onTapGesture {
+                        showingWebSheet = true
+                        urlLink = notice.noticeLink
+                    }
+                    Divider()
                 }
-                Divider()
+                
             }
+            .sheet(isPresented: $showingWebSheet) {
+                WebView(siteURL: urlLink)
+            }
+            .navigationTitle("공지사항")
+            .modifier(BackButton())
         }
-        .sheet(isPresented: $showingWebSheet) {
-            // WebView(siteURL: urlLink)
-        }
-        .navigationTitle("공지사항")
-        .modifier(BackButton())
     }
     
     private func announcementsCellView(title: String, createdDate: Date) -> some View {

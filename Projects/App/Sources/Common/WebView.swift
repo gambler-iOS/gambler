@@ -25,7 +25,6 @@ struct WebView: UIViewControllerRepresentable {
 }
 
 class UrlErrorViewController: UIViewController {
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -37,4 +36,3 @@ class UrlErrorViewController: UIViewController {
         view.backgroundColor = .white
     }
 }
-

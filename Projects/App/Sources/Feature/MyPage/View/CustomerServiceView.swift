@@ -46,8 +46,6 @@ struct CustomerServiceView: View {
                 .padding(.top, 10)
         }
     }
-    
-    
 }
 
 #Preview {
