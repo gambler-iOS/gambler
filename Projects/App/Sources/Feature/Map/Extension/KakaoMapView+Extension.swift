@@ -38,7 +38,6 @@ extension KakaoMapView.KakaoMapCoordinator {
                 mapView.animateCamera(cameraUpdate: cameraUpdate, 
                                       options: CameraAnimationOptions(autoElevation: false,
                                                                       consecutive: false, durationInMillis: 200))
-                print("[Get: Camera point] latitude = \(self.userLocate.latitude), longitude = \(self.userLocate.longitude)")
             }
         }
     }
@@ -126,11 +125,11 @@ extension KakaoMapView.KakaoMapCoordinator {
             let manager = mapView.getLabelManager()
             
             let shopPoiIconStyle = PoiIconStyle(symbol: UIImage(named: "markDefault")?
-                .resized(withSize: CGSize(width: 45, height: 63)))
+                .resized(withSize: CGSize(width: 49, height: 69)))
             let pickPoiIconStyle = PoiIconStyle(symbol: UIImage(named: "markPressed")?
-                .resized(withSize: CGSize(width: 60, height: 84)))
+                .resized(withSize: CGSize(width: 66, height: 92)))
             let userLocationPoiIconStyle = PoiIconStyle(symbol: UIImage(named: "myLocation")?
-                .resized(withSize: CGSize(width: 200, height: 200)))
+                .resized(withSize: CGSize(width: 160, height: 160)))
             let shopPoiStyle = PoiStyle(styleID: "shopPoiIconStyle", styles: [
                 PerLevelPoiStyle(iconStyle: shopPoiIconStyle, level: 1)
             ])
@@ -156,15 +155,14 @@ extension KakaoMapView.KakaoMapCoordinator {
             spriteGui.splitLineColor = UIColor.white
             
             spriteGui.origin = GuiAlignment(vAlign: .top, hAlign: .right)
-            spriteGui.position = CGPoint(x: getSafeAreaTop(), 
+            spriteGui.position = CGPoint(x: getSafeAreaTop(),
                                          y: UIScreen.main.bounds.height + 50)
             
             let gpsButton = GuiButton("GPS Button")
-            gpsButton.image = UIImage(named: "location")?
+            gpsButton.image = UIImage(named: "Location")?
                 .resized(withSize: CGSize(width: 100, height: 100))
             
             spriteGui.addChild(gpsButton)
-            
             guiManager.spriteGuiLayer.addSpriteGui(spriteGui)
             spriteGui.delegate = self
             spriteGui.show()

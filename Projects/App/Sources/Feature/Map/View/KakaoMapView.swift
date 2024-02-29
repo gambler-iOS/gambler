@@ -79,6 +79,10 @@ struct KakaoMapView: UIViewRepresentable {
             let mapviewInfo: MapviewInfo =
             MapviewInfo(viewName: "mapview", viewInfoName: "map", defaultPosition: defaultPosition)
             controller?.addView(mapviewInfo)
+            /*if controller?.addView(mapviewInfo) == Result.OK {
+                settingMap()
+                isLoading  = false
+            }*/
         }
         
         func addViewSucceeded(_ viewName: String, viewInfoName: String) {
@@ -98,6 +102,8 @@ struct KakaoMapView: UIViewRepresentable {
                 createUserLocationPoi()
                 createPoisOnMap()
                 createSpriteGUI()
+                moveCameraToFocus(MapPoint(longitude: userLocate.longitude,
+                                           latitude: userLocate.latitude))
             }
         }
         

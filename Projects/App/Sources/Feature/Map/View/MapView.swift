@@ -26,13 +26,14 @@ struct MapView: View {
                 self.draw = true
             }
             .onDisappear(perform: {
-               //self.draw = false
+               // self.draw = false
                 isLoading = false
             })
             .overlay {
                 Group {
                     if isLoading {
                         ProgressView()
+                            .tint(.gray400)
                             .offset(y: 0)
                     } else {
                         FloatingView(shopStore: shopStore, selectedShop: $selectedShop,
