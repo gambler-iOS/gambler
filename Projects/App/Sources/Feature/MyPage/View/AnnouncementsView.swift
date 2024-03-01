@@ -17,7 +17,6 @@ struct AnnouncementsView: View {
             Text("공지사항이 없습니다.")
         } else {
             ScrollView {
-                
                 ForEach(Notice.dummyNotice) { notice in
                     announcementsCellView(title: notice.noticeTitle,
                                           createdDate: notice.createdDate)
@@ -29,7 +28,6 @@ struct AnnouncementsView: View {
                     }
                     Divider()
                 }
-                
             }
             .sheet(isPresented: $showingWebSheet) {
                 WebView(siteURL: urlLink)
@@ -45,7 +43,7 @@ struct AnnouncementsView: View {
                 .font(.body1M)
                 .foregroundStyle(Color.gray900)
                 .padding(.bottom, 8)
-            Text("\(GamblerDateFormatter.shared.periodDateString(from: createdDate))")
+            Text("\(GamblerDateFormatter.shared.calendarDateString(from: createdDate))")
                 .font(.body2M)
                 .foregroundStyle(Color.gray400)
         }

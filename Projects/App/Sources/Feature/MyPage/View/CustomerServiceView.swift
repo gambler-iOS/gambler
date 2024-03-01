@@ -11,17 +11,20 @@ import SwiftUI
 struct CustomerServiceView: View {
     @State private var serviceContent: String = ""
     @State private var disabledButton: Bool = true
-    @State private var selectedOption = 0
-    @State private var tap = false
-    let options = ["Option 1", "Option 2", "Option 3"]
+    @State private var choiceCategory: ComplainCategory = .spam
+    @State private var isShowingDropMenu = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: .zero) {
             titleView
                 .padding(.top, 24)
                 .padding(.bottom, 16)
-            TitleAndBoxView(title: "항목")
-                .padding(.vertical, 16)
+            complainTitleView(image:
+                                isShowingDropMenu ?
+                              GamblerAsset.arrowDown.swiftUIImage : GamblerAsset.arrowUp.swiftUIImage)
+            .onTapGesture {
+                isShowingDropMenu.toggle()
+            }
             TextEditorView(text: $serviceContent, placeholder: "내용을 적어주세요")
                 .padding(.top, 16)
             AddImageView(topPadding: .constant(16))
@@ -31,9 +34,23 @@ struct CustomerServiceView: View {
             }
             .padding(.bottom, 24)
         }
+        .background {
+            Color.white
+                .onTapGesture {
+                    isShowingDropMenu = false
+                }
+        }
+        .overlay(content: {
+            if isShowingDropMenu {
+                DropDownMemuView(isShowingDropMenu: $isShowingDropMenu, choiceCategory: $choiceCategory)
+                    .padding(.top, 50)
+                
+            }
+        })
         .padding(.horizontal, 24)
         .navigationTitle("고객 센터")
         .modifier(BackButton())
+        
     }
     
     private var titleView: some View {
@@ -45,6 +62,25 @@ struct CustomerServiceView: View {
                 .foregroundStyle(Color.gray300)
                 .padding(.top, 10)
         }
+    }
+    
+    private func complainTitleView(image: Image) -> some View {
+        TitleAndBoxView(title: "항목")
+            .padding(.vertical, 16)
+            .overlay {
+                HStack {
+                    Text(choiceCategory.complainName)
+                        .font(.body1M)
+                        .foregroundStyle(Color.gray700)
+                    Spacer()
+                    image
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                }
+                .frame(height: 56)
+                .padding(.top, 28)
+                .padding(.horizontal, 16)
+            }
     }
 }
 
