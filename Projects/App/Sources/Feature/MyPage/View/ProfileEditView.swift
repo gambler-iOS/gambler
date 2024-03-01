@@ -9,6 +9,8 @@
 import SwiftUI
 
 struct ProfileEditView: View {
+    @State private var nickName: String = ""
+    @State private var email: String = ""
     
     var body: some View {
         ScrollView {
@@ -28,10 +30,19 @@ struct ProfileEditView: View {
         .modifier(BackButton())
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-               Text("완료")
-                    .font(.body2M)
+                Button {
+                    reply()
+                } label: {
+                    Text("완료")
+                        .font(.body2M)
+                }
+
             }
         }
+    }
+    
+    private func reply() {
+        // 완료 동작
     }
     
     private var profileView: some View {
@@ -50,11 +61,22 @@ struct ProfileEditView: View {
                 .padding(.bottom, 24)
                 .font(.subHead1B)
                 .foregroundStyle(Color.gray700)
-            TitleAndBoxView(title: "닉네임")
-            TitleAndBoxView(title: "이메일")
+            profileTextField(title: "닉네임", content: $nickName)
+            profileTextField(title: "이메일", content: $email)
         }
     }
 
+    private func profileTextField(title: String, content: Binding<String>) -> some View {
+        TitleAndBoxView(title: title)
+            .overlay {
+                TextField("", text: content)
+                    .font(.body1M)
+                    .foregroundColor(.gray700)
+                    .padding(.top, 28)
+                    .padding(.horizontal, 16)
+            }
+    }
+    
     private var pluginView: some View {
         VStack(alignment: .leading) {
             Text("연결된 소셜 로그인")
