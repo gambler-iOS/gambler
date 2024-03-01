@@ -7,11 +7,19 @@
 //
 
 import SwiftUI
+import CoreLocation
 import SwiftData
+import KakaoMapsSDK
 
 @main
 struct GamblerApp: App {
-
+    
+    init() {
+        let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_APP_KEY"] ?? ""
+        SDKInitializer.InitSDK(appKey: "\(kakaoAppKey)")
+    }
+    
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             SearchKeyword.self
@@ -28,9 +36,27 @@ struct GamblerApp: App {
     var body: some Scene {
         WindowGroup {
             TabBarView()
+                .onAppear {
+                    Task {
+                        await startTask()
+                    }
+                }
 //            MainView()
         }
         .modelContainer(sharedModelContainer)
+    }
+    
+    func startTask() async {
+        let locationManager = CLLocationManager()
+        let authorizationStatus = locationManager.authorizationStatus
+        if authorizationStatus == .denied {
+            DispatchQueue.main.async {
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+            }
+        }
+        else if authorizationStatus == .restricted || authorizationStatus == .notDetermined {
+            locationManager.requestWhenInUseAuthorization()
+        }
     }
 }
 
