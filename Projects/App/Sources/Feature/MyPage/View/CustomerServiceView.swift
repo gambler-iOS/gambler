@@ -9,10 +9,12 @@
 import SwiftUI
 
 struct CustomerServiceView: View {
-    @State private var serviceContent: String = ""
-    @State private var disabledButton: Bool = true
     @State private var choiceCategory: ComplainCategory = .spam
     @State private var isShowingDropMenu = false
+    
+    @State private var serviceContent: String = ""
+    @State private var rating: Double = 0.0
+    @State private var disabledButton: Bool = true
     
     var body: some View {
         VStack(alignment: .leading, spacing: .zero) {
@@ -47,6 +49,12 @@ struct CustomerServiceView: View {
                 
             }
         })
+        .onReceive([self.rating].publisher.first()) { _ in
+            self.updateDisabledButton()
+        }
+        .onReceive([self.serviceContent].publisher.first()) { _ in
+            self.updateDisabledButton()
+        }
         .padding(.horizontal, 24)
         .navigationTitle("고객 센터")
         .modifier(BackButton())
@@ -81,6 +89,10 @@ struct CustomerServiceView: View {
                 .padding(.top, 28)
                 .padding(.horizontal, 16)
             }
+    }
+    
+    private func updateDisabledButton() {
+        self.disabledButton = rating == 0.0 || serviceContent.isEmpty
     }
 }
 
