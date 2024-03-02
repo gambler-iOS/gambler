@@ -26,6 +26,7 @@ final class HomeViewModel: ObservableObject {
         "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20201122_151%2F1606046564169SzUUi_JPEG%2FrkjG5CgJbjULKNT0NaPHKoHl.jpg"
         for num in 1...3 {
             popularGames.append(Game(id: UUID().uuidString, gameName: "game\(num)", gameImage: gameImageUrl,
+                                     descriptionContent: "게임 상세 설명",
                                      descriptionImage: [gameDescriptionImageUrl], gameLink: "link\(num)",
                                      createdDate: Date(),
                                      reviewCount: 1 + num, reviewRatingAverage: 3.5 + (0.1 * Double(num)),
@@ -39,6 +40,7 @@ final class HomeViewModel: ObservableObject {
                                      createdDate: Date(), reviewCount: 3 + num,
                                      reviewRatingAverage: 3.5 + (0.1 * Double(num))))
             newGames.append(Game(id: UUID().uuidString, gameName: "game\(num)", gameImage: gameImageUrl,
+                                 descriptionContent: "게임 상세 설명",
                                  descriptionImage: [gameDescriptionImageUrl], gameLink: "link\(num)",
                                  createdDate: Date(),
                                  reviewCount: 1 + num, reviewRatingAverage: 3.5 + (0.1 * Double(num)),

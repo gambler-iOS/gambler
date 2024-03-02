@@ -19,10 +19,11 @@ struct Shop: AvailableFirebase, AvailableAggregateReview, Hashable {
     let shopImage: String
     let location: GeoPoint
     let shopPhoneNumber: String
-    let menu: [String: Int]
-    let openingHour: String
-    let amenity: [String]
-    let shopDetailImage: [String]
+    var cost: [String: Int]?
+    var menu: [String: Int]?
+    var openingHour: String?
+    var amenity: [String]?
+    var shopDetailImage: [String]?
     let createdDate: Date
     // 목록 호출 시 지나친 데이터 호출 막고, 보다 쉽게 리스트 출력하기 위해 추가
     var reviewCount: Int
@@ -34,16 +35,54 @@ struct Shop: AvailableFirebase, AvailableAggregateReview, Hashable {
         shopAddress: "address",
         shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
         location: GeoPoint(latitude: 120.1, longitude: 140),
-        shopPhoneNumber: "010-5555", menu: ["커피": 1000],
+        shopPhoneNumber: "010-5555",
+        cost: nil,
+        menu: ["커피": 1000],
         openingHour: "10시",
         amenity: ["주차"],
         shopDetailImage: ["detailImage"],
         createdDate: Date(),
         reviewCount: 3,
         reviewRatingAverage: 3.5)
+  
 }
 
 struct GeoPoint: Codable, Hashable {
     var latitude: Double
     var longitude: Double
+    
+    static let defaultPoint = GeoPoint(latitude: 37.402001, longitude: 127.108678)
+}
+
+/// map dummy
+extension Shop {
+    static let dummyShopList = [
+        Shop(id: UUID().uuidString, shopName: "레드버튼 판교점", shopAddress: "판교주소",
+             shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
+             location: GeoPoint(latitude: 37.395815438352216, longitude: 127.1122214051127), shopPhoneNumber: "010-1111", menu: ["커피": 1000],
+             openingHour: "10시",
+             amenity: ["주차"],
+             shopDetailImage: ["detailImage"],
+             createdDate: Date(),
+             reviewCount: 3,
+             reviewRatingAverage: 3.5),
+        Shop(id: UUID().uuidString, shopName: "레드버튼 판교 2점", shopAddress: "2번째 판교",
+             shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
+             location: GeoPoint(latitude: 37.39568857499883, longitude: 127.11297786474694), shopPhoneNumber: "010-2222", menu: ["커피": 1000],
+             openingHour: "10시",
+             amenity: ["주차"],
+             shopDetailImage: ["detailImage"],
+             createdDate: Date(),
+             reviewCount: 3,
+             reviewRatingAverage: 3.5),
+        Shop(id: UUID().uuidString, shopName: "레드버튼 판교 3점", shopAddress: "3번째 판교",
+             shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
+             location: GeoPoint(latitude: 37.395889599947324, longitude: 127.11000802973668), shopPhoneNumber: "010-2222", menu: ["커피": 1000],
+             openingHour: "10시",
+             amenity: ["주차"],
+             shopDetailImage: ["detailImage"],
+             createdDate: Date(),
+             reviewCount: 3,
+             reviewRatingAverage: 3.5)
+    ]
 }
