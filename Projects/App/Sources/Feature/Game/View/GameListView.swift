@@ -86,7 +86,9 @@ struct GameListView: View {
 }
 
 #Preview {
-    GameListView(title: "인기 게임")
-        .environmentObject(AppNavigationPath())
-        .environmentObject(GameListViewModel())
+    NavigationStack {
+        GameListView(title: "인기 게임")
+            .environmentObject(AppNavigationPath())
+            .environmentObject(GameListViewModel())
+    }
 }

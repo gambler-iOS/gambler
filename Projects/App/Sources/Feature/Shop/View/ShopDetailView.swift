@@ -13,7 +13,6 @@ struct ShopDetailView: View {
     
     var body: some View {
         VStack {
-            #warning("ShopDetail 더미")
             Text(shop.shopName)
         }
     }
