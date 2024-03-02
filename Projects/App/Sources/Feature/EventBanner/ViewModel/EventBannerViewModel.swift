@@ -28,7 +28,8 @@ final class EventBannerViewModel: ObservableObject {
             eventBanners.append(
                 EventBanner(id: UUID().uuidString,
                             bannerImage: bannerImageUrl[index],
-                            linkURL: testUrl[index]))
+                            linkURL: testUrl[index],
+                           Catchphrase: "신규 게임을\n빠르게 만나보세요"))
         }
     }
 

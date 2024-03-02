@@ -72,6 +72,7 @@ final class MyPageViewModel: ObservableObject {
                 id: UUID().uuidString,
                 gameName: "아임 더 보스",
                 gameImage: "https://weefun.co.kr/shopimages/weefun/007009000461.jpg?1596805186",
+                descriptionContent: "게임 상세 설명",
                 descriptionImage: ["image"],
                 gameLink: "link",
                 createdDate: Date(),
@@ -92,8 +93,11 @@ final class MyPageViewModel: ObservableObject {
         return "10"
     }
     
-    private func getNumberOfLikes() -> String{
-        let numberOfReviewInt = user.likeGameId.count + user.likeShopId.count
+    private func getNumberOfLikes() -> String {
+        let likeGames = user.likeGameId ?? []
+        let likeShops = user.likeShopId ?? []
+        
+        let numberOfReviewInt = likeGames.count + likeShops.count
         return "\(numberOfReviewInt)"
     }
 }

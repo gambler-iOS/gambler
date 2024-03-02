@@ -12,4 +12,5 @@ struct EventBanner: AvailableFirebase {
     var id: String
     let bannerImage: String
     let linkURL: String
+    let Catchphrase: String
 }

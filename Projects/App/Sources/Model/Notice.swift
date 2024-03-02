@@ -11,8 +11,6 @@ import Foundation
 struct Notice: AvailableFirebase {
     var id: String
     let noticeTitle: String
-    let noticeContent: String
-    let noticeImage: [String]?
     let noticeLink: String
     let createdDate: Date
 }
