@@ -11,6 +11,7 @@ import SwiftUI
 struct ListItemView: View {
     @EnvironmentObject var myPageViewModel: MyPageViewModel
     @EnvironmentObject var reviewViewModel: ReviewViewModel
+    @EnvironmentObject var loginViewModel: LoginViewModel
     
     var body: some View {
         HStack {
@@ -46,7 +47,13 @@ struct ListItemView: View {
                     listBodyView(title: "개발자 정보", destination: AboutDevelopersView())
                     
                     Button {
-                        // 로그아웃
+                        Task {
+                            do {
+                                try await loginViewModel.signOut()
+                            } catch {
+                                print("로그아웃 실패 Error: \(error)")
+                            }
+                        }
                     } label: {
                         Text("로그아웃")
                     }
@@ -81,4 +88,5 @@ struct ListItemView: View {
     ListItemView()
         .environmentObject(MyPageViewModel())
         .environmentObject(ReviewViewModel())
+        .environmentObject(LoginViewModel())
 }

@@ -48,6 +48,7 @@ struct LoginView: View {
                     .frame(height: 60)
                     .onTapGesture {
                         // 구글 로그인
+                        loginViewModel.signInWithGoogle()
                     }
             }
             .padding(.bottom, 56)

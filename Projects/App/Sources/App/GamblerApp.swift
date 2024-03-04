@@ -10,15 +10,16 @@ import SwiftUI
 import CoreLocation
 import SwiftData
 import KakaoMapsSDK
+import GoogleSignIn
 
 @main
 struct GamblerApp: App {
-    
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
     init() {
         let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_APP_KEY"] ?? ""
         SDKInitializer.InitSDK(appKey: "\(kakaoAppKey)")
     }
-    
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
