@@ -18,7 +18,8 @@ public extension Project {
             sources: SourceFilesList = ["Sources/**"],
             resources: ResourceFileElements? = nil,
             infoPlist: InfoPlist = .default,
-            entitlements: Entitlements? = nil
+            entitlements: Entitlements? = nil,
+            plistFiles: [String] = [] // 추가된 프로퍼티
         ) -> Project {
             let settings: Settings = .settings(
                 base: [:],

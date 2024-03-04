@@ -10,20 +10,16 @@ import SwiftUI
 import SwiftData
 import KakaoSDKCommon
 import KakaoSDKAuth
+import GoogleSignIn
 
 @main
 struct GamblerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     init() {
-        // kakaoAppKey에 번들 메인 리소스 infoDictionary에서 키 이름으로 가져와서 할당
-//        let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] ?? ""
         let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_APP_KEY"] ?? ""
-   
-        print(#fileID, #function, #line, "- kakaoAppKey: \(kakaoAppKey) ")
-        
-        // Kakao SDK 초기화
         KakaoSDK.initSDK(appKey: kakaoAppKey as? String ?? "")
+        print(#fileID, #function, #line, "- kakaoAppKey: \(kakaoAppKey) ")
     }
     
     var sharedModelContainer: ModelContainer = {

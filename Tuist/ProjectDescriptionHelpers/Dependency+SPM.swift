@@ -22,4 +22,6 @@ public extension TargetDependency.SPM {
     static let FirebaseAuth = TargetDependency.external(name: "FirebaseAuth")
     static let FirebaseStorage = TargetDependency.external(name: "FirebaseStorage")
     static let KakaoSDK = TargetDependency.external(name: "KakaoSDK")
+    static let GoogleSignIn = TargetDependency.external(name: "GoogleSignIn")
+    static let GoogleSignInSwift = TargetDependency.external(name: "GoogleSignInSwift")
 }

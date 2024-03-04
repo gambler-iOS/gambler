@@ -28,9 +28,13 @@ let project = Project.makeModule(
         .SPM.FirebaseFirestore,
         .SPM.FirebaseFirestoreSwift,
         .SPM.FirebaseMessaging,
-        .SPM.KakaoSDK
+        .SPM.KakaoSDK,
+        .SPM.GoogleSignIn,
+        .SPM.GoogleSignInSwift
     ],
     resources: ["Resources/**"],
     infoPlist: .file(path: "Resources/gambler-Info.plist"),
-    entitlements: "gambler.entitlements"
+    entitlements: "gambler.entitlements",
+    plistFiles: ["Resources/gambler-Info.plist",
+                "Resources/GoogleService-Info.plist"]
 )

@@ -13,8 +13,10 @@ struct TabBarView: View {
     @StateObject private var myPageViewModel = MyPageViewModel()
     @StateObject private var reviewViewModel = ReviewViewModel()
     @StateObject private var loginViewModel = LoginViewModel()
+    @StateObject private var authViewModel = AuthViewModel()
+
     @StateObject private var appNavigationPath = AppNavigationPath()
-    
+
     var body: some View {
         TabView(selection: $selectedTab) {
             
@@ -55,7 +57,7 @@ struct TabBarView: View {
             
             MyPageView()
                 .environmentObject(myPageViewModel)
-                .environmentObject(loginViewModel)
+                .environmentObject(authViewModel)
                 .tabItem {
                     HStack {
                         (selectedTab == 3 ?

@@ -10,8 +10,9 @@ import SwiftUI
 
 struct ListItemView: View {
     @EnvironmentObject var myPageViewModel: MyPageViewModel
-//    @EnvironmentObject var reviewViewModel: ReviewViewModel
-    @EnvironmentObject var loginViewModel: LoginViewModel
+    //    @EnvironmentObject var reviewViewModel: ReviewViewModel
+//    @EnvironmentObject var loginViewModel: LoginViewModel
+    @EnvironmentObject var authViewModel: AuthViewModel
     
     var body: some View {
         HStack {
@@ -21,8 +22,8 @@ struct ListItemView: View {
                 
                 Group {
                     listBodyView(title: "프로필 수정", destination: ProfileEditView())
-//                    listBodyView(title: "프로필 수정", destination: ReviewDetailView( reviewableItem: Shop.dummyShop)
-//                        .environmentObject(reviewViewModel))
+                    //                    listBodyView(title: "프로필 수정", destination: ReviewDetailView( reviewableItem: Shop.dummyShop)
+                    //                        .environmentObject(reviewViewModel))
                     
                     listBodyView(title: "알림 설정", destination: NotificationSettingView())
                     
@@ -47,8 +48,16 @@ struct ListItemView: View {
                     listBodyView(title: "개발자 정보", destination: AboutDevelopersView())
                     
                     Button {
-                        // 카카오 로그아웃
-                        loginViewModel.kakaoSignOut()
+                        //                        func signOut() {
+                        Task {
+                            do {
+                                try await authViewModel.signOut()
+                            }
+                            catch {
+                                print("Error: \(error)")
+                            }
+                        }
+                        //                        }
                     } label: {
                         Text("로그아웃")
                     }
@@ -59,6 +68,8 @@ struct ListItemView: View {
             .foregroundStyle(Color.gray700)
             Spacer()
         }
+        
+        
     }
     
     @ViewBuilder
@@ -82,5 +93,6 @@ struct ListItemView: View {
 #Preview {
     ListItemView()
         .environmentObject(MyPageViewModel())
-//        .environmentObject(ReviewViewModel())
+        .environmentObject(AuthViewModel())
+    //        .environmentObject(ReviewViewModel())
 }

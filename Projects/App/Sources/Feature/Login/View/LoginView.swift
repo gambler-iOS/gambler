@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct LoginView: View {
-    @EnvironmentObject var loginViewModel: LoginViewModel
+    @EnvironmentObject var authViewModel: AuthViewModel
     
     var body: some View {
         VStack(spacing: .zero) {
@@ -24,14 +24,15 @@ struct LoginView: View {
             
             Spacer()
             
-            #warning("로그인 버튼은 공식 이미지 받아서 하는게 어떤지")
             VStack(spacing: 16) {
                 Image("Kakao")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(height: 60)
                     .onTapGesture {
-                        loginViewModel.kakaoAuthSignIn()
+                        Task {
+                            await authViewModel.signInWithKakao()
+                        }
                     }
                 
                 Image("Apple")
@@ -47,7 +48,7 @@ struct LoginView: View {
                     .aspectRatio(contentMode: .fill)
                     .frame(height: 60)
                     .onTapGesture {
-                        // 구글 로그인
+                        authViewModel.signInWithGoogle()
                     }
             }
             .padding(.bottom, 56)
@@ -63,8 +64,10 @@ struct LoginView: View {
         }
         .padding(.horizontal, 24)
     }
+    
 }
 
 #Preview {
     LoginView()
+        .environmentObject(AuthViewModel())
 }

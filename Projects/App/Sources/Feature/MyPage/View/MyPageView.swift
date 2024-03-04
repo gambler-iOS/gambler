@@ -13,14 +13,14 @@ import KakaoSDKCommon
 
 struct MyPageView: View {
     @EnvironmentObject var myPageViewModel: MyPageViewModel
-    @EnvironmentObject var loginViewModel: LoginViewModel
+    @EnvironmentObject var authViewModel: AuthViewModel
 
     let loginPlatform: String = "카카오톡"
     
     var body: some View {
-        if loginViewModel.state == .signedOut {
+        if authViewModel.authState == .signedOut {
             LoginView()
-                .environmentObject(loginViewModel)
+                .environmentObject(authViewModel)
                 .onOpenURL { url in
                     if AuthApi.isKakaoTalkLoginUrl(url) {
                         _ = AuthController.handleOpenUrl(url: url)
@@ -48,6 +48,8 @@ struct MyPageView: View {
                         .clipShape(.rect(cornerRadius: 8))
                         
                         ListItemView()
+                            .environmentObject(myPageViewModel)
+                            .environmentObject(authViewModel)
                     }
                 }
                 .padding(.horizontal, 24)
@@ -91,5 +93,5 @@ struct MyPageView: View {
 #Preview {
     MyPageView()
         .environmentObject(MyPageViewModel())
-        .environmentObject(LoginViewModel())
+        .environmentObject(AuthViewModel())
 }

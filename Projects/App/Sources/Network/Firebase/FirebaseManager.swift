@@ -13,17 +13,19 @@ import FirebaseFirestoreSwift
 final class FirebaseManager {
     static let shared = FirebaseManager()
 
+    private let db = Firestore.firestore()
+    
     private init() {
     }
 
     func createData<T: AvailableFirebase>(collectionName: String, data: T) throws {
-        let documentRef = Firestore.firestore().collection(collectionName).document(data.id)
+        let documentRef = db.collection(collectionName).document(data.id)
         try documentRef.setData(from: data)
     }
 
     func fetchAllData<T: AvailableFirebase>(collectionName: String, objectType: T.Type) async -> [T] {
         do {
-            let querySnapshot = try await Firestore.firestore().collection(collectionName).getDocuments()
+            let querySnapshot = try await db.collection(collectionName).getDocuments()
             let data = querySnapshot.documents.compactMap { try? $0.data(as: objectType) }
             return data
         } catch {
@@ -36,7 +38,7 @@ final class FirebaseManager {
     func fetchOrderData<T: AvailableFirebase>(collectionName: String, objectType: T.Type, orderBy: String, limit: Int?)
     async -> [T] {
         do {
-            var collectionRef = Firestore.firestore().collection(collectionName)
+            var collectionRef = db.collection(collectionName)
                 .order(by: orderBy, descending: true)
             if let limit {
                 collectionRef = collectionRef.limit(to: limit)
@@ -53,7 +55,7 @@ final class FirebaseManager {
     func fetchWhereData<T: AvailableFirebase>(collectionName: String, objectType: T.Type, field: String,
                                               isEqualTo data: String) async -> [T] {
         do {
-            let querySnapshot = try await Firestore.firestore().collection(collectionName)
+            let querySnapshot = try await db.collection(collectionName)
                 .whereField(field, isEqualTo: data).getDocuments()
             let data = querySnapshot.documents.compactMap { try? $0.data(as: objectType) }
             return data
@@ -65,7 +67,7 @@ final class FirebaseManager {
 
     func fetchOneData<T: AvailableFirebase>(collectionName: String, objectType: T.Type, byId: String) async -> T? {
         do {
-            let querySnapshot = try await Firestore.firestore().collection(collectionName)
+            let querySnapshot = try await db.collection(collectionName)
                 .whereField("id", isEqualTo: byId).getDocuments()
             let data = querySnapshot.documents.compactMap { try? $0.data(as: objectType) }
             return data[0]
@@ -77,7 +79,7 @@ final class FirebaseManager {
 
     func updateData<T: AvailableFirebase>(collectionName: String, objectType: T.Type, byId: String,
                                           data: [AnyHashable: Any]) async throws {
-        try await Firestore.firestore().collection(collectionName).document(byId).updateData(data)
+        try await db.collection(collectionName).document(byId).updateData(data)
     }
     //    func getProfileImageURL(path: ImagePath, fileName:String) -> String {
     //        Storage.storage().reference().child(path.rawValue + fileName).fullPath
