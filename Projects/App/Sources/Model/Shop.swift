@@ -26,18 +26,18 @@ struct Shop: AvailableFirebase, AvailableAggregateReview, Hashable {
     var shopDetailImage: [String]?
     let createdDate: Date
     // 목록 호출 시 지나친 데이터 호출 막고, 보다 쉽게 리스트 출력하기 위해 추가
-    var reviewCount: Int
-    var reviewRatingAverage: Double
+    var reviewCount: Int = 0
+    var reviewRatingAverage: Double = 0.0
     
     static let dummyShop = Shop(
         id: UUID().uuidString,
         shopName: "레드버튼 강남점",
-        shopAddress: "address",
+        shopAddress: "서울특별시 강남구 역삼동 814-5 1층",
         shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
         location: GeoPoint(latitude: 120.1, longitude: 140),
         shopPhoneNumber: "010-5555",
         cost: nil,
-        menu: ["커피": 1000],
+        menu: ["커피": 1000, "이용금액(1시간)": 3000],
         openingHour: "10시",
         amenity: ["주차"],
         shopDetailImage: ["detailImage"],

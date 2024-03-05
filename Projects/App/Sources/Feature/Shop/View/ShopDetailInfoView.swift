@@ -36,15 +36,45 @@ struct ShopDetailInfoView: View {
             .frame(minHeight: mainImageHeight)
             
             TitleView
-                .padding(EdgeInsets(top: 10, leading: 24, bottom: 0, trailing: 0))
-            AddressView
-                .padding(EdgeInsets(top: 16, leading: 24, bottom: 0, trailing: 0))
-//            ItemButtonSetView(type: type)
-//                .padding(EdgeInsets(top: 32, leading: 24, bottom: 0, trailing: 24))
+                .padding(.horizontal, 24)
             
+            AddressView
+                .padding(.horizontal, 24)
+                .padding(.top, 16)
+            
+            ItemButtonSetView(type: .shop)
+                .padding(.horizontal, 24)
+                .padding(.top, 32)
+            
+            BorderView()
             /// 이 부분에 게임 이너뷰 추가하시면 됩니다!
             ShopCostDetailView(shop: shop)
-                .padding(.bottom, 400)
+                .padding(.horizontal, 24)
+                .padding(.top, 32)
+            
+            BorderView()
+                .padding(.top, 32)
+            
+            ShopDetailHeaderView(shop: shop)
+                .padding(.horizontal, 24)
+                .padding(.top, 32)
+            
+            ScrollView(.horizontal) {
+                HStack {
+                    ForEach(0..<shop.reviewCount) { _ in
+                        ReviewListCellView(review: .dummyShopReview)
+                    }
+                }
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 8)
+            
+            BorderView()
+                .padding(.top, 32)
+            
+            mapHeaderView
+                .padding(.horizontal, 24)
+                .padding(.top, 32)
         }
         .background(.white)
         .overlay(
@@ -64,7 +94,7 @@ struct ShopDetailInfoView: View {
             Text(shop.shopName)
                 .font(.subHead1B)
                 .foregroundStyle(Color.gray700)
-            ReviewRatingCellView(rating: shop.reviewRatingAverage ?? 0.0)
+            ReviewRatingCellView(rating: shop.reviewRatingAverage)
             Spacer()
         }
     }
@@ -93,6 +123,15 @@ struct ShopDetailInfoView: View {
             self.offsetY = offset
         }
         return EmptyView()
+    }
+    
+    private var mapHeaderView: some View {
+        HStack(spacing: .zero) {
+            Text("위치")
+                .font(.subHead1B)
+                .foregroundStyle(Color.gray700)
+            Spacer()
+        }
     }
 }
 

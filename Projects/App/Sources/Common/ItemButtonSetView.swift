@@ -88,7 +88,7 @@ struct ItemButtonView: View {
                     .font(.body1M)
             }
             .frame(height: 72)
-            .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/)
+            .frame(maxWidth: .infinity)
         }
         
     }
