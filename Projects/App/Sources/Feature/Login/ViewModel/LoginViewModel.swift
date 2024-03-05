@@ -43,23 +43,21 @@ final class LoginViewModel: ObservableObject {
         verifySignInWithAppleID()
         
         Task {
-            try await loadUserData()
+            try await fetchUserData()
         }
         
     }
     
     // MARK: - Auth State
-    // 2.
     /// 권한 부여 상태 변경에 대한 리스너를 추가
     func configureAuthStateChanges() {
-        authStateHandle = Auth.auth().addStateDidChangeListener { auth, user in
+        authStateHandle = Auth.auth().addStateDidChangeListener { _, user in
             print("Auth changed: \(user != nil)")
             print("\(self.authState)")
             self.updateState(user: user)
         }
     }
     
-    // 2.
     /// 권한 부여 상태의 변경 사항에 대한 리스너를 제거
     func removeAuthStateListener() {
         Auth.auth().removeStateDidChangeListener(authStateHandle)
@@ -73,8 +71,13 @@ final class LoginViewModel: ObservableObject {
         
         if isAuthenticatedUser {
             self.authState = .signedIn
+            Task {
+                try await fetchUserData()
+            }
         } else {
             self.authState = .signedOut
+            self.currentUser = nil
+            self.userSession = nil
         }
     }
     
@@ -92,6 +95,7 @@ final class LoginViewModel: ObservableObject {
                     // The Apple ID credential is either revoked or was not found, so show the sign-in UI.
                     do {
                         try await self.signOut()
+                        //                        AppleAuthService.shared.signOutFromApple()
                     } catch {
                         print("FirebaseAuthError: signOut() failed. \(error)")
                     }
@@ -103,19 +107,17 @@ final class LoginViewModel: ObservableObject {
     }
     
     //MARK: - Authenticate
-    // AuthCredential을 받고 인증된 사용자가 있는지 확인
     private func authenticateUser(credentials: AuthCredential) async throws -> AuthDataResult? {
-        // If we have authenticated user, then link with given credentials.
-        // Otherwise, sign in using given credentials.
-        if Auth.auth().currentUser != nil {
+        // AuthCredential을 받고 인증된 사용자가 있는지 확인
+        if Auth.auth().currentUser != nil {  // 인증된 사용자가 있는 경우 주어진 credentials으로 연결
             return try await authLink(credentials: credentials)
-        } else {
+        } else {  // 주어진 자격 증명을 사용하여 로그인합니다.
             return try await authSignIn(credentials: credentials)
         }
     }
     
-    /// Authenticate with Firebase using Google `idToken`, and `accessToken` from given `GIDGoogleUser`.
-    /// - Parameter user: Signed-in Google user.
+    /// Google `idToken` 과 `GIDGoogleUser`의 `accessToken`을 사용하여 Firebase 인증
+    /// - Parameter user: 로그인한 Google 사용자
     /// - Returns: Auth data.
     func googleAuth(_ user: GIDGoogleUser) async throws -> AuthDataResult? {
         guard let idToken = user.idToken?.tokenString else { return nil }
@@ -147,7 +149,7 @@ final class LoginViewModel: ObservableObject {
             return nil
         }
         
-        // Initialize a Firebase credential, including the user's full name.
+        // 사용자의 이름을 포함하여 Firebase 자격 증명을 초기화
         let credentials = OAuthProvider.appleCredential(withIDToken: idTokenString,
                                                         rawNonce: nonce,
                                                         fullName: appleIDCredential.fullName)
@@ -198,90 +200,18 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
-    // MARK: - SignInWithGoogle
-    @MainActor
-    func signInWithGoogle() {
-        GoogleAuthSerVice.shared.signInWithGoogle { user, error in
-            if let error {
-                print("GoogleSignInError: failed to sign in with Google, \(error))")
-                return
-            }
-            
-            guard let user = user else { return }
-            Task {
-                do {
-                    let result = try await self.googleAuth(user)
-                    if let result {
-                        print("GoogleSignInSuccess: \(result.user.uid)")
-                        let user = result.user
-                        
-                        let newUser = try await self.isNewUser(user: user)
-                        
-                        if newUser {
-                            self.uploadUserToFirestore(userId: user.uid,
-                                                       name: user.displayName ?? "무명",
-                                                       profileImageURL: user.photoURL?.absoluteString ?? "",
-                                                       apnsToken: "구글",
-                                                       loginPlatform: .google)
-                        }
-                    }
-                } catch {
-                    print("GoogleSignInError: failed to authenticate with Google, \(error))")
-                }
-            }
-            
+    fileprivate func isNewUser(user: FirebaseAuth.User) async throws -> Bool {
+        let createDate = user.metadata.creationDate
+        guard let createDate else {
+            return true
         }
+        return Date() > createDate
     }
-    
-    // MARK: - SignInWithKakao
-    func signInWithKakao() async {
-        if AuthApi.hasToken() {
-            UserApi.shared.accessTokenInfo { _, error in
-                if error != nil {
-                    KakaoAuthService.shared.handleKakaoLogin()
-                } else {
-                    Task {
-                        await self.loadingInfoDidKakaoAuth()
-                    }
-                }
-            }
-        } else {
-            KakaoAuthService.shared.handleKakaoLogin()
-        }
-    }
-    
-    func loadingInfoDidKakaoAuth() async {  // 사용자 정보 불러오기
-        UserApi.shared.me { kakaoUser, error in
-            if error != nil {
-                print("카카오톡 사용자 정보 불러오는데 실패했습니다.")
-                
-                return
-            }
-            guard let email = kakaoUser?.kakaoAccount?.email else { return }
-            guard let name = kakaoUser?.kakaoAccount?.profile?.nickname else { return }
-            guard let profileImageURL = kakaoUser?.kakaoAccount?.profile?.profileImageUrl?.absoluteString else { return }
-            let password = String(describing: kakaoUser?.id)
-            
-            // 로그인 되면 그냥 로그인, 안되면 회원가입 후 로그인
-            Task {
-                let isLogedin = await self.login(email: email, password: password)
-                
-                if !isLogedin {
-                    try await self.createUser(email: email,
-                                              password: password,
-                                              name: name,
-                                              profileImageURL: profileImageURL)
-                    
-                    await self.login(email: email, password: password)
-                }
-            }
-            
-        }
-    }
-    
     
     // MARK: - FireStore
-    func loadUserData() async throws {
+    
+    // 유저 정보 가져오기
+    func fetchUserData() async throws {
         self.userSession = Auth.auth().currentUser
         print("Auth.currentUser: \(String(describing: userSession))")
         
@@ -296,125 +226,154 @@ final class LoginViewModel: ObservableObject {
             print("유저 데이터 읽기 성공")
             dump(currentUser)
         }
-        
     }
     
-    func uploadUserToFirestore(userId: String, name: String, profileImageURL: String, apnsToken: String, loginPlatform: LoginPlatform) {
+    /// 각 플랫폼 별 로그아웃 - 로그인되어있는 유저의 loginPlatform으로 분기
+    func firebaseProviderSignOut() async {
+        let platform = currentUser?.loginPlatform
         
-        let user = User(id: userId,
-                        nickname: name,
-                        profileImageURL: profileImageURL,
-                        apnsToken: apnsToken,
-                        createdDate: Date(),
-                        likeGameId: [],
-                        likeShopId: [],
-                        myReviewsCount: 0,
-                        myLikesCount: 0,
-                        loginPlatform: loginPlatform
-        )
-        
-        do {
-            try FirebaseManager.shared.createData(collectionName: "Users", data: user)
-        } catch {
-            print("Firestore에 올리기 실패, \(error)")
-        }
-        
-    }
-    
-    func isNewUser(user: FirebaseAuth.User) async throws -> Bool {
-        let createDate = user.metadata.creationDate
-        guard let createDate else {
-            return true
-        }
-        return Date() > createDate  // 현재 날짜 > 생성일 같겠지? 그럼 올려야지
-    }
-    
-    /// 이메일 회원가입(FirebaseStore에도 등록) ->  카카오가입할때
-    @MainActor
-    func createUser(email: String, password: String, name: String, profileImageURL: String) async throws {
-        do {
-            let result = try await Auth.auth().createUser(withEmail: email, password: password)
-            
-            self.userSession = result.user
-            uploadUserToFirestore(userId: result.user.uid,
-                                  name: name,
-                                  profileImageURL: profileImageURL,
-                                  apnsToken: "카카오톡",
-                                  loginPlatform: .kakakotalk)
-            print("회원가입 성공")
-        } catch {
-            print("회원가입 실패. 에러메세지: \(error.localizedDescription)")
-            throw error
-        }
-    }
-    
-    /// 이메일 로그인
-    func login(email: String, password: String) async -> Bool {
-        await withCheckedContinuation { continuation in
-            Auth.auth().signIn(withEmail: email, password: password) { result, error in
-                if let error {
-                    print(error.localizedDescription)
-                    continuation.resume(returning: false)
-                }
-                
-                if let result {
-                    print("카카오톡 로그인 성공")
-                    continuation.resume(returning: true)
-                }
-            }
-        }
-    }
-    
-    // MARK: - Sign Out
-    /// Sign out a user from Firebase Provider.
-    func firebaseProviderSignOut(_ user: FirebaseAuth.User) async {  // login 저장한 걸로 분기해서 하면 될 듯~~
-        let providers = user.providerData
-            .map { $0.providerID }.joined(separator: ", ")
-        
-        if providers.contains("apple.com") {
-            // TODO: Sign out from Apple
-        }
-        if providers.contains("google.com") {
-            GoogleAuthSerVice.shared.signOutFromGoogle()
-        }
-        
-        if providers.contains("kakao.com") {  // 카카오는 꼭 kakao.com이 아닐 수도 있음
-            // email logout
+        switch platform {
+        case .apple:
+            break  // 애플 로그아웃
+        case .google:
             Task {
+                await GoogleAuthSerVice.shared.signOutFromGoogle()
+            }
+        case .kakakotalk:
+            Task {
+                try Auth.auth().signOut()
                 await KakaoAuthService.shared.handleKakaoLogout()
             }
+        default:
+            break
         }
+        
+        self.currentUser = nil
+        self.userSession = nil
     }
     
-    /// Sign out current `Firebase` auth user
+    /// `FirebaseAuth` 로그아웃
     func signOut() async throws {
         if let user = Auth.auth().currentUser {
             
             // Sign out current authenticated user in Firebase
             do {
-                await firebaseProviderSignOut(user)
+                await firebaseProviderSignOut()
                 try Auth.auth().signOut()
                 self.authState = .signedOut
-            } catch let error as NSError {
-                print("FirebaseAuthError: failed to sign out from Firebase, \(error)")
-                throw error
             }
         }
     }
     
-    fileprivate func deleteAccount() {
-        if  let user = Auth.auth().currentUser {
+    /// 계정삭제 - 회원탈퇴
+    func deleteAccount() async {
+        if let user = Auth.auth().currentUser {
             user.delete { error in
                 if let error = error {
                     print("Firebase Error : ",error)
                 } else {
                     print("회원탈퇴 성공!")
-                    // FireStore 데이터도 지워야 함
-                    // delete가 없음 ㅜ FirebaseManager.shared
+                    Task {  // 카카오톡일 때 로그아웃 후 삭제 -> 토큰 문제
+                        // 토큰을 없앰
+                        if self.currentUser?.loginPlatform == .kakakotalk {
+                            await KakaoAuthService.shared.handleKakaoLogout()
+                        }
+                        try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
+                        print("Firestore - 현재 User 삭제 성공")
+                    }
                 }
             }
         } else {
             print("로그인 정보가 존재하지 않습니다")
         }
     }
+}
+
+
+// MARK: - Login 메서드
+extension LoginViewModel {
+    // 애플 로그인
+    func handleAppleID(_ result: Result<ASAuthorization, Error>) {
+        if case let .success(auth) = result {
+            guard let appleIDCredentials = auth.credential as? ASAuthorizationAppleIDCredential else {
+                print("AppleAuthorization failed: AppleID credential not available")
+                return
+            }
+            
+            Task {
+                do {
+                    let result = try await self.appleAuth(
+                        appleIDCredentials,
+                        nonce: AppleAuthService.nonce
+                    )
+                    if let result = result {
+                        //                        dismiss()
+                        print("애플 로그인 성공 - \(result)")
+                        
+                    }
+                } catch {
+                    print("AppleAuthorization failed: \(error)")
+                    // Here you can show error message to user.
+                }
+            }
+        }
+        else if case let .failure(error) = result {
+            print("AppleAuthorization failed: \(error)")
+            // Here you can show error message to user.
+        }
+    }
+    
+    // 카카오 로그인
+    func signInWithKakao() async {
+        if AuthApi.hasToken() {
+            UserApi.shared.accessTokenInfo { _, error in
+                if error != nil {
+                    // 토큰이 유효하지 않으면 로그인(로그인 시켜서 토큰을 다시 받음)
+                    KakaoAuthService.shared.handleKakaoLogin()
+                } else {  // ???
+                    Task {
+                        await KakaoAuthService.shared.loadingInfoDidKakaoAuth()
+                    }
+                }
+            }
+        } else { // 토큰 없으면 로그인
+            KakaoAuthService.shared.handleKakaoLogin()
+        }
+    }
+    
+    // 구글 로그인
+    func signInWithGoogle() async {
+        await GoogleAuthSerVice.shared.signInWithGoogle { user, error in
+            if let error {
+                print("GoogleSignInError: failed to sign in with Google, \(error))")
+                return
+            }
+            
+            guard let user = user else { return }
+            Task {
+                do {
+                    let result = try await self.googleAuth(user)
+                    if let result {
+                        print("GoogleSignInSuccess: \(result.user.uid)")
+                        let user = result.user
+                        
+                        // 이거 때문에 조금 느릴지도...?
+                        let newUser = try await self.isNewUser(user: user)
+                        
+                        if newUser {
+                            AuthService.shared.uploadUserToFirestore(userId: user.uid,
+                                                                     name: user.displayName ?? "무명",
+                                                                     profileImageURL: user.photoURL?.absoluteString ?? "",
+                                                                     apnsToken: "구글",
+                                                                     loginPlatform: .google)
+                        }
+                    }
+                } catch {
+                    print("GoogleSignInError: failed to authenticate with Google, \(error))")
+                }
+            }
+            
+        }
+    }
+    
 }

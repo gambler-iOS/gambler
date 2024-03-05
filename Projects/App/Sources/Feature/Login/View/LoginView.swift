@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import AuthenticationServices
 
 struct LoginView: View {
     @EnvironmentObject var loginViewModel: LoginViewModel
@@ -36,6 +37,7 @@ struct LoginView: View {
                         }
                     }
                 
+                // TODO: 팀계정 연결 후 애플 로그인 구현
                 Image("appleLogin")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
@@ -49,7 +51,9 @@ struct LoginView: View {
                     .aspectRatio(contentMode: .fill)
                     .frame(height: 60)
                     .onTapGesture {
-                        loginViewModel.signInWithGoogle()
+                        Task {
+                            await loginViewModel.signInWithGoogle()
+                        }
                     }
             }
             .padding(.bottom, 56)

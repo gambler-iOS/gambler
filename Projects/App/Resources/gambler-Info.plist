@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>GIDClientID</key>
-	<string>563905006805-up9ah64e14k162am1o3g2cc64n80r6im.apps.googleusercontent.com</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -31,6 +29,8 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>GIDClientID</key>
+	<string>563905006805-up9ah64e14k162am1o3g2cc64n80r6im.apps.googleusercontent.com</string>
 	<key>KAKAO_APP_KEY</key>
 	<string>$(KAKAO_APP_KEY)</string>
 	<key>LSRequiresIPhoneOS</key>

@@ -81,32 +81,12 @@ final class FirebaseManager {
                                           data: [AnyHashable: Any]) async throws {
         try await db.collection(collectionName).document(byId).updateData(data)
     }
+    
+    func deleteData(collectionName: String, byId: String) async throws {
+            try await db.collection(collectionName).document(byId).delete()
+    }
+    
     //    func getProfileImageURL(path: ImagePath, fileName:String) -> String {
     //        Storage.storage().reference().child(path.rawValue + fileName).fullPath
     //    }
-    
-    
-    /// 파이어스토어에 원하는 다큐먼트가 있는지 확인
-    /// - Parameters:
-    ///   - collectionName: 콜렉션 이름
-    ///   - byId: 다큐먼트이름 - id로 설정
-    /// - Returns: Bool - 있으면 true / 없으면 false
-    func checkDocumentExists(collectionName: String, byId: String, completion: @escaping (Bool, Error?) -> Void) {
-        // 파이어스토어에 있는 특정 다큐먼트를 참조합니다.
-        let docRef = db.collection(collectionName).document(byId)
-        
-        // 해당 다큐먼트의 데이터를 가져오는 메서드를 호출합니다.
-        docRef.getDocument { (document, error) in
-            if let error = error {
-                // 에러가 발생한 경우
-                completion(false, error)
-            } else if let document = document, document.exists {
-                // 다큐먼트가 존재하는 경우
-                completion(true, nil)
-            } else {
-                // 다큐먼트가 존재하지 않는 경우
-                completion(false, nil)
-            }
-        }
-    }
 }

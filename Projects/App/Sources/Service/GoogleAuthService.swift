@@ -9,6 +9,7 @@
 import Foundation
 import GoogleSignIn
 
+@MainActor
 final class GoogleAuthSerVice {
     static let shared = GoogleAuthSerVice()
     
@@ -18,7 +19,7 @@ final class GoogleAuthSerVice {
     
     /// Sign in with `Google`.
     /// - Parameter completion: restore/sign-in 흐름이 완료되면 호출되는 블록
-    func signInWithGoogle(_ completion: @escaping GoogleAuthResult) {
+    func signInWithGoogle(_ completion: @escaping GoogleAuthResult) async {
         // 1. 이전 로그인 확인
         if GIDSignIn.sharedInstance.hasPreviousSignIn() { // 이 전에 로그인 - 사용자의 로그인 복원
             GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
@@ -38,7 +39,7 @@ final class GoogleAuthSerVice {
     }
     
     /// Sign out from `Google`.
-    func signOutFromGoogle() {
+    func signOutFromGoogle() async {
         GIDSignIn.sharedInstance.signOut()
     }
 }
