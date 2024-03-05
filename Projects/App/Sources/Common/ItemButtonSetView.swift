@@ -13,6 +13,7 @@ struct ItemButtonSetView: View {
     let type: MyPageFilter
     var shop: Shop?
     var game: Game?
+    
     @State private var heartState: Bool = false
     
     var body: some View {
@@ -23,7 +24,7 @@ struct ItemButtonSetView: View {
             case .game:
                 GameButtonSet
             }
-        }.padding(.horizontal, 25)
+        }
     }
     
     private var ShopButtonSet: some View {
@@ -38,7 +39,7 @@ struct ItemButtonSetView: View {
             ItemButtonView(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
                 tappedReview()
             }
-        }.padding(.horizontal, 15)
+        }
     }
     
     private var GameButtonSet: some View {
@@ -50,7 +51,7 @@ struct ItemButtonSetView: View {
             ItemButtonView(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
                 tappedReview()
             }
-        }.padding(.horizontal, 40)
+        }
     }
     
     private func tappedCall() {
@@ -86,10 +87,14 @@ struct ItemButtonView: View {
                     .foregroundStyle(Color.gray500)
                     .font(.body1M)
             }
-        }.frame(width: 80)
+            .frame(height: 72)
+            .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/)
+        }
+        
     }
 }
 
 #Preview {
-    ItemButtonSetView(type: .shop, shop: Shop.dummyShop)
+//    ItemButtonSetView(type: .shop, shop: Shop.dummyShop)
+    ItemButtonSetView(type: .game, game: Game.dummyGame)
 }

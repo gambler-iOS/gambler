@@ -38,7 +38,7 @@ struct ShopListView: View {
     }
     
     @ViewBuilder
-    func headerView(title: String, showGrid: Bool) -> some View {
+    private func headerView(title: String, showGrid: Bool) -> some View {
         HStack(alignment: .center, spacing: .zero) {
             GamblerAsset.arrowLeft.swiftUIImage
                 .resizable()
