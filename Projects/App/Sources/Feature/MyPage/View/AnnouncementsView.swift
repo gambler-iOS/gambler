@@ -9,8 +9,8 @@
 import SwiftUI
 
 struct AnnouncementsView: View {
-    @State var showingWebSheet: Bool = false
-    @State var urlLink: String = ""
+    @State private var showingWebSheet: Bool = false
+    @State private var urlLink: String = ""
     
     var body: some View {
         if Notice.dummyNotice.isEmpty {

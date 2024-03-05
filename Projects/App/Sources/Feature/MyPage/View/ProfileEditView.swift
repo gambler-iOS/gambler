@@ -7,16 +7,24 @@
 //
 
 import SwiftUI
+import PhotosUI
+import Kingfisher
 
 struct ProfileEditView: View {
     @State private var nickName: String = ""
     @State private var email: String = ""
+    @State private var selectedPhoto: PhotosPickerItem?
+    @State private var imageData: Data?
+    @Environment(\.presentationMode) var presentationMode
+    
+    #warning("임시")
+    @State private var user: User = User.dummyUser
     
     var body: some View {
         ScrollView {
             VStack {
                 profileView
-                    .padding(32)
+                    .padding(24)
                 BorderView()
                 defaultInfoView
                     .padding(24)
@@ -35,33 +43,60 @@ struct ProfileEditView: View {
                 } label: {
                     Text("완료")
                         .font(.body2M)
+                        .foregroundStyle(Color.gray900)
                 }
-
             }
         }
     }
     
     private func reply() {
         // 완료 동작
+        presentationMode.wrappedValue.dismiss()
     }
     
+    #warning("현재 Data타입을 url로 바꾸는 방법은 storage를 거치는 방법 뿐인것같아 일단은 UIImage로 처리함")
     private var profileView: some View {
         VStack {
-            CircleImageView(imageURL: User.dummyUser.profileImageURL, size: 64)
-                .padding(.bottom, 16)
+            if let data = imageData, let uiImage = UIImage(data: data) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 64, height: 64)
+                    .clipShape(.circle)
+            } else {
+                CircleImageView(imageURL: User.dummyUser.profileImageURL, size: 64)
+            }
+            pickerView
+                .padding(.top, 16)
+        }
+    }
+    
+    private var pickerView: some View {
+        PhotosPicker(
+            selection: $selectedPhoto,
+            matching: .images
+        ) {
             ChipView(label: "프로필 사진 수정", size: .medium)
                 .foregroundStyle(Color.gray400)
-                
+        }
+        .onChange(of: selectedPhoto) {
+            Task {
+                if let data = try? await selectedPhoto?.loadTransferable(type: Data.self) {
+                    imageData = data
+                }
+            }
         }
     }
     
     private var defaultInfoView: some View {
+        
         VStack(alignment: .leading) {
             Text("기본 정보")
                 .padding(.bottom, 24)
                 .font(.subHead1B)
                 .foregroundStyle(Color.gray700)
             profileTextField(title: "닉네임", content: $nickName)
+               
             profileTextField(title: "이메일", content: $email)
         }
     }
@@ -88,34 +123,27 @@ struct ProfileEditView: View {
                 .padding(.vertical, 24)
                 .overlay {
                     VStack {
-                        pluginCellView(image: GamblerAsset.kakaotalkLogo.swiftUIImage, socialName: "카카오톡")
+                        PluginCellView(image: GamblerAsset.kakaotalkLogo.swiftUIImage,
+                                       social: LoginPlatform.kakakotalk,
+                                       user: $user)
                             .padding(.horizontal, 16)
-                        pluginCellView(image: GamblerAsset.appleLogo.swiftUIImage, socialName: "Apple")
+                        PluginCellView(image: GamblerAsset.appleLogo.swiftUIImage,
+                                       social: LoginPlatform.apple,
+                                       user: $user)
                             .padding(.horizontal, 16)
-                        pluginCellView(image: GamblerAsset.googleLogo.swiftUIImage, socialName: "Google")
+                        PluginCellView(image: GamblerAsset.googleLogo.swiftUIImage,
+                                       social: LoginPlatform.google,
+                                       user: $user)
                             .padding(.horizontal, 16)
                     }
                 }
-            Rectangle()
-                .frame(width: 57, height: 30)
-                .cornerRadius(8)
+            Button {
+                // 탈퇴
+            } label: {
+                ProfileButtonView(text: "회원 탈퇴하기", size: 109, isDefaultButton: true)
+            }
         }
     }
-    
-    private func pluginCellView(image: Image, socialName: String) -> some View {
-        HStack {
-            image
-                .resizable()
-                .frame(width: 40, height: 40)
-            Text(socialName)
-            Spacer()
-            Rectangle()
-                .frame(width: 57, height: 30)
-                .cornerRadius(8)
-        }
-        .frame(height: 56)
-    }
-    
 }
 
 #Preview {
