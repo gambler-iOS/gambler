@@ -70,7 +70,6 @@ final class LoginViewModel: ObservableObject {
     func updateState(user: FirebaseAuth.User?) {
         self.userSession = user
         let isAuthenticatedUser = user != nil
-        let isAnonymous = user?.isAnonymous ?? false
         
         if isAuthenticatedUser {
             self.authState = .signedIn
@@ -199,9 +198,6 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
-
- 
-    
     // MARK: - SignInWithGoogle
     @MainActor
     func signInWithGoogle() {
@@ -236,6 +232,53 @@ final class LoginViewModel: ObservableObject {
             
         }
     }
+    
+    // MARK: - SignInWithKakao
+    func signInWithKakao() async {
+        if AuthApi.hasToken() {
+            UserApi.shared.accessTokenInfo { _, error in
+                if error != nil {
+                    KakaoAuthService.shared.handleKakaoLogin()
+                } else {
+                    Task {
+                        await self.loadingInfoDidKakaoAuth()
+                    }
+                }
+            }
+        } else {
+            KakaoAuthService.shared.handleKakaoLogin()
+        }
+    }
+    
+    func loadingInfoDidKakaoAuth() async {  // 사용자 정보 불러오기
+        UserApi.shared.me { kakaoUser, error in
+            if error != nil {
+                print("카카오톡 사용자 정보 불러오는데 실패했습니다.")
+                
+                return
+            }
+            guard let email = kakaoUser?.kakaoAccount?.email else { return }
+            guard let name = kakaoUser?.kakaoAccount?.profile?.nickname else { return }
+            guard let profileImageURL = kakaoUser?.kakaoAccount?.profile?.profileImageUrl?.absoluteString else { return }
+            let password = String(describing: kakaoUser?.id)
+            
+            // 로그인 되면 그냥 로그인, 안되면 회원가입 후 로그인
+            Task {
+                let isLogedin = await self.login(email: email, password: password)
+                
+                if !isLogedin {
+                    try await self.createUser(email: email,
+                                              password: password,
+                                              name: name,
+                                              profileImageURL: profileImageURL)
+                    
+                    await self.login(email: email, password: password)
+                }
+            }
+            
+        }
+    }
+    
     
     // MARK: - FireStore
     func loadUserData() async throws {
@@ -306,33 +349,25 @@ final class LoginViewModel: ObservableObject {
     }
     
     /// 이메일 로그인
-    @MainActor
-    func login(email: String, password: String) async {
-        do {
-            try await Auth.auth().signIn(withEmail: email, password: password)
-            print("로그인 성공")
-        } catch let error as NSError {
-            switch AuthErrorCode.Code(rawValue: error.code) {
-            case .wrongPassword:  // 잘못된 비밀번호
-                break
-            case .userTokenExpired: // 사용자 토큰 만료 -> 사용자가 다른 기기에서 계정 비밀번호를 변경했을수도 있음. -> 재로그인 해야함.
-                break
-            case .tooManyRequests: // Firebase 인증 서버로 비정상적인 횟수만큼 요청이 이루어져 요청을 차단함.
-                break
-            case .userNotFound: // 사용자 계정을 찾을 수 없음.
-                break
-            case .networkError: // 작업 중 네트워크 오류 발생
-                break
-            default:
-                break
+    func login(email: String, password: String) async -> Bool {
+        await withCheckedContinuation { continuation in
+            Auth.auth().signIn(withEmail: email, password: password) { result, error in
+                if let error {
+                    print(error.localizedDescription)
+                    continuation.resume(returning: false)
+                }
+                
+                if let result {
+                    print("카카오톡 로그인 성공")
+                    continuation.resume(returning: true)
+                }
             }
-            print("로그인 실패. 에러메세지: \(error.localizedDescription)")
         }
     }
     
     // MARK: - Sign Out
     /// Sign out a user from Firebase Provider.
-    func firebaseProviderSignOut(_ user: FirebaseAuth.User) async {
+    func firebaseProviderSignOut(_ user: FirebaseAuth.User) async {  // login 저장한 걸로 분기해서 하면 될 듯~~
         let providers = user.providerData
             .map { $0.providerID }.joined(separator: ", ")
         
@@ -345,6 +380,9 @@ final class LoginViewModel: ObservableObject {
         
         if providers.contains("kakao.com") {  // 카카오는 꼭 kakao.com이 아닐 수도 있음
             // email logout
+            Task {
+                await KakaoAuthService.shared.handleKakaoLogout()
+            }
         }
     }
     

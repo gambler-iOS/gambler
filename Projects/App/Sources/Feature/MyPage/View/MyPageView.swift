@@ -8,6 +8,8 @@
 
 import SwiftUI
 import Kingfisher
+import KakaoSDKAuth
+import KakaoSDKCommon
 
 struct MyPageView: View {
     @EnvironmentObject var myPageViewModel: MyPageViewModel

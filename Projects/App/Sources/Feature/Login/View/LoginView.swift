@@ -31,7 +31,9 @@ struct LoginView: View {
                     .aspectRatio(contentMode: .fill)
                     .frame(height: 60)
                     .onTapGesture {
-                        // 카카오톡 로그인
+                        Task {
+                            await loginViewModel.signInWithKakao()
+                        }
                     }
                 
                 Image("appleLogin")
@@ -47,7 +49,6 @@ struct LoginView: View {
                     .aspectRatio(contentMode: .fill)
                     .frame(height: 60)
                     .onTapGesture {
-                        // 구글 로그인
                         loginViewModel.signInWithGoogle()
                     }
             }
