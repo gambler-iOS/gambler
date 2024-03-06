@@ -24,7 +24,7 @@ struct WebView: UIViewControllerRepresentable {
        }
 }
 
-class UrlErrorViewController: UIViewController {
+final class UrlErrorViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 

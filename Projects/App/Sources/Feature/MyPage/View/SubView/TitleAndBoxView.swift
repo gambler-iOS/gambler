@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct TitleAndBoxView: View {
-    var title: String
+    let title: String
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
