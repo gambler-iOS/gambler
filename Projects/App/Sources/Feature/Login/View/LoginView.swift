@@ -10,6 +10,7 @@ import SwiftUI
 import AuthenticationServices
 
 struct LoginView: View {
+    // 여기는 회원가입 뷰를 추가할 예정이라 private 없이 진행하도록 하겠습니다!
     @EnvironmentObject var loginViewModel: LoginViewModel
     
 #warning("뷰 padding 수정 필요")
@@ -57,14 +58,6 @@ struct LoginView: View {
                     }
             }
             .padding(.bottom, 56)
-            
-            HStack {
-                Text("이미 가입하셨나요?")
-                Text("로그인")
-                    .underline()
-            }
-            .foregroundStyle(Color.gray600)
-            .padding(.bottom, 24)
             
         }
         .padding(.horizontal, 24)

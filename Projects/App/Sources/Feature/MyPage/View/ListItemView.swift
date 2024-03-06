@@ -9,9 +9,8 @@
 import SwiftUI
 
 struct ListItemView: View {
-    @EnvironmentObject var myPageViewModel: MyPageViewModel
-    @EnvironmentObject var reviewViewModel: ReviewViewModel
-    @EnvironmentObject var loginViewModel: LoginViewModel
+    @EnvironmentObject private var myPageViewModel: MyPageViewModel
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     
     var body: some View {
         HStack {
@@ -20,9 +19,7 @@ struct ListItemView: View {
                     .font(.subHead2B)
                 
                 Group {
-//                    listBodyView(title: "프로필 수정", destination: ProfileEditView())
-                    listBodyView(title: "프로필 수정", destination: ReviewDetailView( reviewableItem: Shop.dummyShop)
-                        .environmentObject(reviewViewModel))
+                    listBodyView(title: "프로필 수정", destination: ProfileEditView())
                     
                     listBodyView(title: "알림 설정", destination: NotificationSettingView())
                     
@@ -87,6 +84,5 @@ struct ListItemView: View {
 #Preview {
     ListItemView()
         .environmentObject(MyPageViewModel())
-        .environmentObject(ReviewViewModel())
         .environmentObject(LoginViewModel())
 }

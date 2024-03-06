@@ -12,7 +12,7 @@ import KakaoSDKAuth
 import KakaoSDKCommon
 
 struct MyPageView: View {
-    @EnvironmentObject var myPageViewModel: MyPageViewModel
+    @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject var loginViewModel: LoginViewModel
     
 #warning("로그인 플랫폼 로직 구현 필요")

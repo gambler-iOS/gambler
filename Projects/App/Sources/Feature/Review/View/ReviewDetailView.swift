@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct ReviewDetailView: View {
-    @EnvironmentObject var reviewViewModel: ReviewViewModel
+    @EnvironmentObject private var reviewViewModel: ReviewViewModel
     
     let reviewableItem: AvailableAggregateReview
     
