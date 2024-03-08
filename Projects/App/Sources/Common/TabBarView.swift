@@ -10,10 +10,10 @@ import SwiftUI
 
 struct TabBarView: View {
     @State private var selectedTab = 0
+    @State private var draw = false
     @StateObject private var myPageViewModel = MyPageViewModel()
     @StateObject private var reviewViewModel = ReviewViewModel()
     @StateObject private var appNavigationPath = AppNavigationPath()
-    
     var body: some View {
         TabView(selection: $selectedTab) {
             
@@ -31,7 +31,7 @@ struct TabBarView: View {
                 }
                 .tag(0)
             
-            MapView()
+            MapView(draw: $draw)
                 .tabItem {
                     HStack {
                         (selectedTab == 1 ?
@@ -65,6 +65,13 @@ struct TabBarView: View {
                 .tag(3)
         }
         .tint(Color.primaryDefault)
+        .onAppear {
+            self.draw = true
+        }
+        .onDisappear {
+            self.draw = false
+        }
+    
     }
 }
 

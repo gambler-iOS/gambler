@@ -48,8 +48,7 @@ extension KakaoMapView.KakaoMapCoordinator {
                   let manager = view.getLabelManager()
                   let layer = manager.getLabelLayer(layerID: "tappedPoiLayer")
                   let marker = layer?.getPoi(poiID: tapPoiId)
-                  
-                 
+                
                   if recentPoiId != param.poiItem.itemID {
                       self.moveCameraToFocus(MapPoint(longitude: Double(markerData.location.longitude),
                                                       latitude: markerData.location.latitude))

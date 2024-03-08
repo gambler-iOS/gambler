@@ -13,7 +13,7 @@ import CoreLocation
 
 struct MapView: View {
     @StateObject private var shopStore = ShopStore()
-    @State private var draw: Bool = false
+    @Binding var draw: Bool
     @State private var isLoading: Bool = true
     @State private var isShowingSheet: Bool = false
     @State private var selectedShop: Shop = Shop.dummyShop
@@ -22,9 +22,6 @@ struct MapView: View {
     var body: some View {
         KakaoMapView(userLocate: $userLocate, selectedShop: $selectedShop,
                      draw: $draw, isShowingSheet: $isShowingSheet, isLoading: $isLoading)
-            .onAppear {
-                self.draw = true
-            }
             .overlay {
                 Group {
                     if isLoading {
