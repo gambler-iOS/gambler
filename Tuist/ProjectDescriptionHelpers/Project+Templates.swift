@@ -11,7 +11,7 @@ public extension Project {
             name: String,
             platform: Platform = .iOS,
             product: Product,
-            organizationName: String = "gambler",
+            organizationName: String = "gamblerTeam",
             packages: [Package] = [],
             deploymentTarget: DeploymentTarget? = .iOS(targetVersion: "17.0", devices: [.iphone]),
             dependencies: [TargetDependency] = [],
