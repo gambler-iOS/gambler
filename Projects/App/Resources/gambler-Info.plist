@@ -30,7 +30,7 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>GIDClientID</key>
-	<string>563905006805-up9ah64e14k162am1o3g2cc64n80r6im.apps.googleusercontent.com</string>
+	<string>${GIDClientID}</string>
 	<key>KAKAO_APP_KEY</key>
 	<string>$(KAKAO_APP_KEY)</string>
 	<key>LSRequiresIPhoneOS</key>
