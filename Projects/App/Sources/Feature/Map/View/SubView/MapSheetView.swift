@@ -19,11 +19,15 @@ struct MapSheetView: View {
             if shopStore.userAreaShopList.isEmpty {
                 Text("없음")
             } else {
-                ForEach(shopStore.userAreaShopList) { i in
-                    Text("\(i.shopName)")
+                ScrollView {
+                    ForEach(shopStore.userAreaShopList) { i in
+                        Text("\(i.shopName)")
+                    }
                 }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.white)
     }
 }
 

@@ -14,6 +14,7 @@ struct TabBarView: View {
     @StateObject private var myPageViewModel = MyPageViewModel()
     @StateObject private var reviewViewModel = ReviewViewModel()
     @StateObject private var appNavigationPath = AppNavigationPath()
+    
     var body: some View {
         TabView(selection: $selectedTab) {
             
