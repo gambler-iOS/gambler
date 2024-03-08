@@ -28,7 +28,6 @@ struct FloatingView: View {
     
     private var showListButtonView: some View {
         Button(action: {
-            print("되긴 했어..?")
             shopStore.fetchUserAreaShopList(userPoint: userLocate)
             withAnimation {
                 isShowingSheet = true
