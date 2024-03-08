@@ -43,29 +43,32 @@ extension KakaoMapView.KakaoMapCoordinator {
     }
     
     func poiDidTapped(_ param: PoiInteractionEventParam) {
-        if let markerData = param.poiItem.userObject as? Shop {
-            if let mapView = controller?.getView("mapview") as? KakaoMap {
-                let manager = mapView.getLabelManager()
-                let layer = manager.getLabelLayer(layerID: "PoiLayer")
-                
-                if recentPoiId != param.poiItem.itemID {
-                    self.moveCameraToFocus(MapPoint(longitude: Double(markerData.location.longitude),
-                                                    latitude: markerData.location.latitude))
-                    
-                    let tabMarker = layer?.getPoi(poiID: param.poiItem.itemID)
-                    tabMarker?.changeStyle(styleID: "pickPoiIconStyle")
-                    
-                    if let recentMarkerId = recentPoiId {
-                        let recentMarker = layer?.getPoi(poiID: recentMarkerId)
-                        recentMarker?.changeStyle(styleID: "shopPoiIconStyle")
-                    }
-                    
-                    recentPoiId = param.poiItem.itemID
-                    selectedShop = markerData
-                }
-            }
-        }
-    }
+          if let markerData = param.poiItem.userObject as? Shop {
+              if let view = controller?.getView("mapview") as? KakaoMap {
+                  let manager = view.getLabelManager()
+                  let layer = manager.getLabelLayer(layerID: "tappedPoiLayer")
+                  let marker = layer?.getPoi(poiID: tapPoiId)
+                  
+                 
+                  if recentPoiId != param.poiItem.itemID {
+                      self.moveCameraToFocus(MapPoint(longitude: Double(markerData.location.longitude),
+                                                      latitude: markerData.location.latitude))
+                      if firstTap {
+                          createTappedPoi(mapPoint: MapPoint(longitude: Double(markerData.location.longitude),
+                                                             latitude: markerData.location.latitude))
+                          firstTap = false
+                      }
+                      
+                      let tabMarker = layer?.getPoi(poiID: param.poiItem.itemID)
+                      marker?.position =  MapPoint(longitude: markerData.location.longitude, latitude: markerData.location.latitude)
+                      
+                      recentPoiId = param.poiItem.itemID
+                      selectedShop = markerData
+                      marker?.show()
+                  }
+              }
+          }
+      }
     
     func guiDidTapped(_ gui: GuiBase, componentName: String) {
         print("Gui: \(gui.name), Component: \(componentName) tapped")
@@ -78,6 +81,24 @@ extension KakaoMapView.KakaoMapCoordinator {
 
 /// UI
 extension KakaoMapView.KakaoMapCoordinator {
+   
+   func createTappedPoi(mapPoint: MapPoint) {
+          if let view = controller?.getView("mapview") as? KakaoMap {
+              let manager = view.getLabelManager()
+              let layer = manager.getLabelLayer(layerID: "tappedPoiLayer")
+              let poiOption = PoiOptions(styleID: "pickPoiIconStyle")
+              
+              poiOption.rank = 0
+              poiOption.transformType = .decal
+              poiOption.clickable = true
+              
+              let markerPoint = mapPoint
+              let marker = layer?.addPoi(option: poiOption, at: markerPoint)
+              tapPoiId = marker?.itemID ?? ""
+              print("[Action: Create PoiID \(locationPoiID)]")
+              marker?.show()
+          }
+      }
     
     func createPoisOnMap() {
         if let mapView = controller?.getView("mapview") as? KakaoMap {
@@ -179,11 +200,19 @@ extension KakaoMapView.KakaoMapCoordinator {
                                                       orderType: .rank, zOrder: 5000)
             _ = manager.addLabelLayer(option: markerLayerOption)
             
+            let tappedMarkerLayerOption = LabelLayerOptions(layerID: "tappedPoiLayer"
+                                                            ,competitionType: .none,
+                                                            competitionUnit: .symbolFirst,
+                                                            orderType: .rank, zOrder: 6000)
+            _ = manager.addLabelLayer(option: tappedMarkerLayerOption)
+            
             let myLocationLayerOption =  LabelLayerOptions(layerID: "myLocationLayer"
                                                            ,competitionType: .none, 
                                                            competitionUnit: .symbolFirst,
                                                            orderType: .rank, zOrder: 7000)
             _ = manager.addLabelLayer(option: myLocationLayerOption)
+            
+           
         }
     }
 }

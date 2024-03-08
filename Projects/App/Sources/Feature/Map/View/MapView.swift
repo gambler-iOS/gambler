@@ -25,10 +25,6 @@ struct MapView: View {
             .onAppear {
                 self.draw = true
             }
-            .onDisappear(perform: {
-               // self.draw = false
-                isLoading = false
-            })
             .overlay {
                 Group {
                     if isLoading {

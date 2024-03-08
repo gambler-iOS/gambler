@@ -58,6 +58,8 @@ struct KakaoMapView: UIViewRepresentable {
         var cameraStartHandler: DisposableEventHandler?
         var locationPoiID: String = ""
         var recentPoiId: String?
+        var tapPoiId: String = ""
+        var firstTap: Bool = true
         
         init (userLocate: Binding<GeoPoint>, isShowingSheet: Binding<Bool>,
               tappedShop: Binding<Shop>, isLoading: Binding<Bool>) {
@@ -79,10 +81,6 @@ struct KakaoMapView: UIViewRepresentable {
             let mapviewInfo: MapviewInfo =
             MapviewInfo(viewName: "mapview", viewInfoName: "map", defaultPosition: defaultPosition)
             controller?.addView(mapviewInfo)
-            /*if controller?.addView(mapviewInfo) == Result.OK {
-                settingMap()
-                isLoading  = false
-            }*/
         }
         
         func addViewSucceeded(_ viewName: String, viewInfoName: String) {
