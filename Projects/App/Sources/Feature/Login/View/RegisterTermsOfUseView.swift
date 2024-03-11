@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct RegisterTermsOfUseView: View {
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     @State private var isDisabled: Bool = true
     @State private var agreedAll: Bool = false
     @State private var agreedFirstItem: Bool = false
@@ -40,6 +41,9 @@ struct RegisterTermsOfUseView: View {
                     
                     if newValue && agreedSecondItem {
                         agreedAll = true
+                        isDisabled = false
+                    } else {
+                        isDisabled = true
                     }
                 }
                 .onChange(of: agreedSecondItem) { _, newValue in
@@ -49,6 +53,9 @@ struct RegisterTermsOfUseView: View {
                     
                     if newValue && agreedFirstItem {
                         agreedAll = true
+                        isDisabled = false
+                    } else {
+                        isDisabled = true
                     }
                 }
             
@@ -58,6 +65,17 @@ struct RegisterTermsOfUseView: View {
                 // 1. Auth에 등록
                 // 2. Firestore에 올리기
                 // 3. 로그인하기
+                guard let user = loginViewModel.currentUser else {
+                    print(#fileID, #function, #line, "- 회원가입 실패 ")
+                    return
+                }
+                
+                AuthService.shared.uploadUserToFirestore(userId: user.id,
+                                                         name: user.nickname,
+                                                         profileImageURL: user.profileImageURL,
+                                                         apnsToken: user.apnsToken ?? "없음",
+                                                         loginPlatform: user.loginPlatform)
+                
             }
             .padding(.bottom, 24)
         }
@@ -82,4 +100,5 @@ struct RegisterTermsOfUseView: View {
 
 #Preview {
     RegisterTermsOfUseView()
+        .environmentObject(LoginViewModel())
 }

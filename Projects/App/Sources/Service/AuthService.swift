@@ -23,7 +23,7 @@ final class AuthService {
                     continuation.resume(returning: false)
                 }
                 
-                if let _ = result {
+                if let result {
                     print("카카오톡 로그인 성공")
                     continuation.resume(returning: true)
                 }

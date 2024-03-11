@@ -10,12 +10,11 @@ import SwiftUI
 
 struct TextFieldView: View {
     @Binding var text: String
-    @State private var isEditing = false
+    @Binding var isDuplicated: Bool
+    @State private var isEditing: Bool = false
+    @State private var textColor: Color = Color.gray300
     
-    /*  1. 영어 / 한글 / 숫자만 입력받음
-        2. 최대 20글자만 받도록
-        3. 닉네임 중복 확인
-    */
+    private let maxLength: Int = 20
     
     var body: some View {
         VStack(alignment: .leading, spacing: .zero) {
@@ -32,12 +31,22 @@ struct TextFieldView: View {
                 })
                 .foregroundColor(.gray700)
                 .keyboardType(.webSearch)
+                .autocorrectionDisabled()
+                .onChange(of: self.text) { _, newValue in
+                    textColor = isValidInput(input: newValue) ? Color.gray300 : Color.primaryDefault
+                }
+                .onChange(of: self.text) { _, newValue in
+                    if newValue.count > maxLength {
+                        self.text = String(newValue.prefix(maxLength))
+                    }
+                }
                 
                 if !text.isEmpty {
                     Button {
                         text = ""
                     } label: {
-                        Image("searchClosed")  // 중복 아니면 Image("Success")
+                        Image(isDuplicated ? "searchClosed" :
+                        "Success")
                             .resizable()
                             .frame(width: 24, height: 24)
                     }
@@ -49,11 +58,29 @@ struct TextFieldView: View {
             
             Text("영문, 한글, 숫자를 사용하여 20자까지 가능합니다.")
                 .font(.caption1M)
-                .foregroundStyle(Color.gray300)  // 조건에 따라 PrimaryDefault
+                .foregroundStyle(textColor)  // 조건에 따라 PrimaryDefault
+        }
+    }
+    
+    /// 입력이 한글, 영어, 숫자로만 이루어져 있는지를 판별하는 함수
+    /// - Parameter input: 텍스트 필드의 텍스트
+    /// - Returns: Bool
+    private func isValidInput(input: String) -> Bool {
+        let pattern = "^[가-힣a-zA-Z0-9]+$"  // 정규식 패턴(한글/영어/숫자)
+        
+        do {
+            let regex = try NSRegularExpression(pattern: pattern, options: .caseInsensitive)  // 대소문자 구분하지 않고 탐색
+            let nsInput = input as NSString
+            let matches = regex.matches(in: input, options: [], range: NSRange(location: 0, length: nsInput.length))
+            
+            return !matches.isEmpty  // matches.count > 0
+        } catch {
+            print("Regex Error: \(error.localizedDescription)")
+            return false
         }
     }
 }
 
 #Preview {
-    TextFieldView(text: .constant(""))
+    TextFieldView(text: .constant(""), isDuplicated: .constant(false))
 }

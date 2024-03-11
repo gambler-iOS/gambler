@@ -24,6 +24,8 @@ final class LoginViewModel: ObservableObject {
     @Published var currentUser: User?
     @Published var userSession: FirebaseAuth.User?
     @Published var authState = AuthState.signedOut
+    @Published var isRegisterationViewPop: Bool = false
+    // 여기서 회원가입 뷰에 대한 변수를 부울타입으로 해야할 듯??
     
     // 1. 이 리스너는 사용자의 로그인 상태가 바뀔 때마다 호출됨
     private var authStateHandle: AuthStateDidChangeListenerHandle!
@@ -200,12 +202,18 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
-    fileprivate func isNewUser(user: FirebaseAuth.User) async throws -> Bool {
-        let createDate = user.metadata.creationDate
-        guard let createDate else {
+    
+    /// 새로 가입한 유저인지 확인
+    /// - Parameter user: 파이어베이스 어스의 유저
+    /// - Returns: 새로 가입하는 유저 - true / 기존 유저 - false
+    fileprivate func isNewUser(uid: String) async throws -> Bool {
+        // Store에 해당 데이터가 있는지로 봐야할 듯..?
+        guard let registered = await FirebaseManager.shared.fetchOneData(collectionName: "Users", objectType: User.self, byId: uid) else {
+            print("첫 로그인")
             return true
         }
-        return Date() > createDate
+        print("기존 로그인")
+        return false
     }
     
     // MARK: - FireStore
@@ -223,6 +231,11 @@ final class LoginViewModel: ObservableObject {
         
         do {
             currentUser = await FirebaseManager.shared.fetchOneData(collectionName: "Users", objectType: User.self, byId: currentUid)
+            
+            guard let user = currentUser else {
+                print("파이어스토어에 유저 정보 없음")
+                return
+            }
             print("유저 데이터 읽기 성공")
             dump(currentUser)
         }
@@ -234,7 +247,8 @@ final class LoginViewModel: ObservableObject {
         
         switch platform {
         case .apple:
-            break  // 애플 로그아웃
+            AppleAuthService.shared.signOutFromApple()
+            
         case .google:
             Task {
                 await GoogleAuthSerVice.shared.signOutFromGoogle()
@@ -289,7 +303,6 @@ final class LoginViewModel: ObservableObject {
     }
 }
 
-
 // MARK: - Login 메서드
 extension LoginViewModel {
     // 애플 로그인
@@ -309,7 +322,16 @@ extension LoginViewModel {
                     if let result = result {
                         //                        dismiss()
                         print("애플 로그인 성공 - \(result)")
+                        // 여기서 스토어에 올리던가 해야지
+                        let user = result.user
                         
+                        if try await self.isNewUser(uid: user.uid) {
+                            AuthService.shared.uploadUserToFirestore(userId: user.uid,
+                                                                     name: user.displayName ?? "무명",
+                                                                     profileImageURL: user.photoURL?.absoluteString ?? "",
+                                                                     apnsToken: "애플",
+                                                                     loginPlatform: .apple)
+                        }
                     }
                 } catch {
                     print("AppleAuthorization failed: \(error)")
@@ -341,7 +363,8 @@ extension LoginViewModel {
         }
     }
     
-    // 구글 로그인
+    
+    /// 구글 로그인
     func signInWithGoogle() async {
         await GoogleAuthSerVice.shared.signInWithGoogle { user, error in
             if let error {
@@ -357,10 +380,7 @@ extension LoginViewModel {
                         print("GoogleSignInSuccess: \(result.user.uid)")
                         let user = result.user
                         
-                        // 이거 때문에 조금 느릴지도...?
-                        let newUser = try await self.isNewUser(user: user)
-                        
-                        if newUser {
+                        if try await self.isNewUser(uid: user.uid) {
                             AuthService.shared.uploadUserToFirestore(userId: user.uid,
                                                                      name: user.displayName ?? "무명",
                                                                      profileImageURL: user.photoURL?.absoluteString ?? "",
@@ -375,5 +395,4 @@ extension LoginViewModel {
             
         }
     }
-    
 }

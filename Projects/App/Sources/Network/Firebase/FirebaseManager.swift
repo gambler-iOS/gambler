@@ -70,7 +70,8 @@ final class FirebaseManager {
             let querySnapshot = try await db.collection(collectionName)
                 .whereField("id", isEqualTo: byId).getDocuments()
             let data = querySnapshot.documents.compactMap { try? $0.data(as: objectType) }
-            return data[0]
+//            return data[0]  // 인덱스로 접근하면 에러날 확률이 있어 first로 접근
+            return data.first
         } catch {
             print("Error fetching \(collectionName): \(error.localizedDescription)")
         }

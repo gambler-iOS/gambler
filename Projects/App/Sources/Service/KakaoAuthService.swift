@@ -16,6 +16,9 @@ final class KakaoAuthService {
     static let shared = KakaoAuthService()
     
     private let kakao = UserApi.shared
+
+//    typealias KakaoAuthResult = (UserApi.shared.me.user?, Error?) -> Void
+
     
     private init() { }
     
@@ -79,6 +82,7 @@ final class KakaoAuthService {
                 
                 return
             }
+            
             guard let email = kakaoUser?.kakaoAccount?.email else { return }
             guard let name = kakaoUser?.kakaoAccount?.profile?.nickname else { return }
             guard let profileImageURL = kakaoUser?.kakaoAccount?.profile?.profileImageUrl?.absoluteString else { return }
