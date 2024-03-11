@@ -13,4 +13,12 @@ struct Notice: AvailableFirebase {
     let noticeTitle: String
     let noticeLink: String
     let createdDate: Date
+    
+    static let dummyNotice: [Notice] = [Notice(
+        id: UUID().uuidString,
+        noticeTitle: "앱 1.0.1 업데이트 안내",
+        noticeLink: "ㅇㅅㅇ",
+        createdDate: Date())
+    ]
+    
 }

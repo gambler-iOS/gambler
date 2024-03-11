@@ -19,9 +19,9 @@ struct ListItemView: View {
                     .font(.subHead2B)
                 
                 Group {
-//                    listBodyView(title: "프로필 수정", destination: ProfileEditView())
-                    listBodyView(title: "프로필 수정", destination: ReviewDetailView( reviewableItem: Shop.dummyShop)
-                        .environmentObject(reviewViewModel))
+                  listBodyView(title: "프로필 수정", destination: ProfileEditView())
+                   /* listBodyView(title: "프로필 수정", destination: ReviewDetailView( reviewableItem: Shop.dummyShop)
+                        .environmentObject(reviewViewModel))*/
                     
                     listBodyView(title: "알림 설정", destination: NotificationSettingView())
                     

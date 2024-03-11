@@ -11,6 +11,7 @@ import Kingfisher
 
 struct MyPageView: View {
     @EnvironmentObject var myPageViewModel: MyPageViewModel
+    
 #warning("로그인 플랫폼 로직 구현 필요")
     let loginPlatform: String = "카카오톡"
     
