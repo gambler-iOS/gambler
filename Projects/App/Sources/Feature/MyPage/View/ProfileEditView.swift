@@ -15,36 +15,48 @@ struct ProfileEditView: View {
     @State private var email: String = ""
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var imageData: Data?
+    @State private var isShowingResingModal: Bool = false
     @Environment(\.presentationMode) var presentationMode
     
     #warning("임시")
     @State private var user: User = User.dummyUser
     
     var body: some View {
-        ScrollView {
-            VStack {
-                profileView
-                    .padding(24)
-                BorderView()
-                defaultInfoView
-                    .padding(24)
-                BorderView()
-                pluginView
-                    .padding(24)
-            }
-            .padding(.bottom, 60)
-        }
-        .navigationTitle("프로필 수정")
-        .modifier(BackButton())
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    reply()
-                } label: {
-                    Text("완료")
-                        .font(.body2M)
-                        .foregroundStyle(Color.gray900)
+        ZStack {
+            ScrollView {
+                VStack {
+                    profileView
+                        .padding(24)
+                    BorderView()
+                    defaultInfoView
+                        .padding(24)
+                    BorderView()
+                    pluginView
+                        .padding(24)
                 }
+                .padding(.bottom, 60)
+            }
+            .navigationTitle("프로필 수정")
+            .modifier(BackButton())
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        reply()
+                    } label: {
+                        Text("완료")
+                            .font(.body2M)
+                            .foregroundStyle(Color.gray900)
+                    }
+                }
+            }
+            if isShowingResingModal {
+                ResignModalView(isShowingResingModal: $isShowingResingModal)
+                    .background {
+                        Color.black.opacity(0.5)
+                            .frame(width: UIScreen.main.bounds.width,
+                                   height: UIScreen.main.bounds.height)
+                            .edgesIgnoringSafeArea(.all)
+                    }
             }
         }
     }
@@ -138,9 +150,9 @@ struct ProfileEditView: View {
                     }
                 }
             Button {
-                // 탈퇴
+                isShowingResingModal = true
             } label: {
-                ProfileButtonView(text: "회원 탈퇴하기", size: 109, isDefaultButton: true)
+                ProfileButtonView(text: "회원 탈퇴하기", width: 109, height: 30, isDefaultButton: true)
             }
         }
     }

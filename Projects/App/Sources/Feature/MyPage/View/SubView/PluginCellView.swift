@@ -25,11 +25,12 @@ struct PluginCellView: View {
                 .frame(width: 40, height: 40)
             Text(social.description)
             Spacer()
-            ProfileButtonView(text: isUserSocial ? "연결 해제" : "연결", 
-                              size: isUserSocial ? 84 : 57,
+            ProfileButtonView(text: isUserSocial ? "연결됨" : "연결",
+                              width: isUserSocial ? 69 : 57, height: 30,
                               isDefaultButton: isUserSocial)
+            .disabled(!isUserSocial)
                 .onTapGesture {
-                    user.loginPlatform = social
+                    // user.loginPlatform = social
                 }
         }
         .frame(height: 56)
