@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct MyLikesView: View {
-    @EnvironmentObject var myPageViewModel: MyPageViewModel
+    @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @State private var selectedFilter = AppConstants.MyPageFilter.allCases.first ?? .shop
     
     var body: some View {
