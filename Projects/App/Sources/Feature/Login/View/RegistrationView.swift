@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct RegisterationView: View {
+struct RegistrationView: View {
     @EnvironmentObject var loginViewModel: LoginViewModel
     
     @State private var isDisabled: Bool = true
@@ -66,6 +66,6 @@ struct RegisterationView: View {
 }
 
 #Preview {
-    RegisterationView()
+    RegistrationView()
         .environmentObject(LoginViewModel())
 }

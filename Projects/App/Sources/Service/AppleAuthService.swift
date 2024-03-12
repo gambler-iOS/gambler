@@ -87,5 +87,8 @@ extension AppleAuthService {
         // revokeToken + firebase 회원탈퇴 두개 다 진행해줘야 한다.
         // JWT를 생성하고 Apple ID를 사용하는 앱 항목에서 내 앱을 삭제하기 위해서는 이 api를 처리할 서버로직이 필요하다
         // Firebase의 Cloud Functions를 사용하면 백엔드 로직을 간단하게 구현
+        
+        // https://weekoding.tistory.com/29 참고
+        // swift jwt를 발급 받고, store에 저장하고 있다가, 탈퇴할 떄 jwt랑 토큰 활용
     }
 }

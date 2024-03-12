@@ -66,11 +66,11 @@ struct LoginView: View {
                             }
                         }
                         .navigationDestination(isPresented: $loginViewModel.isRegisterationViewPop) {
-                            RegisterationView()
+                            RegistrationView()
                                 .environmentObject(loginViewModel)
                         }
                 }
-                .padding(.bottom, 56)
+                .padding(.bottom, 32)
             }
             .padding(.horizontal, 24)
         }
