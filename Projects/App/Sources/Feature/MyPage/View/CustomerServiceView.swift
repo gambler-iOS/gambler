@@ -11,10 +11,10 @@ import SwiftUI
 struct CustomerServiceView: View {
     @State private var choiceCategory: ComplainCategory = .spam
     @State private var isShowingDropMenu = false
-    
     @State private var serviceContent: String = ""
-    @State private var rating: Double = 0.0
     @State private var disabledButton: Bool = true
+    
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         VStack(alignment: .leading, spacing: .zero) {
@@ -33,6 +33,7 @@ struct CustomerServiceView: View {
             Spacer()
             CTAButton(disabled: $disabledButton, title: "완료") {
                 print("완료 버튼 눌림")
+                presentationMode.wrappedValue.dismiss()
             }
             .padding(.bottom, 24)
         }
@@ -49,9 +50,6 @@ struct CustomerServiceView: View {
                 
             }
         })
-        .onReceive([self.rating].publisher.first()) { _ in
-            self.updateDisabledButton()
-        }
         .onReceive([self.serviceContent].publisher.first()) { _ in
             self.updateDisabledButton()
         }
@@ -92,7 +90,11 @@ struct CustomerServiceView: View {
     }
     
     private func updateDisabledButton() {
-        self.disabledButton = rating == 0.0 || serviceContent.isEmpty
+        if !serviceContent.isEmpty {
+            disabledButton = false
+        } else {
+            disabledButton = true
+        }
     }
 }
 
