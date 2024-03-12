@@ -13,7 +13,7 @@ struct GameDetailView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @EnvironmentObject private var gameDetailViewModel: GameDetailViewModel
     @State private var offsetY: CGFloat = CGFloat.zero
-    let mainImageHeight: CGFloat = 290
+    private let mainImageHeight: CGFloat = 290
     let game: Game
     
     var body: some View {
