@@ -8,39 +8,49 @@
 
 import SwiftUI
 import Kingfisher
+import KakaoSDKAuth
+import KakaoSDKCommon
 
 struct MyPageView: View {
-    @EnvironmentObject var myPageViewModel: MyPageViewModel
+    @EnvironmentObject private var myPageViewModel: MyPageViewModel
+    @EnvironmentObject var loginViewModel: LoginViewModel
     
 #warning("로그인 플랫폼 로직 구현 필요")
     let loginPlatform: String = "카카오톡"
     
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: .zero) {
-                    myPageHeaderView(imageURL: myPageViewModel.user.profileImageURL, nickname: myPageViewModel.user.nickname, loginPlatform: self.loginPlatform)
-                    
-                    HStack {
-                        Spacer()
-                        navigationView(title: "나의 리뷰", destination: MyReviewsView(), count: "\(User.dummyUser.myReviewsCount)")
-                        Spacer()
-                        Divider()
-                            .frame(width: 1, height: 44)
-                            .foregroundStyle(Color.gray200)
-                        Spacer()
-                        navigationView(title: "좋아요", destination: MyLikesView(), count: "\(User.dummyUser.myLikesCount)")
-                        Spacer()
+        
+        if loginViewModel.authState == .signedOut {
+            LoginView()
+                .environmentObject(loginViewModel)
+        } else {
+            NavigationStack {
+                ScrollView {
+                    VStack(spacing: .zero) {
+                        myPageHeaderView(imageURL: myPageViewModel.user.profileImageURL, nickname: myPageViewModel.user.nickname, loginPlatform: self.loginPlatform)
+                        
+                        HStack {
+                            Spacer()
+                            navigationView(title: "나의 리뷰", destination: MyReviewsView(), count: "\(User.dummyUser.myReviewsCount)")
+                            Spacer()
+                            Divider()
+                                .frame(width: 1, height: 44)
+                                .foregroundStyle(Color.gray200)
+                            Spacer()
+                            navigationView(title: "좋아요", destination: MyLikesView(), count: "\(User.dummyUser.myLikesCount)")
+                            Spacer()
+                        }
+                        .frame(height: 140)
+                        .background(Color.gray50)
+                        .clipShape(.rect(cornerRadius: 8))
+                        
+                        ListItemView()
+                            .environmentObject(loginViewModel)
                     }
-                    .frame(height: 140)
-                    .background(Color.gray50)
-                    .clipShape(.rect(cornerRadius: 8))
-                    
-                    ListItemView()
                 }
+                .padding(.horizontal, 24)
+                .scrollIndicators(.hidden)
             }
-            .padding(.horizontal, 24)
-            .scrollIndicators(.hidden)
         }
     }
     
@@ -79,4 +89,5 @@ struct MyPageView: View {
 #Preview {
     MyPageView()
         .environmentObject(MyPageViewModel())
+        .environmentObject(LoginViewModel())
 }

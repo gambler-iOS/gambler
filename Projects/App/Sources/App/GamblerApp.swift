@@ -9,16 +9,20 @@
 import SwiftUI
 import CoreLocation
 import SwiftData
+import KakaoSDKCommon
+import KakaoSDKAuth
 import KakaoMapsSDK
+import GoogleSignIn
 
 @main
 struct GamblerApp: App {
-    
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
     init() {
         let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_APP_KEY"] ?? ""
         SDKInitializer.InitSDK(appKey: "\(kakaoAppKey)")
+        KakaoSDK.initSDK(appKey: kakaoAppKey as? String ?? "")
     }
-    
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -39,6 +43,11 @@ struct GamblerApp: App {
                 .onAppear {
                     Task {
                         await startTask()
+                    }
+                }
+                .onOpenURL { url in
+                    if AuthApi.isKakaoTalkLoginUrl(url) {
+                        _ = AuthController.handleOpenUrl(url: url)
                     }
                 }
 //            MainView()

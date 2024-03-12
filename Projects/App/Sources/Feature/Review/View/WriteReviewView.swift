@@ -11,7 +11,7 @@ import Kingfisher
 import PhotosUI
 
 struct WriteReviewView: View {
-    @EnvironmentObject var reviewViewModel: ReviewViewModel
+    @EnvironmentObject private var reviewViewModel: ReviewViewModel
     @Environment(\.dismiss) private var dismiss
     
     @State private var reviewContent: String = ""
