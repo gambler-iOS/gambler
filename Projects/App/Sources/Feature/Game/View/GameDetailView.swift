@@ -44,7 +44,7 @@ struct GameDetailView: View {
                 HStack(alignment: .center, spacing: 8) {
                     Text(game.gameName)
                         .font(.subHead1B)
-                    ReviewRatingCellView(rating: game.reviewRatingAverage)
+                    ReviewRatingCellView(rating: gameDetailViewModel.game.reviewRatingAverage)
                 }
                 .padding(.leading, 24)
                 .padding(.top, 32)
@@ -85,7 +85,12 @@ struct GameDetailView: View {
             .clipShape(RoundedRectangle(cornerRadius: 16.0))
         }
         .onAppear {
+            print("detail appear")
             setGameInViewModel()
+        }
+        .task {
+            print("detail task")
+            await gameDetailViewModel.fetchData()
         }
         .ignoresSafeArea(.all, edges: .top)
         .navigationTitle(offsetY < -5 ? "\(game.gameName)" : "")

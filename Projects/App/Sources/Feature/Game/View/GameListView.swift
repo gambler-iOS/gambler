@@ -47,6 +47,9 @@ struct GameListView: View {
         }
         .padding(.horizontal, 24)
         .navigationBarBackButtonHidden()
+        .task {
+            await gameListViewModel.fetchData(title: title)
+        }
     }
         
     @ViewBuilder

@@ -62,8 +62,7 @@ struct GamblerApp: App {
             DispatchQueue.main.async {
                 UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
             }
-        }
-        else if authorizationStatus == .restricted || authorizationStatus == .notDetermined {
+        } else if authorizationStatus == .restricted || authorizationStatus == .notDetermined {
             locationManager.requestWhenInUseAuthorization()
         }
     }

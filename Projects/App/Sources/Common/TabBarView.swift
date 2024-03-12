@@ -13,15 +13,18 @@ struct TabBarView: View {
     @StateObject private var myPageViewModel = MyPageViewModel()
     @StateObject private var loginViewModel = LoginViewModel()
     @StateObject private var appNavigationPath = AppNavigationPath()
+    @StateObject private var homeViewModel = HomeViewModel()
+    @StateObject private var gameListViewModel = GameListViewModel()
+    @StateObject private var gameDetailViewModel = GameDetailViewModel()
     
     var body: some View {
         TabView(selection: $selectedTab) {
             
             HomeView()
-                .environmentObject(HomeViewModel())
+                .environmentObject(homeViewModel)
                 .environmentObject(appNavigationPath)
-                .environmentObject(GameListViewModel())
-                .environmentObject(GameDetailViewModel())
+                .environmentObject(gameListViewModel)
+                .environmentObject(gameDetailViewModel)
                 .tabItem {
                     HStack {
                         (selectedTab == 0 ?
