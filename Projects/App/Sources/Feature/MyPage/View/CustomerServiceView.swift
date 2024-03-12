@@ -9,11 +9,11 @@
 import SwiftUI
 
 struct CustomerServiceView: View {
+    let complainViewModel: ComplainViewModel = ComplainViewModel()
     @State private var choiceCategory: ComplainCategory = .spam
     @State private var isShowingDropMenu = false
     @State private var serviceContent: String = ""
     @State private var disabledButton: Bool = true
-    
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
@@ -33,7 +33,14 @@ struct CustomerServiceView: View {
             Spacer()
             CTAButton(disabled: $disabledButton, title: "완료") {
                 print("완료 버튼 눌림")
-                presentationMode.wrappedValue.dismiss()
+                Task{
+                    await complainViewModel.addData(complain: Complain(id: UUID().uuidString,
+                                                                   complainCategory: choiceCategory,
+                                                                   complainContent: serviceContent,
+                                                                   complainImage: [],
+                                                                   createdDate: Date()))
+                    presentationMode.wrappedValue.dismiss()
+                }
             }
             .padding(.bottom, 24)
         }

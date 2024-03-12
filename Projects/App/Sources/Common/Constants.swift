@@ -60,7 +60,14 @@ enum AppConstants {
         
         var id: Int { return self.rawValue }
     }
+    
+    enum CollectionName {
+        static let complains: String = "Complains"
+    }
 }
+
+
+
 
 extension AppConstants.MyPageFilter: Sequence {
     func makeIterator() -> IndexingIterator<[AppConstants.MyPageFilter]> {
