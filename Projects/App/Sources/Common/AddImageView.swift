@@ -11,7 +11,7 @@ import PhotosUI
 
 struct AddImageView: View {
     @State private var selectedItems: [PhotosPickerItem] = []
-    @State private var selectedPhotosData: [Data] = []
+    @Binding var selectedPhotosData: [Data]
     @Binding var topPadding: CGFloat
     
     var body: some View {
@@ -69,5 +69,5 @@ struct AddImageView: View {
 }
 
 #Preview {
-    AddImageView(topPadding: .constant(16))
+    AddImageView(selectedPhotosData: .constant([]), topPadding: .constant(16))
 }

@@ -17,6 +17,7 @@ struct WriteReviewView: View {
     @State private var reviewContent: String = ""
     @State private var rating: Double = 0.0
     @State private var disabledButton: Bool = true
+    @State private var selectedPhotosData: [Data] = []
     
     let placeholder: String = "리뷰를 남겨주세요."
     let reviewableItem: AvailableAggregateReview
@@ -35,7 +36,7 @@ struct WriteReviewView: View {
                     TextEditorView(text: $reviewContent, placeholder: placeholder)
                 }
                 
-                AddImageView(topPadding: .constant(16))
+                AddImageView(selectedPhotosData: $selectedPhotosData, topPadding: .constant(16))
                 Spacer()
                 CTAButton(disabled: $disabledButton, title: "완료") {
                     print("완료 버튼 눌림")

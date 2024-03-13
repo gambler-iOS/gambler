@@ -14,7 +14,7 @@ struct CustomerServiceView: View {
     @State private var isShowingDropMenu = false
     @State private var serviceContent: String = ""
     @State private var disabledButton: Bool = true
-    @State private var isShowingSubmitModal: Bool = false
+    @State private var selectedPhotosData: [Data] = []
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
@@ -31,11 +31,20 @@ struct CustomerServiceView: View {
                 }
                 TextEditorView(text: $serviceContent, placeholder: "내용을 적어주세요")
                     .padding(.top, 16)
-                AddImageView(topPadding: .constant(16))
+                AddImageView(selectedPhotosData: $selectedPhotosData, topPadding: .constant(16))
                 Spacer()
                 CTAButton(disabled: $disabledButton, title: "완료") {
                     print("완료 버튼 눌림")
-                    isShowingSubmitModal = true
+                    Task {
+                        await complainViewModel.addData(complain: Complain(id: UUID().uuidString,
+                                                                           complainCategory: choiceCategory,
+                                                                           complainContent: serviceContent,
+                                                                           complainImage: 
+                                                                            try await ImageUploader.uploadCustomerServiceImage(selectedPhotosData, 
+                                                                                                                               type: .customerService),
+                                                                           createdDate: Date()))
+                        presentationMode.wrappedValue.dismiss()
+                    }
                 }
                 .padding(.bottom, 24)
             }
