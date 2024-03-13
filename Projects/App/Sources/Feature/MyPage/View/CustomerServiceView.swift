@@ -14,56 +14,53 @@ struct CustomerServiceView: View {
     @State private var isShowingDropMenu = false
     @State private var serviceContent: String = ""
     @State private var disabledButton: Bool = true
+    @State private var isShowingSubmitModal: Bool = false
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        VStack(alignment: .leading, spacing: .zero) {
-            titleView
-                .padding(.top, 24)
-                .padding(.bottom, 16)
-            complainTitleView(image:
-                                isShowingDropMenu ?
-                              GamblerAsset.arrowDown.swiftUIImage : GamblerAsset.arrowUp.swiftUIImage)
-            .onTapGesture {
-                isShowingDropMenu.toggle()
-            }
-            TextEditorView(text: $serviceContent, placeholder: "내용을 적어주세요")
-                .padding(.top, 16)
-            AddImageView(topPadding: .constant(16))
-            Spacer()
-            CTAButton(disabled: $disabledButton, title: "완료") {
-                print("완료 버튼 눌림")
-                Task {
-                    await complainViewModel.addData(complain: Complain(id: UUID().uuidString,
-                                                                   complainCategory: choiceCategory,
-                                                                   complainContent: serviceContent,
-                                                                   complainImage: [],
-                                                                   createdDate: Date()))
-                    presentationMode.wrappedValue.dismiss()
+        GeometryReader { _ in
+            ZStack {
+                VStack(alignment: .leading, spacing: .zero) {
+                    titleView
+                        .padding(.top, 24)
+                        .padding(.bottom, 16)
+                    complainTitleView(image:
+                                        isShowingDropMenu ?
+                                      GamblerAsset.arrowDown.swiftUIImage : GamblerAsset.arrowUp.swiftUIImage)
+                    .onTapGesture {
+                        isShowingDropMenu.toggle()
+                    }
+                    TextEditorView(text: $serviceContent, placeholder: "내용을 적어주세요")
+                        .padding(.top, 16)
+                    AddImageView(topPadding: .constant(16))
+                    Spacer()
+                    CTAButton(disabled: $disabledButton, title: "완료") {
+                        print("완료 버튼 눌림")
+                        isShowingSubmitModal = true
+                    }
+                    .padding(.bottom, 24)
                 }
-            }
-            .padding(.bottom, 24)
-        }
-        .background {
-            Color.white
-                .onTapGesture {
-                    isShowingDropMenu = false
+                .background {
+                    Color.white
+                        .onTapGesture {
+                            isShowingDropMenu = false
+                        }
                 }
-        }
-        .overlay(content: {
-            if isShowingDropMenu {
-                DropDownMemuView(isShowingDropMenu: $isShowingDropMenu, choiceCategory: $choiceCategory)
-                    .padding(.top, 50)
-                
+                .overlay(content: {
+                    if isShowingDropMenu {
+                        DropDownMemuView(isShowingDropMenu: $isShowingDropMenu, choiceCategory: $choiceCategory)
+                            .padding(.top, 50)
+                        
+                    }
+                })
+                .onReceive([self.serviceContent].publisher.first()) { _ in
+                    self.updateDisabledButton()
+                }
+                .padding(.horizontal, 24)
+                .navigationTitle("고객 센터")
+                .modifier(BackButton())
             }
-        })
-        .onReceive([self.serviceContent].publisher.first()) { _ in
-            self.updateDisabledButton()
         }
-        .padding(.horizontal, 24)
-        .navigationTitle("고객 센터")
-        .modifier(BackButton())
-        
     }
     
     private var titleView: some View {

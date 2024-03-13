@@ -8,51 +8,49 @@
 
 import SwiftUI
 
-struct ResignModalView: View {
-    @Binding var isShowingResingModal: Bool
+struct CustomModalView: View {
+    @Binding var isShowingModal: Bool
+    let title: String
+    let content: String
+    let modalAction: (() -> Void)
     
     var body: some View {
         VStack {
-            resignModalCellView
+            modalCellView
                 .background {
                     RoundedRectangle(cornerRadius: 16)
                         .foregroundStyle(Color.white)
                         .frame(height: 221)
                 }
                 .padding(24)
-            
         }
-        
-        
     }
     
-    private var resignModalCellView: some View {
+    private var modalCellView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("정말 탈퇴하시겠어요?")
+            Text(title)
                 .font(.subHead2B)
-            Text("탈퇴 후에는 작성하신 리뷰를 수정 혹은 삭제할 수 없어요. 탈퇴 신청 전에 꼭 확인해주세요.")
+            Text(content)
                 .font(.body2M)
+                .foregroundStyle(Color.gray500)
             HStack(spacing: 8) {
                 ProfileButtonView(text: "취소", width: 127.5, height: 56, isDefaultButton: true, isDisabled: false)
+                    .onTapGesture {
+                        isShowingModal = false
+                    }
                 ProfileButtonView(text: "확인", width: 127.5, height: 56, isDefaultButton: false, isDisabled: false)
                     .onTapGesture {
-                        isShowingResingModal = false
+                        modalAction()
                     }
             }
-            .padding(.top, 24)
+            .padding(.top, 16)
         }.padding(24)
-    }
-    
-    private func resignModalButtonView(title: String, isMainColor: Bool) -> some View {
-        RoundedRectangle(cornerRadius: 8)
-            .overlay {
-                Text(title)
-                    .font(.body1B)
-            }
-    
+            .padding(.top, 16)
     }
 }
 
 #Preview {
-    ResignModalView(isShowingResingModal: .constant(true))
+    CustomModalView(isShowingModal: .constant(true), title: "제목", content: "설명"){
+        print("결과")
+    }
 }
