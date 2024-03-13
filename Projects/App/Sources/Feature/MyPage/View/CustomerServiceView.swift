@@ -33,7 +33,7 @@ struct CustomerServiceView: View {
             Spacer()
             CTAButton(disabled: $disabledButton, title: "완료") {
                 print("완료 버튼 눌림")
-                Task{
+                Task {
                     await complainViewModel.addData(complain: Complain(id: UUID().uuidString,
                                                                    complainCategory: choiceCategory,
                                                                    complainContent: serviceContent,

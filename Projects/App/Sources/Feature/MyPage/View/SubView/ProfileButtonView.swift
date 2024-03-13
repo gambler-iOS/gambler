@@ -13,7 +13,8 @@ struct ProfileButtonView: View {
     let width: CGFloat
     let height: CGFloat
     let isDefaultButton: Bool
-    //30
+    let isDisabled: Bool?
+    
     var body: some View {
         if isDefaultButton {
             RoundedRectangle(cornerRadius: 8)
@@ -27,7 +28,7 @@ struct ProfileButtonView: View {
                 }
         } else {
             RoundedRectangle(cornerRadius: 8)
-                .foregroundStyle(Color.primaryDisabled)
+                .foregroundStyle(isDisabled ?? false ? Color.primaryDisabled : Color.primaryDefault)
                 .frame(width: width, height: height)
                 .overlay {
                     Text(text)
@@ -39,5 +40,5 @@ struct ProfileButtonView: View {
 }
 
 #Preview {
-    ProfileButtonView(text: "연결 해제", width: 84, height: 30, isDefaultButton: true)
+    ProfileButtonView(text: "연결 해제", width: 84, height: 30, isDefaultButton: true, isDisabled: true)
 }

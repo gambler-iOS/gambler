@@ -33,8 +33,8 @@ struct ResignModalView: View {
             Text("탈퇴 후에는 작성하신 리뷰를 수정 혹은 삭제할 수 없어요. 탈퇴 신청 전에 꼭 확인해주세요.")
                 .font(.body2M)
             HStack(spacing: 8) {
-                ProfileButtonView(text: "취소", width: 127.5, height: 56, isDefaultButton: true)
-                ProfileButtonView(text: "확인", width: 127.5, height: 56, isDefaultButton: false)
+                ProfileButtonView(text: "취소", width: 127.5, height: 56, isDefaultButton: true, isDisabled: false)
+                ProfileButtonView(text: "확인", width: 127.5, height: 56, isDefaultButton: false, isDisabled: false)
                     .onTapGesture {
                         isShowingResingModal = false
                     }

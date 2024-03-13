@@ -108,8 +108,6 @@ struct ProfileEditView: View {
                 .font(.subHead1B)
                 .foregroundStyle(Color.gray700)
             profileTextField(title: "닉네임", content: $nickName)
-               
-            profileTextField(title: "이메일", content: $email)
         }
     }
 
@@ -152,7 +150,7 @@ struct ProfileEditView: View {
             Button {
                 isShowingResingModal = true
             } label: {
-                ProfileButtonView(text: "회원 탈퇴하기", width: 109, height: 30, isDefaultButton: true)
+                ProfileButtonView(text: "회원 탈퇴하기", width: 109, height: 30, isDefaultButton: true, isDisabled: false)
             }
         }
     }
