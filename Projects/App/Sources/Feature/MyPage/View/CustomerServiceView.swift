@@ -19,48 +19,48 @@ struct CustomerServiceView: View {
     
     var body: some View {
         GeometryReader { _ in
-            ZStack {
-                VStack(alignment: .leading, spacing: .zero) {
-                    titleView
-                        .padding(.top, 24)
-                        .padding(.bottom, 16)
-                    complainTitleView(image:
-                                        isShowingDropMenu ?
-                                      GamblerAsset.arrowDown.swiftUIImage : GamblerAsset.arrowUp.swiftUIImage)
-                    .onTapGesture {
-                        isShowingDropMenu.toggle()
-                    }
-                    TextEditorView(text: $serviceContent, placeholder: "내용을 적어주세요")
-                        .padding(.top, 16)
-                    AddImageView(topPadding: .constant(16))
-                    Spacer()
-                    CTAButton(disabled: $disabledButton, title: "완료") {
-                        print("완료 버튼 눌림")
-                        isShowingSubmitModal = true
-                    }
-                    .padding(.bottom, 24)
+            VStack(alignment: .leading, spacing: .zero) {
+                titleView
+                    .padding(.top, 24)
+                    .padding(.bottom, 16)
+                complainTitleView(image:
+                                    isShowingDropMenu ?
+                                  GamblerAsset.arrowDown.swiftUIImage : GamblerAsset.arrowUp.swiftUIImage)
+                .onTapGesture {
+                    isShowingDropMenu.toggle()
                 }
-                .background {
-                    Color.white
-                        .onTapGesture {
-                            isShowingDropMenu = false
-                        }
+                TextEditorView(text: $serviceContent, placeholder: "내용을 적어주세요")
+                    .padding(.top, 16)
+                AddImageView(topPadding: .constant(16))
+                Spacer()
+                CTAButton(disabled: $disabledButton, title: "완료") {
+                    print("완료 버튼 눌림")
+                    isShowingSubmitModal = true
                 }
-                .overlay(content: {
-                    if isShowingDropMenu {
-                        DropDownMemuView(isShowingDropMenu: $isShowingDropMenu, choiceCategory: $choiceCategory)
-                            .padding(.top, 50)
-                        
-                    }
-                })
-                .onReceive([self.serviceContent].publisher.first()) { _ in
-                    self.updateDisabledButton()
-                }
-                .padding(.horizontal, 24)
-                .navigationTitle("고객 센터")
-                .modifier(BackButton())
+                .padding(.bottom, 24)
             }
+            .background {
+                Color.white
+                    .onTapGesture {
+                        isShowingDropMenu = false
+                    }
+            }
+            .onReceive([self.serviceContent].publisher.first()) { _ in
+                self.updateDisabledButton()
+            }
+            .padding(.horizontal, 24)
+            .navigationTitle("고객 센터")
+            .modifier(BackButton())
+            .overlay(content: {
+                if isShowingDropMenu {
+                    DropDownMemuView(isShowingDropMenu: $isShowingDropMenu, choiceCategory: $choiceCategory)
+                        .padding(.top, 50)
+                        .padding(.horizontal, 23)
+                    
+                }
+            })
         }
+        
     }
     
     private var titleView: some View {
