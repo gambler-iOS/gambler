@@ -15,6 +15,7 @@ struct CustomerServiceView: View {
     @State private var serviceContent: String = ""
     @State private var disabledButton: Bool = true
     @State private var selectedPhotosData: [Data] = []
+    @State private var isUploading: Bool = false
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
@@ -33,20 +34,17 @@ struct CustomerServiceView: View {
                     .padding(.top, 16)
                 AddImageView(selectedPhotosData: $selectedPhotosData, topPadding: .constant(16))
                 Spacer()
+                
                 CTAButton(disabled: $disabledButton, title: "완료") {
-                    print("완료 버튼 눌림")
-                    Task {
-                        await complainViewModel.addData(complain: Complain(id: UUID().uuidString,
-                                                                           complainCategory: choiceCategory,
-                                                                           complainContent: serviceContent,
-                                                                           complainImage: 
-                                                                            try await ImageUploader.uploadCustomerServiceImage(selectedPhotosData, 
-                                                                                                                               type: .customerService),
-                                                                           createdDate: Date()))
-                        presentationMode.wrappedValue.dismiss()
-                    }
+                    submitComplain()
                 }
                 .padding(.bottom, 24)
+            }
+            .overlay {
+                if isUploading {
+                    ProgressView()
+                        .tint(.gray400)
+                }
             }
             .background {
                 Color.white
@@ -70,6 +68,22 @@ struct CustomerServiceView: View {
             })
         }
         
+    }
+    
+    private func submitComplain() {
+        Task {
+            isUploading = true
+            await complainViewModel.addData(complain:
+                                                Complain(id: UUID().uuidString,
+                                                        complainCategory: choiceCategory,
+                                                        complainContent: serviceContent,
+                                                        complainImage: try await ImageUploader
+                                                            .uploadCustomerServiceImage(selectedPhotosData,
+                                                                                        type: .customerService),
+                                                        createdDate: Date()))
+            presentationMode.wrappedValue.dismiss()
+            isUploading = false
+        }
     }
     
     private var titleView: some View {
