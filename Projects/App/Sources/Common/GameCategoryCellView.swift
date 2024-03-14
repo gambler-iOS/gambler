@@ -30,6 +30,9 @@ struct GameCategoryCellView: View {
             Text(name)
                 .font(.body2M)
                 .foregroundStyle(Color.gray700)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(width: 80)
         }
     }
 }
