@@ -16,7 +16,6 @@ struct RegistrationView: View {
     @State private var isDisabled: Bool = true
     @State private var nicknameText: String = ""  // 이거는 init으로 가져오자
     @State private var showTermsOfUseView: Bool = false
-    @State private var isDuplicated: Bool = false
     private let textField: String = "닉네임을 입력해주세요."
     
     // TODO: Toast Message
@@ -28,15 +27,15 @@ struct RegistrationView: View {
                 .foregroundStyle(Color.black)
                 .padding(.vertical, 24)
             
-            TextFieldView(text: $nicknameText, isDuplicated: $isDuplicated)
+            TextFieldView(text: $nicknameText, isDisabled: $isDisabled)
                 .onChange(of: nicknameText) { _, _ in
-                    Task {
-                        if !isDuplicated && nicknameText.count >= 2 {
-                            isDisabled = false
-                        } else {
-                            isDisabled = true
-                        }
-                    }
+//                    Task {
+//                        if !isDuplicated && nicknameText.count >= 2 {
+//                            isDisabled = false
+//                        } else {
+//                            isDisabled = true
+//                        }
+//                    }
                 }
             Spacer()
             

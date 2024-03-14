@@ -10,10 +10,16 @@ import SwiftUI
 
 struct TextFieldView: View {
     @Binding var text: String
-    @Binding var isDuplicated: Bool
+    @Binding var isDisabled: Bool
+    @State private var isDuplicated: Bool = false
     @State private var isEditing: Bool = false
-    @State private var textColor: Color = Color.gray300
+    @State private var isValid: Bool = false
     
+    var textColor: Color {
+        isValid ? Color.gray300 : Color.primaryDefault
+    }
+    
+    private let minLength: Int = 2
     private let maxLength: Int = 20
     
     var body: some View {
@@ -23,84 +29,90 @@ struct TextFieldView: View {
                 .foregroundStyle(Color.gray700)
                 .padding(.bottom, 8)
             
-            GeometryReader { proxy in
-                HStack(spacing: 8) { 
-                    HStack {
-                        TextField("닉네임을 입력해주세요", text: $text, onEditingChanged: { _ in
-                            withAnimation(.interpolatingSpring, {
-                                self.isEditing.toggle()
-                            })
+            HStack(spacing: 8) {
+                HStack(spacing: .zero) {
+                    TextField("닉네임을 입력해주세요", text: $text, onEditingChanged: { _ in
+                        withAnimation(.interpolatingSpring, {
+                            self.isEditing.toggle()
                         })
-                        .foregroundColor(.gray700)
-                        .keyboardType(.webSearch)
-                        .autocorrectionDisabled()
-                        .onChange(of: self.text) { _, newValue in
-                            textColor = isValidInput(input: newValue) ? Color.gray300 : Color.primaryDefault
+                    })
+                    .foregroundColor(.gray700)
+                    .keyboardType(.webSearch)
+                    .autocorrectionDisabled()
+                    .onChange(of: self.text) { _, newValue in
+                        if newValue.count > maxLength {  // 20자가 안넘도록 막음
+                            self.text = String(newValue.prefix(maxLength))
                         }
-                        .onChange(of: self.text) { _, newValue in
-                            if newValue.count > maxLength {
-                                self.text = String(newValue.prefix(maxLength))
-                            }
-                        }
-                        
-                        if !text.isEmpty {
-                            Button {
-                                text = ""
-                            } label: {
-                                Image(isDuplicated ? "searchClosed" :
-                                        "Success")
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                            }
-                        }
+                        isValid = isValidInput(input: text)
+                        isDuplicated = false
+                        isDisabled = true
                     }
-                    .padding(16)
-                    .background(Color.gray50)
-                    .cornerRadius(8)
-                    
                     if !text.isEmpty {
-                        Button {
-                            Task {
-                                await duplicateCheck()
-                                
-//                                if !isDuplicated && text.count >= 2 {
-//                                    isDisabled = false
-//                                } else {
-//                                    isDisabled = true
-//                                }
+                        Image(isValid ? "Success" : "searchClosed")
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .onTapGesture {
+                                if !isDuplicated {
+                                    text = ""
+                                }
                             }
-                        } label: {
-                            Text("중복확인")
-                                .font(.body1B)
-                                .foregroundStyle(Color.gray500) // 500
-                                .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                        }
-//                        .frame(height: proxy.size.height)
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray200, lineWidth: 1.0))
                     }
-                    
+                }
+                .padding(16)
+                .background(Color.gray50)
+                .cornerRadius(8)
+
+                if !text.isEmpty {
+                    Button {
+                        Task {
+                            await duplicateCheck()
+                            print("중복여부: \(isDuplicated)")
+                            
+                            if isValid && !isDuplicated { // 가능한 문자 & 중복x
+                                isDisabled = false
+                            } else {
+                                isDisabled = true
+                            }
+                        }
+                    } label: {
+                        Text("중복확인")
+                            .font(.body1B)
+                            .foregroundStyle(Color.gray500) // 500
+                    }
+                    .padding(EdgeInsets(top: 18, leading: 8, bottom: 18, trailing: 8))  // 이거로는 높이가 좀 다름
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray200, lineWidth: 1.0))
                 }
             }
-            Text("영문, 한글, 숫자를 사용하여 20자까지 가능합니다.")
+            Text("영문, 한글, 숫자를 사용하여 \(minLength)~\(maxLength)자까지 가능합니다.")
                 .font(.caption1M)
                 .foregroundStyle(textColor)  // 조건에 따라 PrimaryDefault
+            
+            Text("중복여부: \(isDuplicated)")
+        }
+        .onAppear {
+            self.isValid = isValidInput(input: text)
         }
     }
     
-    /// 입력이 한글, 영어, 숫자로만 이루어져 있는지를 판별하는 함수
+    /// 입력이 한글, 영어, 숫자로로 2~20글자로 이루어져 있는지를 판별하는 함수
     /// - Parameter input: 텍스트 필드의 텍스트
-    /// - Returns: Bool
+    /// - Returns: 부합하면 true 아니면 false
     private func isValidInput(input: String) -> Bool {
         let pattern = "^[가-힣a-zA-Z0-9]+$"  // 정규식 패턴(한글/영어/숫자)
         
-        do {
-            let regex = try NSRegularExpression(pattern: pattern, options: .caseInsensitive)  // 대소문자 구분하지 않고 탐색
-            let nsInput = input as NSString
-            let matches = regex.matches(in: input, options: [], range: NSRange(location: 0, length: nsInput.length))
-            
-            return !matches.isEmpty  // matches.count > 0
-        } catch {
-            print("Regex Error: \(error.localizedDescription)")
+        
+        if input.count >= minLength && input.count <= maxLength {
+            do {
+                let regex = try NSRegularExpression(pattern: pattern, options: .caseInsensitive)  // 대소문자 구분하지 않고 탐색
+                let nsInput = input as NSString
+                let matches = regex.matches(in: input, options: [], range: NSRange(location: 0, length: nsInput.length))
+                
+                return !matches.isEmpty  // matches.count > 0
+            } catch {
+                print("Regex Error: \(error.localizedDescription)")
+                return false
+            }
+        } else {
             return false
         }
     }
@@ -115,5 +127,5 @@ struct TextFieldView: View {
 }
 
 #Preview {
-    TextFieldView(text: .constant(""), isDuplicated: .constant(false))
+    TextFieldView(text: .constant("Good"), isDisabled: .constant(true))
 }
