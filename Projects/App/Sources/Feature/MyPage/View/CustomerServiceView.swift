@@ -17,7 +17,7 @@ struct CustomerServiceView: View {
     @State private var serviceContent: String = ""
     @State private var disabledButton: Bool = true
     @State private var selectedPhotosData: [Data] = []
-    @State private var isUploading: Bool = false
+    @Binding var isShowingToast: Bool
    
     let complainPlaceholder: String = "내용을 적어주세요"
     
@@ -43,12 +43,6 @@ struct CustomerServiceView: View {
                 }
                 .padding(.bottom, 24)
             }
-            .overlay {
-                if isUploading {
-                    ProgressView()
-                        .tint(.gray400)
-                }
-            }
             .background {
                 Color.white
                     .onTapGesture {
@@ -70,22 +64,23 @@ struct CustomerServiceView: View {
                 }
             })
         }
-        
     }
     
     private func submitComplain() {
         Task {
-            isUploading = true
             await complainViewModel.addData(complain:
                                                 Complain(id: UUID().uuidString,
-                                                        complainCategory: choiceCategory,
-                                                        complainContent: serviceContent,
-                                                        complainImage: try await ImageUploader
-                                                            .uploadCustomerServiceImage(selectedPhotosData,
-                                                                                        type: .customerService),
-                                                        createdDate: Date()))
-            presentationMode.wrappedValue.dismiss()
-            isUploading = false
+                                                         complainCategory: choiceCategory,
+                                                         complainContent: serviceContent,
+                                                         complainImage: try await ImageUploader
+                                                    .uploadCustomerServiceImage(selectedPhotosData,
+                                                                                type: .customerService),
+                                                         createdDate: Date()))
+            isShowingToast = true
+        }
+        presentationMode.wrappedValue.dismiss()
+        withAnimation(.easeIn(duration: 0.4)) {
+            isShowingToast = true
         }
     }
     
@@ -129,5 +124,5 @@ struct CustomerServiceView: View {
 }
 
 #Preview {
-    CustomerServiceView()
+    CustomerServiceView(isShowingToast: .constant(true))
 }

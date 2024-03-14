@@ -60,11 +60,12 @@ struct ProfileEditView: View {
                 
                 CustomModalView(isShowingModal: $isShowingResingModal,
                                 title: "정말 탈퇴하시겠어요?",
-                                content:"탈퇴 후에는 작성하신 리뷰를 수정 혹은 삭제할 수 없어요. 탈퇴 신청 전에 꼭 확인해주세요.") {
+                                content: "탈퇴 후에는 작성하신 리뷰를 수정 혹은 삭제할 수 없어요. 탈퇴 신청 전에 꼭 확인해주세요.") {
                     isShowingResingModal = false
                 }
             }
         }
+        
     }
     
     private func reply() {

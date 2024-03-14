@@ -11,6 +11,7 @@ import SwiftUI
 struct ListItemView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject private var loginViewModel: LoginViewModel
+    @Binding var isShowingToast: Bool
     
     var body: some View {
         HStack {
@@ -21,7 +22,7 @@ struct ListItemView: View {
                 Group {
                     listBodyView(title: "프로필 수정", destination: ProfileEditView())
 
-                    listBodyView(title: "고객센터", destination: CustomerServiceView())
+                    listBodyView(title: "고객센터", destination: CustomerServiceView(isShowingToast: $isShowingToast))
                     
                     listBodyView(title: "공지사항", destination: AnnouncementsView())
                     
@@ -80,7 +81,7 @@ struct ListItemView: View {
 }
 
 #Preview {
-    ListItemView()
+    ListItemView(isShowingToast: .constant(false))
         .environmentObject(MyPageViewModel())
         .environmentObject(LoginViewModel())
 }

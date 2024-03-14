@@ -63,6 +63,7 @@ enum AppConstants {
     
     enum CollectionName {
         static let complains: String = "Complains"
+        static let reviews: String = "Reviews"
     }
 }
 

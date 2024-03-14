@@ -14,7 +14,7 @@ import KakaoSDKCommon
 struct MyPageView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject var loginViewModel: LoginViewModel
-    
+    @State private var isShowingToast: Bool = false
 #warning("로그인 플랫폼 로직 구현 필요")
     let loginPlatform: String = "카카오톡"
     
@@ -44,13 +44,18 @@ struct MyPageView: View {
                         .background(Color.gray50)
                         .clipShape(.rect(cornerRadius: 8))
                         
-                        ListItemView()
+                        ListItemView(isShowingToast: $isShowingToast)
                             .environmentObject(loginViewModel)
+                    } .overlay {
+                        if isShowingToast {
+                            toastMessageView
+                        }
                     }
+                   
                 }
                 .padding(.horizontal, 24)
                 .scrollIndicators(.hidden)
-            }
+           }
         }
     }
     
@@ -83,6 +88,18 @@ struct MyPageView: View {
                     .foregroundStyle(Color.gray700)
             }
         }
+    }
+    
+    private var toastMessageView: some View {
+        CustomToastView(content: "신고가 완료되었어요!")
+            .offset(y: UIScreen.main.bounds.height * 0.3)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    withAnimation {
+                        isShowingToast = false
+                    }
+                }
+            }
     }
 }
 

@@ -20,6 +20,8 @@ struct WriteReviewView: View {
     @State private var selectedPhotosData: [Data] = []
     @State private var isUploading: Bool = false
     
+    @Binding var isShowingToast: Bool
+    
     let placeholder: String = "리뷰를 남겨주세요."
     let reviewableItem: AvailableAggregateReview
     
@@ -94,9 +96,11 @@ struct WriteReviewView: View {
                                                                             type: .review),
                                                    createdDate: Date()) )
             await reviewViewModel.fetchData()
-            print(reviewViewModel.reviews.count)
-           // dismiss()
             isUploading = false
+        }
+        dismiss()
+        withAnimation(.easeIn(duration: 0.4)) {
+            isShowingToast = true
         }
     }
     
@@ -127,6 +131,6 @@ struct WriteReviewView: View {
 }
 
 #Preview {
-    WriteReviewView(reviewableItem: Shop.dummyShop)
+    WriteReviewView(isShowingToast: .constant(false), reviewableItem: Shop.dummyShop)
         .environmentObject(ReviewViewModel())
 }
