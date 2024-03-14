@@ -18,6 +18,7 @@ struct WriteReviewView: View {
     @State private var rating: Double = 0.0
     @State private var disabledButton: Bool = true
     @State private var selectedPhotosData: [Data] = []
+    @State private var isUploading: Bool = false
     
     let placeholder: String = "리뷰를 남겨주세요."
     let reviewableItem: AvailableAggregateReview
@@ -39,8 +40,7 @@ struct WriteReviewView: View {
                 AddImageView(selectedPhotosData: $selectedPhotosData, topPadding: .constant(16))
                 Spacer()
                 CTAButton(disabled: $disabledButton, title: "완료") {
-                    print("완료 버튼 눌림")
-                    // 해당 리뷰를 파베에 올림
+                    submitReview()
                 }
                 .padding(.bottom, 24)
                 
@@ -59,6 +59,12 @@ struct WriteReviewView: View {
                     }
                 }
             }
+            .overlay {
+                if isUploading {
+                    ProgressView()
+                        .tint(.gray400)
+                }
+            }
             .onReceive([self.rating].publisher.first()) { _ in
                 self.updateDisabledButton()
             }
@@ -70,6 +76,29 @@ struct WriteReviewView: View {
     }
     
 #warning("텍스트 에디터의 reviewContent가 바뀔 때마다 메서드를 호출하는 것은 안좋아 보임. 디바운싱이나 스로틀링을 적용하면 좋을 듯 (onReceive)")
+    
+    
+#warning("postId, userId 임시")
+    private func submitReview() {
+        Task {
+            isUploading = true
+            await reviewViewModel.addData(review:
+                                            Review(id: UUID().uuidString,
+                                                   postId: UUID().uuidString,
+                                                   userId: UUID().uuidString,
+                                                   reviewContent: reviewContent,
+                                                   reviewRating: rating,
+                                                   reviewImage: 
+                                                    try await ImageUploader
+                                                .uploadCustomerServiceImage(selectedPhotosData,
+                                                                            type: .review),
+                                                   createdDate: Date()) )
+            await reviewViewModel.fetchData()
+            print(reviewViewModel.reviews.count)
+           // dismiss()
+            isUploading = false
+        }
+    }
     
     @ViewBuilder
     private func headerView(reviewableItem: AvailableAggregateReview) -> some View {

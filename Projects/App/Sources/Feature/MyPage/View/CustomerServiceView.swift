@@ -10,13 +10,16 @@ import SwiftUI
 
 struct CustomerServiceView: View {
     let complainViewModel: ComplainViewModel = ComplainViewModel()
+    @Environment(\.presentationMode) var presentationMode
+    
     @State private var choiceCategory: ComplainCategory = .spam
     @State private var isShowingDropMenu = false
     @State private var serviceContent: String = ""
     @State private var disabledButton: Bool = true
     @State private var selectedPhotosData: [Data] = []
     @State private var isUploading: Bool = false
-    @Environment(\.presentationMode) var presentationMode
+   
+    let complainPlaceholder: String = "내용을 적어주세요"
     
     var body: some View {
         GeometryReader { _ in
@@ -30,7 +33,7 @@ struct CustomerServiceView: View {
                 .onTapGesture {
                     isShowingDropMenu.toggle()
                 }
-                TextEditorView(text: $serviceContent, placeholder: "내용을 적어주세요")
+                TextEditorView(text: $serviceContent, placeholder: complainPlaceholder)
                     .padding(.top, 16)
                 AddImageView(selectedPhotosData: $selectedPhotosData, topPadding: .constant(16))
                 Spacer()

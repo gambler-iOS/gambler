@@ -20,7 +20,7 @@ struct ListItemView: View {
                 
                 Group {
                     listBodyView(title: "프로필 수정", destination: ProfileEditView())
-                    
+
                     listBodyView(title: "고객센터", destination: CustomerServiceView())
                     
                     listBodyView(title: "공지사항", destination: AnnouncementsView())
