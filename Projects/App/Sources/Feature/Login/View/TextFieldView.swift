@@ -9,14 +9,20 @@
 import SwiftUI
 
 struct TextFieldView: View {
-    @Binding var text: String
-    @Binding var isDisabled: Bool
-    @State private var isDuplicated: Bool = false
     @State private var isEditing: Bool = false
     @State private var isValid: Bool = false
     
+    @Binding var text: String
+    @Binding var isDisabled: Bool
+    @Binding var isDuplicated: Bool
+    @Binding var showToast: Bool
+    
     var textColor: Color {
         isValid ? Color.gray300 : Color.primaryDefault
+    }
+    
+    var textImage: Image {
+        isValid && !isDuplicated ? Image("Success") : Image("searchClosed")
     }
     
     private let minLength: Int = 2
@@ -44,43 +50,44 @@ struct TextFieldView: View {
                             self.text = String(newValue.prefix(maxLength))
                         }
                         isValid = isValidInput(input: text)
-                        isDuplicated = false
+                        isDuplicated = true
                         isDisabled = true
                     }
                     if !text.isEmpty {
-                        Image(isValid ? "Success" : "searchClosed")
+                        textImage
                             .resizable()
                             .frame(width: 24, height: 24)
                             .onTapGesture {
-                                if !isDuplicated {
-                                    text = ""
-                                }
+                                text = ""
                             }
                     }
                 }
                 .padding(16)
                 .background(Color.gray50)
                 .cornerRadius(8)
-
+                
                 if !text.isEmpty {
-                    Button {
-                        Task {
-                            await duplicateCheck()
-                            print("중복여부: \(isDuplicated)")
-                            
-                            if isValid && !isDuplicated { // 가능한 문자 & 중복x
-                                isDisabled = false
-                            } else {
-                                isDisabled = true
+                    Text("중복확인")
+                        .font(.body1B)
+                        .foregroundStyle(!isDuplicated ? Color.gray200 : Color.gray500)
+                    
+                        .padding(EdgeInsets(top: 18, leading: 8, bottom: 18, trailing: 8))  // 이거로는 높이가 좀 다름
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray200, lineWidth: 1.0))
+                        .onTapGesture {
+                            Task {
+                                if isDuplicated {  // 중복일 떈 중복체크
+                                    await duplicateCheck()
+                                    print("중복여부: \(isDuplicated)")
+                                    showToast = true
+                                    
+                                    if isValid && !isDuplicated { // 가능한 문자 & 중복x
+                                        isDisabled = false
+                                    } else {
+                                        isDisabled = true
+                                    }
+                                }
                             }
                         }
-                    } label: {
-                        Text("중복확인")
-                            .font(.body1B)
-                            .foregroundStyle(Color.gray500) // 500
-                    }
-                    .padding(EdgeInsets(top: 18, leading: 8, bottom: 18, trailing: 8))  // 이거로는 높이가 좀 다름
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray200, lineWidth: 1.0))
                 }
             }
             Text("영문, 한글, 숫자를 사용하여 \(minLength)~\(maxLength)자까지 가능합니다.")
@@ -99,7 +106,6 @@ struct TextFieldView: View {
     /// - Returns: 부합하면 true 아니면 false
     private func isValidInput(input: String) -> Bool {
         let pattern = "^[가-힣a-zA-Z0-9]+$"  // 정규식 패턴(한글/영어/숫자)
-        
         
         if input.count >= minLength && input.count <= maxLength {
             do {
@@ -127,5 +133,5 @@ struct TextFieldView: View {
 }
 
 #Preview {
-    TextFieldView(text: .constant("Good"), isDisabled: .constant(true))
+    TextFieldView(text: .constant("User"), isDisabled: .constant(true), isDuplicated: .constant(true), showToast: .constant(false))
 }

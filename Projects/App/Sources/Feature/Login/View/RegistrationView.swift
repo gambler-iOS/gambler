@@ -14,12 +14,15 @@ struct RegistrationView: View {
     @EnvironmentObject var loginViewModel: LoginViewModel
     
     @State private var isDisabled: Bool = true
-    @State private var nicknameText: String = ""  // 이거는 init으로 가져오자
+    @State private var nicknameText: String = ""
     @State private var showTermsOfUseView: Bool = false
+    @State private var isDuplicated: Bool = false
+    @State private var showToast = false
     private let textField: String = "닉네임을 입력해주세요."
+    private var toastMessage: String {
+        isDuplicated ? "아이디가 중복됩니다. 다시 입력해주세요!": "아이디 중복확인이 완료되었습니다!"
+    }
     
-    // TODO: Toast Message
-
     var body: some View {
         VStack(alignment: .leading, spacing: .zero) {
             Text("닉네임을 입력해주세요.")
@@ -27,17 +30,13 @@ struct RegistrationView: View {
                 .foregroundStyle(Color.black)
                 .padding(.vertical, 24)
             
-            TextFieldView(text: $nicknameText, isDisabled: $isDisabled)
-                .onChange(of: nicknameText) { _, _ in
-//                    Task {
-//                        if !isDuplicated && nicknameText.count >= 2 {
-//                            isDisabled = false
-//                        } else {
-//                            isDisabled = true
-//                        }
-//                    }
-                }
+            TextFieldView(text: $nicknameText, isDisabled: $isDisabled, isDuplicated: $isDuplicated, showToast: $showToast)
             Spacer()
+            
+            if showToast {
+                Toast(message: toastMessage, show: $showToast)
+                    .padding(.bottom, 16)
+            }
             
             CTAButton(disabled: $isDisabled, title: "다음") {
                 // 유저 닉네임 받아들이기
@@ -60,10 +59,8 @@ struct RegistrationView: View {
         }
         .navigationTitle("회원가입")
         .onAppear {
-            self.nicknameText = "tdas"
-
-//            self.nicknameText = AuthService.shared.dummyUser.nickname
-        }
+            self.nicknameText = AuthService.shared.dummyUser.nickname
+        }        
     }
     
     private var backButton: some View {
