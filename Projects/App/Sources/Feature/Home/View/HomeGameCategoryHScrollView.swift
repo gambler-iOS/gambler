@@ -9,18 +9,24 @@
 import SwiftUI
 
 struct HomeGameCategoryHScrollView: View {
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
     let title: String
-    var categoryNames: [String]
+    let categoryNames: [GameTheme]
     
     var body: some View {
         VStack(spacing: 24) {
             SectionHeaderView(title: title)
                 .padding(.trailing, 24)
+                .onTapGesture {
+                    appNavigationPath.homeViewPath.append(title)
+                }
             
             ScrollView(.horizontal) {
                 HStack(spacing: 16) {
                     ForEach(categoryNames, id: \.self) { categotyName in
-                        GameCategoryCellView(imageUrl: "", name: categotyName)
+                        NavigationLink(value: categotyName) {
+                            GameCategoryCellView(imageUrl: categotyName.imageUrl, name: categotyName.koreanName)
+                        }
                     }
                 }
             }
@@ -32,5 +38,6 @@ struct HomeGameCategoryHScrollView: View {
 }
 
 #Preview {
-    HomeGameCategoryHScrollView(title: "종류별 Best", categoryNames: ["마피아", "블러핑"])
+    HomeGameCategoryHScrollView(title: "종류별 Best", categoryNames: [.fantasy, .bluffing])
+        .environmentObject(AppNavigationPath())
 }
