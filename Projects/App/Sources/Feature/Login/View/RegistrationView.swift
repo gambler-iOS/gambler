@@ -9,6 +9,8 @@
 import SwiftUI
 
 struct RegistrationView: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @EnvironmentObject var loginViewModel: LoginViewModel
     
     @State private var isDisabled: Bool = true
@@ -17,6 +19,8 @@ struct RegistrationView: View {
     @State private var isDuplicated: Bool = false
     private let textField: String = "닉네임을 입력해주세요."
     
+    // TODO: Toast Message
+
     var body: some View {
         VStack(alignment: .leading, spacing: .zero) {
             Text("닉네임을 입력해주세요.")
@@ -27,16 +31,13 @@ struct RegistrationView: View {
             TextFieldView(text: $nicknameText, isDuplicated: $isDuplicated)
                 .onChange(of: nicknameText) { _, _ in
                     Task {
-                        await duplicateCheck()
-                        
-                        if !isDuplicated && !textField.isEmpty {
+                        if !isDuplicated && nicknameText.count >= 2 {
                             isDisabled = false
                         } else {
                             isDisabled = true
                         }
                     }
                 }
-            
             Spacer()
             
             CTAButton(disabled: $isDisabled, title: "다음") {
@@ -48,24 +49,45 @@ struct RegistrationView: View {
             .navigationDestination(isPresented: $showTermsOfUseView) {
                 RegisterTermsOfUseView()
                     .environmentObject(loginViewModel)
+                    .environmentObject(appNavigationPath)
             }
         }
         .padding(.horizontal, 24)
-        .modifier(BackButton())
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                backButton
+            }
+        }
         .navigationTitle("회원가입")
+        .onAppear {
+            self.nicknameText = "tdas"
+
+//            self.nicknameText = AuthService.shared.dummyUser.nickname
+        }
     }
     
-    
-    /// 닉네임 중복검사
-    /// - Returns: 중복 - true / 중복 없을 시 false
-    private func duplicateCheck() async {
-        let user = await FirebaseManager.shared.fetchWhereData(collectionName: "Users", objectType: User.self, field: "nickname", isEqualTo: nicknameText)
-        
-        isDuplicated = user.isEmpty ? false : true
+    private var backButton: some View {
+        Button {
+            Task {
+                do {
+                    dismiss()
+                    try await loginViewModel.signOut()
+                } catch {
+                    print("로그아웃 실패 Error: \(error)")
+                }
+            }
+        } label: {
+            Image("arrowLeft")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 24, height: 24)
+        }
     }
 }
 
 #Preview {
     RegistrationView()
         .environmentObject(LoginViewModel())
+        .environmentObject(AppNavigationPath())
 }

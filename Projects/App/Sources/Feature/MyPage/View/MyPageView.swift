@@ -14,15 +14,19 @@ import KakaoSDKCommon
 struct MyPageView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject var loginViewModel: LoginViewModel
+    @EnvironmentObject var appNavigationPath: AppNavigationPath
     
 #warning("로그인 플랫폼 로직 구현 필요")
     let loginPlatform: String = "카카오톡"
     
     var body: some View {
         
-        if loginViewModel.authState == .signedOut {
+        // 여기서 조건이 이래서 그럼..
+        // 사인인이 되니까...
+        if loginViewModel.authState == .signedOut || loginViewModel.authState == .creatingAccount {
             LoginView()
                 .environmentObject(loginViewModel)
+                .environmentObject(appNavigationPath)
         } else {
             NavigationStack {
                 ScrollView {
@@ -90,4 +94,5 @@ struct MyPageView: View {
     MyPageView()
         .environmentObject(MyPageViewModel())
         .environmentObject(LoginViewModel())
+        .environmentObject(AppNavigationPath())
 }

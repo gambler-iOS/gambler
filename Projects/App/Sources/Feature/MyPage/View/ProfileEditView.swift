@@ -16,6 +16,7 @@ struct ProfileEditView: View {
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var imageData: Data?
     @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     
     #warning("임시")
     @State private var user: User = User.dummyUser
@@ -139,6 +140,9 @@ struct ProfileEditView: View {
                 }
             Button {
                 // 탈퇴
+                Task {
+                    await loginViewModel.deleteAccount()
+                }
             } label: {
                 ProfileButtonView(text: "회원 탈퇴하기", size: 109, isDefaultButton: true)
             }
@@ -148,4 +152,5 @@ struct ProfileEditView: View {
 
 #Preview {
     ProfileEditView()
+        .environmentObject(LoginViewModel())
 }

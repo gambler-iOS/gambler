@@ -25,7 +25,7 @@ final class GoogleAuthSerVice {
             GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
                 completion(user, error)
             }
-        } else {  // 로그인 과정
+        } else {  // 로그인 뷰로 이동
             // 2. UIApplication의 공유 인스턴스를 통해 루트 뷰 컨트롤러에 액세스
             // Google Sign-In SDK는 rootViewController를 사용하여 로그인 흐름을 호스팅하는 브라우저 팝업을 제공
             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }

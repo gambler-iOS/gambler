@@ -10,6 +10,8 @@ import Foundation
 import CryptoKit
 import AuthenticationServices
 import FirebaseAuth
+import Alamofire
+import SwiftJWT
 
 /// 앱에서 Apple 흐름으로 로그인을 승인하고 nonce를 생성
 final class AppleAuthService {
@@ -18,6 +20,9 @@ final class AppleAuthService {
     
     /// Un-hashed nonce.
     fileprivate static var currentNonce: String?
+    private let keyID = Bundle.main.infoDictionary?["Key_ID"] ?? ""
+    private let teamID = Bundle.main.infoDictionary?["Team_ID"] ?? ""
+    private let bundleID = Bundle.main.bundleIdentifier ?? ""
     
     /// Current un-hashed nonce
     static var nonce: String? {
@@ -82,7 +87,7 @@ extension AppleAuthService {
     }
     
     // TODO: Cloud Functions 통해서 토큰 revoke
-    func revokeToken() async {
+    func deRegister() async {
         // Firebase에서 user.delete만 해주면 되는게 아님.
         // revokeToken + firebase 회원탈퇴 두개 다 진행해줘야 한다.
         // JWT를 생성하고 Apple ID를 사용하는 앱 항목에서 내 앱을 삭제하기 위해서는 이 api를 처리할 서버로직이 필요하다
@@ -90,5 +95,152 @@ extension AppleAuthService {
         
         // https://weekoding.tistory.com/29 참고
         // swift jwt를 발급 받고, store에 저장하고 있다가, 탈퇴할 떄 jwt랑 토큰 활용
+        
+        let jwtString = self.makeJWT()
+        
+        guard let taCode = UserDefaults.standard.string(forKey: "theAuthorizationCode") else { return }
+        
+        self.getAppleRefreshToken(code: taCode, completionHandler: { output in
+            let clientSecret = jwtString
+            
+            if let refreshToken = output{
+                print("Client_Secret - \(clientSecret)")
+                print("refresh_token - \(refreshToken)")
+                
+                // api 통신
+                self.revokeAppleToken(clientSecret: clientSecret, token: refreshToken) {
+                    print("Apple revoke token Success")
+                }
+            } else{
+                print(#fileID, #function, #line, "- 회원탈퇴 실패 ")
+            }
+        })
+        
+        
+    }
+}
+
+// MARK: - Generate and validate token & revoke JWT
+extension AppleAuthService {
+    
+    /// client_secret 생성
+    func makeJWT() -> String {
+        let myHeader = Header(kid: "\(keyID)")  // Apple_Key_ID
+        
+        let nowDate = Date()
+        var dateComponent = DateComponents()
+        dateComponent.month = 6
+        let sixDate = Calendar.current.date(byAdding: dateComponent, to: nowDate) ?? Date()
+        let iat = Int(Date().timeIntervalSince1970)
+        let exp = iat + 2600
+        let bundleID = Bundle.main.bundleIdentifier ?? ""
+        let myClaims = MyClaims(iss: "\(teamID)",
+                                iat: iat,
+                                exp: exp,
+                                aud: "https://appleid.apple.com",
+                                sub: bundleID)
+        
+        var myJWT = JWT(header: myHeader, claims: myClaims)
+        
+        // JWT 발급을 요청값의 암호화 과정에서 다운받아두었던 Key File이 필요(.p8 파일)
+        guard let url = Bundle.main.url(forResource: "AuthKey_5V6V6SJZB5", withExtension: "p8") else {
+            return ""
+        }
+        
+        guard let privateKey: Data = try? Data(contentsOf: url, options: .alwaysMapped) else {
+            print(#fileID, #function, #line, "- privateKey 없음 ")
+            return ""
+        }
+        
+        let jwtSinger = JWTSigner.es256(privateKey: privateKey)
+        
+        guard let signedJWT = try? myJWT.sign(using: jwtSinger) else {
+            print(#fileID, #function, #line, "- JWT X ")
+            return ""
+        }
+        
+        print("🗝 singedJWT - \(signedJWT)")
+        return signedJWT
+    }
+    
+    //client_refreshToken
+    func getAppleRefreshToken(code: String, completionHandler: @escaping (String?) -> Void) {
+        guard let secret = UserDefaults.standard.string(forKey: "AppleClientSecret") else { return }
+        
+        let url = "https://appleid.apple.com/auth/token?client_id=\(self.bundleID)&client_secret=\(secret)&code=\(code)&grant_type=authorization_code"
+        let header: HTTPHeaders = ["Content-Type": "application/x-www-form-urlencoded"]
+        
+        print("🗝 clientSecret - \(String(describing: UserDefaults.standard.string(forKey: "AppleClientSecret")))")
+        print("🗝 authCode - \(code)")
+        
+        // Alamofire
+        let a = AF.request(url, method: .post, encoding: JSONEncoding.default, headers: header)
+            .validate(statusCode: 200..<500)
+            .responseData { response in
+                print("🗝 response - \(response.description)")
+                
+                switch response.result {
+                case .success(let output):
+                    print("🗝 ouput - \(output)")
+                    let decoder = JSONDecoder()
+                    if let decodedData = try? decoder.decode(AppleTokenResponse.self, from: output){
+                        print("🗝 output2 - \(String(describing: decodedData.refresh_token))")
+                        
+                        if decodedData.refresh_token == nil{
+                            print(#fileID, #function, #line, "- 토큰 생성 실패 ")
+                        }else{
+                            completionHandler(decodedData.refresh_token)
+                        }
+                    }
+                case .failure(_):
+                    //로그아웃 후 재로그인하여
+                    print("애플 토큰 발급 실패 - \(response.error.debugDescription)")
+                }
+            }
+    }
+    
+    
+    
+    // MARK: - 애플 토큰 삭제 (탈퇴) HTTP 통신
+    // Alamofire 라이브러리 사용
+    func revokeAppleToken(clientSecret: String, token: String, completionHandler: @escaping () -> Void) {
+        let url = "https://appleid.apple.com/auth/revoke?client_id=\(self.bundleID)&client_secret=\(clientSecret)&token=\(token)&token_type_hint=refresh_token"
+        
+        let header: HTTPHeaders = ["Content-Type": "application/x-www-form-urlencoded"]
+        
+        AF.request(url,
+                   method: .post,
+                   headers: header)
+        .validate(statusCode: 200..<600)
+        .responseData { response in
+            guard let statusCode = response.response?.statusCode else { return }
+            if statusCode == 200 {
+                print("애플 토큰 삭제 성공!")
+                completionHandler()
+            }
+        }
+    }
+    
+}
+
+// MARK: - client_secret(JWT) 발급 응답 모델
+fileprivate struct MyClaims: Claims {
+    let iss: String
+    let iat: Int
+    let exp: Int
+    let aud: String
+    let sub: String
+}
+
+// MARK: - 애플 엑세스 토큰 발급 응답 모델
+fileprivate struct AppleTokenResponse: Codable {
+    var access_token: String?
+    var token_type: String?
+    var expires_in: Int?
+    var refresh_token: String?
+    var id_token: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case refresh_token = "refresh_token"
     }
 }

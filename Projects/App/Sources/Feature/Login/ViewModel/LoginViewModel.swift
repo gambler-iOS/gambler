@@ -14,18 +14,11 @@ import KakaoSDKAuth
 import KakaoSDKUser
 import AuthenticationServices
 
-enum AuthState {
-    case signedIn
-    case signedOut
-}
-
 @MainActor
 final class LoginViewModel: ObservableObject {
     @Published var currentUser: User?
     @Published var userSession: FirebaseAuth.User?
     @Published var authState = AuthState.signedOut
-    @Published var isRegisterationViewPop: Bool = false
-    // 여기서 회원가입 뷰에 대한 변수를 부울타입으로 해야할 듯??
     
     // 1. 이 리스너는 사용자의 로그인 상태가 바뀔 때마다 호출됨
     private var authStateHandle: AuthStateDidChangeListenerHandle!
@@ -53,13 +46,34 @@ final class LoginViewModel: ObservableObject {
     // MARK: - Auth State
     /// 권한 부여 상태 변경에 대한 리스너를 추가
     func configureAuthStateChanges() {
+        // Listner = 인증이자 사용자
         authStateHandle = Auth.auth().addStateDidChangeListener { _, user in
             print("Auth changed: \(user != nil)")
             print("\(self.authState)")
-            self.updateState(user: user)
+            
+            guard let user else {
+                // 유효한 사용자가 없기 때문에 로그인되지 않았음을 의미
+                print("User is nil")
+                self.authState = .signedOut
+                return
+            }
+            
+            Task {
+                let currentUser = await FirebaseManager.shared.fetchOneData(collectionName: "Users", objectType: User.self, byId: self.userSession?.uid ?? "")
+                
+                if let currentUser {
+                    self.authState = .signedIn
+                    try await self.fetchUserData()
+                } else {
+                    self.authState = .creatingAccount
+                }
+                
+                //            Task {
+                //                await self.updateState(user: user)
+                //            }
+            }
         }
     }
-    
     /// 권한 부여 상태의 변경 사항에 대한 리스너를 제거
     func removeAuthStateListener() {
         Auth.auth().removeStateDidChangeListener(authStateHandle)
@@ -67,20 +81,44 @@ final class LoginViewModel: ObservableObject {
     
     /// Update auth state for given user.
     /// - Parameter user: `Optional` firebase user.
-    func updateState(user: FirebaseAuth.User?) {
+    func updateState(user: FirebaseAuth.User?) async {
         self.userSession = user
         let isAuthenticatedUser = user != nil
         
-        if isAuthenticatedUser {
+        guard isAuthenticatedUser else {
+            self.authState = .signedOut
+            self.currentUser = nil
+            self.userSession = nil
+            return
+        }
+        
+        let currentUser = await FirebaseManager.shared.fetchOneData(collectionName: "Users", objectType: User.self, byId: userSession?.uid ?? "")
+        
+//        if !isAuthenticatedUser {
+//            self.authState = .signedOut
+//            self.currentUser = nil
+//            self.userSession = nil
+//        }
+        
+        if let currentUser {
             self.authState = .signedIn
             Task {
                 try await fetchUserData()
             }
         } else {
-            self.authState = .signedOut
-            self.currentUser = nil
-            self.userSession = nil
+            self.authState = .creatingAccount
         }
+        
+//        if isAuthenticatedUser {
+//            self.authState = .signedIn
+//            Task {
+//                try await fetchUserData()
+//            }
+//        } else {
+//            self.authState = .signedOut
+//            self.currentUser = nil
+//            self.userSession = nil
+//        }
     }
     
     func verifySignInWithAppleID() {
@@ -168,7 +206,7 @@ final class LoginViewModel: ObservableObject {
     private func authSignIn(credentials: AuthCredential) async throws -> AuthDataResult? {
         do {
             let result = try await Auth.auth().signIn(with: credentials)
-            updateState(user: result.user)
+            //            updateState(user: result.user)
             return result
         } catch {
             print("FirebaseAuthError: signIn(with:) failed. \(error)")
@@ -180,7 +218,7 @@ final class LoginViewModel: ObservableObject {
         do {
             guard let user = Auth.auth().currentUser else { return nil }
             let result = try await user.link(with: credentials)
-            updateState(user: result.user)
+            //            updateState(user: result.user)
             
             return result
         } catch {
@@ -203,18 +241,34 @@ final class LoginViewModel: ObservableObject {
     }
     
     
-    /// 새로 가입한 유저인지 확인
-    /// - Parameter user: 파이어베이스 어스의 유저
-    /// - Returns: 새로 가입하는 유저 - true / 기존 유저 - false
-    fileprivate func isNewUser(uid: String) async throws -> Bool {
-        // Store에 해당 데이터가 있는지로 봐야할 듯..?
-        guard let registered = await FirebaseManager.shared.fetchOneData(collectionName: "Users", objectType: User.self, byId: uid) else {
-            print("첫 로그인")
-            return true
-        }
-        print("기존 로그인")
-        return false
-    }
+//    / 새로 가입한 유저인지 확인
+//    / - Parameter user: 파이어베이스 어스의 유저
+//    / - Returns: 새로 가입하는 유저 - true / 기존 유저 - false
+//    fileprivate func isNewUser(uid: String) async -> Bool {
+//        // Store에 해당 데이터가 있는지로 봐야할 듯..?
+//        guard let registered = await FirebaseManager.shared.fetchOneData(collectionName: "Users", objectType: User.self, byId: uid) else {
+//            print("첫 로그인")
+//            return true
+//        }
+//        print("기존 로그인")
+//        return false
+//        
+//    }
+    
+//    func checkRegistered(uid: String) async -> Bool {
+//        await withCheckedContinuation { continuation in
+//            Task {
+//               if await self.isNewUser(uid: uid) {
+//                    self.authState = .creatingAccount
+//                    //                    self.isRegisterationViewPop = true
+//                    continuation.resume(returning: true)
+//                } else {
+//                    //                    self.authState = .signedIn
+//                    continuation.resume(returning: false)
+//                }
+//            }
+//        }
+//    }
     
     // MARK: - FireStore
     
@@ -225,6 +279,7 @@ final class LoginViewModel: ObservableObject {
         
         guard let currentUid = userSession?.uid else {
             print("로그인된 유저 없음")
+            self.authState = .signedOut
             return
         }
         print("UID = \(currentUid)")
@@ -232,12 +287,16 @@ final class LoginViewModel: ObservableObject {
         do {
             currentUser = await FirebaseManager.shared.fetchOneData(collectionName: "Users", objectType: User.self, byId: currentUid)
             
-            guard let user = currentUser else {
-                print("파이어스토어에 유저 정보 없음")
+            if let user = currentUser {
+                print("유저 데이터 읽기 성공")
+                print("로그인 상태::: \(authState)")
+                self.authState = .signedIn
+                dump(currentUser)
+            } else {
+                print("파이어스토어에 유저 정보 없음 -> 회원가입해야징")
+                self.authState = .creatingAccount
                 return
             }
-            print("유저 데이터 읽기 성공")
-            dump(currentUser)
         }
     }
     
@@ -279,6 +338,7 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
+    // 다 토큰 없애야 할듯..?
     /// 계정삭제 - 회원탈퇴
     func deleteAccount() async {
         if let user = Auth.auth().currentUser {
@@ -289,12 +349,21 @@ final class LoginViewModel: ObservableObject {
                     print("회원탈퇴 성공!")
                     Task {  // 카카오톡일 때 로그아웃 후 삭제 -> 토큰 문제
                         // 토큰을 없앰
-                        if self.currentUser?.loginPlatform == .kakakotalk {
+                        switch self.currentUser?.loginPlatform {
+                        case .kakakotalk:
                             await KakaoAuthService.shared.handleKakaoLogout()
+                            try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
+                        case .apple:
+                            AppleAuthService.shared.signOutFromApple()
+                            try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
+                        case .google:
+                            try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
+                            print("Firestore - 현재 User 삭제 성공")
+                        default:
+                            print("회원탈퇴 실패~~")
                         }
-                        try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
-                        print("Firestore - 현재 User 삭제 성공")
                     }
+                    self.authState = .signedOut
                 }
             }
         } else {
@@ -325,13 +394,12 @@ extension LoginViewModel {
                         // 여기서 스토어에 올리던가 해야지
                         let user = result.user
                         
-                        if try await self.isNewUser(uid: user.uid) {
-                            AuthService.shared.uploadUserToFirestore(userId: user.uid,
-                                                                     name: user.displayName ?? "무명",
-                                                                     profileImageURL: user.photoURL?.absoluteString ?? "",
-                                                                     apnsToken: "애플",
-                                                                     loginPlatform: .apple)
-                        }
+                        AuthService.shared.dummyUser.id = user.uid
+                        AuthService.shared.dummyUser.nickname = user.displayName ?? "닉네임"
+                        AuthService.shared.dummyUser.profileImageURL = user.photoURL?.absoluteString ?? ""
+                        AuthService.shared.dummyUser.loginPlatform = .apple
+                        
+                        try await fetchUserData()
                     }
                 } catch {
                     print("AppleAuthorization failed: \(error)")
@@ -347,46 +415,45 @@ extension LoginViewModel {
     
     // 카카오 로그인
     func signInWithKakao() async {
-        if AuthApi.hasToken() {
-            UserApi.shared.accessTokenInfo { _, error in
-                if error != nil {
-                    // 토큰이 유효하지 않으면 로그인(로그인 시켜서 토큰을 다시 받음)
-                    KakaoAuthService.shared.handleKakaoLogin()
-                } else {  // ???
-                    Task {
-                        await KakaoAuthService.shared.loadingInfoDidKakaoAuth()
-                    }
-                }
-            }
-        } else { // 토큰 없으면 로그인
-            KakaoAuthService.shared.handleKakaoLogin()
+        Task {
+            await KakaoAuthService.shared.handleKakaoLogin()
+            try await fetchUserData()
         }
     }
     
+//    func signInWithKakao() async {
+//        Task {
+//            await KakaoAuthService.shared.handleKakaoLogin()
+//            //            self.userSession = Auth.auth().currentUser
+//            guard let currentUid = userSession?.uid else {
+//                print("로그인된 유저 없음")
+//                return
+//            }
+//            
+//            try await fetchUserData()
+//        }
+//    }
     
     /// 구글 로그인
     func signInWithGoogle() async {
         await GoogleAuthSerVice.shared.signInWithGoogle { user, error in
             if let error {
                 print("GoogleSignInError: failed to sign in with Google, \(error))")
-                return
             }
             
-            guard let user = user else { return }
+            guard let gidUser = user else { return }
             Task {
                 do {
-                    let result = try await self.googleAuth(user)
+                    let result = try await self.googleAuth(gidUser)
                     if let result {
                         print("GoogleSignInSuccess: \(result.user.uid)")
-                        let user = result.user
+                        let user = result.user  // firebase Auth의 User
+                        AuthService.shared.dummyUser.id = user.uid
+                        AuthService.shared.dummyUser.nickname = user.displayName ?? "닉네임"
+                        AuthService.shared.dummyUser.profileImageURL = user.photoURL?.absoluteString ?? ""
+                        AuthService.shared.dummyUser.loginPlatform = .google
                         
-                        if try await self.isNewUser(uid: user.uid) {
-                            AuthService.shared.uploadUserToFirestore(userId: user.uid,
-                                                                     name: user.displayName ?? "무명",
-                                                                     profileImageURL: user.photoURL?.absoluteString ?? "",
-                                                                     apnsToken: "구글",
-                                                                     loginPlatform: .google)
-                        }
+                        try await self.fetchUserData()
                     }
                 } catch {
                     print("GoogleSignInError: failed to authenticate with Google, \(error))")
@@ -395,4 +462,5 @@ extension LoginViewModel {
             
         }
     }
+    
 }

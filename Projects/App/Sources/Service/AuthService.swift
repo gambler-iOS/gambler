@@ -8,9 +8,39 @@
 
 import Foundation
 import FirebaseAuth
+import AuthenticationServices
+import GoogleSignIn
 
-final class AuthService {
+enum AuthState {
+    case signedIn
+    case signedOut
+    case creatingAccount
+}
+
+final class AuthService: ObservableObject {
+    
     static let shared = AuthService()
+    
+    var dummyUser: User = User(id: "",
+                               nickname: "",
+                               profileImageURL: "",
+                               apnsToken: "",
+                               createdDate: Date(),
+                               likeGameId: [],
+                               likeShopId: [],
+                               myReviewsCount: 0,
+                               myLikesCount: 0,
+                               loginPlatform: .none)
+    
+    // 1. 이 리스너는 사용자의 로그인 상태가 바뀔 때마다 호출됨
+    private var authStateHandle: AuthStateDidChangeListenerHandle!
+    
+    /// Common auth link errors.
+    private let authLinkErrors: [AuthErrorCode.Code] = [
+        .emailAlreadyInUse,
+        .credentialAlreadyInUse,
+        .providerAlreadyLinked
+    ]
     
     private init() { }
     
@@ -33,36 +63,33 @@ final class AuthService {
     
     /// 이메일 회원가입(FirebaseStore에도 등록) ->  카카오가입할때
     @MainActor
-    func createUser(email: String, password: String, name: String, profileImageURL: String) async throws {
-        do {
-            let result = try await Auth.auth().createUser(withEmail: email, password: password)
-            
-            uploadUserToFirestore(userId: result.user.uid,
-                                  name: name,
-                                  profileImageURL: profileImageURL,
-                                  apnsToken: "카카오톡",
-                                  loginPlatform: .kakakotalk)
-            print("회원가입 성공")
-        } catch {
-            print("회원가입 실패. 에러메세지: \(error.localizedDescription)")
-            throw error
+    func createUser(email: String, password: String, name: String, profileImageURL: String) async{
+        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+            if let error {
+                print("DEBUG: 파이어베이스 사용자 생성 실패 \(error.localizedDescription)")
+                Auth.auth().signIn(withEmail: email, password: password)
+                print("카카오톡 로그인 성공")
+            } else {
+                print("DEBUG: 파이어베이스 사용자 생성")
+                guard let uid = result?.user.uid else { return }
+                
+                self.dummyUser = User(id: uid,
+                                      nickname: name,
+                                      profileImageURL: profileImageURL,
+                                      apnsToken: "",
+                                      createdDate: Date(),
+                                      likeGameId: [],
+                                      likeShopId: [],
+                                      myReviewsCount: 0,
+                                      myLikesCount: 0,
+                                      loginPlatform: .kakakotalk)
+                
+            }
         }
     }
     
-    func uploadUserToFirestore(userId: String, name: String, profileImageURL: String, apnsToken: String, loginPlatform: LoginPlatform) {
-        
-        let user = User(id: userId,
-                        nickname: name,
-                        profileImageURL: profileImageURL,
-                        apnsToken: apnsToken,
-                        createdDate: Date(),
-                        likeGameId: [],
-                        likeShopId: [],
-                        myReviewsCount: 0,
-                        myLikesCount: 0,
-                        loginPlatform: loginPlatform
-        )
-        
+    //    func uploadUserToFirestore(userId: String, name: String, profileImageURL: String, apnsToken: String, loginPlatform: LoginPlatform) {
+    func uploadUserToFirestore(user: User) {
         do {
             try FirebaseManager.shared.createData(collectionName: "Users", data: user)
         } catch {

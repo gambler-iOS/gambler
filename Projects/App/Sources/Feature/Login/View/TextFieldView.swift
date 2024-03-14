@@ -23,39 +23,64 @@ struct TextFieldView: View {
                 .foregroundStyle(Color.gray700)
                 .padding(.bottom, 8)
             
-            HStack {
-                TextField("닉네임을 입력해주세요", text: $text, onEditingChanged: { _ in
-                    withAnimation(.interpolatingSpring, {
-                        self.isEditing.toggle()
-                    })
-                })
-                .foregroundColor(.gray700)
-                .keyboardType(.webSearch)
-                .autocorrectionDisabled()
-                .onChange(of: self.text) { _, newValue in
-                    textColor = isValidInput(input: newValue) ? Color.gray300 : Color.primaryDefault
-                }
-                .onChange(of: self.text) { _, newValue in
-                    if newValue.count > maxLength {
-                        self.text = String(newValue.prefix(maxLength))
+            GeometryReader { proxy in
+                HStack(spacing: 8) { 
+                    HStack {
+                        TextField("닉네임을 입력해주세요", text: $text, onEditingChanged: { _ in
+                            withAnimation(.interpolatingSpring, {
+                                self.isEditing.toggle()
+                            })
+                        })
+                        .foregroundColor(.gray700)
+                        .keyboardType(.webSearch)
+                        .autocorrectionDisabled()
+                        .onChange(of: self.text) { _, newValue in
+                            textColor = isValidInput(input: newValue) ? Color.gray300 : Color.primaryDefault
+                        }
+                        .onChange(of: self.text) { _, newValue in
+                            if newValue.count > maxLength {
+                                self.text = String(newValue.prefix(maxLength))
+                            }
+                        }
+                        
+                        if !text.isEmpty {
+                            Button {
+                                text = ""
+                            } label: {
+                                Image(isDuplicated ? "searchClosed" :
+                                        "Success")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                            }
+                        }
                     }
-                }
-                
-                if !text.isEmpty {
-                    Button {
-                        text = ""
-                    } label: {
-                        Image(isDuplicated ? "searchClosed" :
-                        "Success")
-                            .resizable()
-                            .frame(width: 24, height: 24)
+                    .padding(16)
+                    .background(Color.gray50)
+                    .cornerRadius(8)
+                    
+                    if !text.isEmpty {
+                        Button {
+                            Task {
+                                await duplicateCheck()
+                                
+//                                if !isDuplicated && text.count >= 2 {
+//                                    isDisabled = false
+//                                } else {
+//                                    isDisabled = true
+//                                }
+                            }
+                        } label: {
+                            Text("중복확인")
+                                .font(.body1B)
+                                .foregroundStyle(Color.gray500) // 500
+                                .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                        }
+//                        .frame(height: proxy.size.height)
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray200, lineWidth: 1.0))
                     }
+                    
                 }
             }
-            .padding(16)
-            .background(Color.gray50)
-            .cornerRadius(8)
-            
             Text("영문, 한글, 숫자를 사용하여 20자까지 가능합니다.")
                 .font(.caption1M)
                 .foregroundStyle(textColor)  // 조건에 따라 PrimaryDefault
@@ -78,6 +103,14 @@ struct TextFieldView: View {
             print("Regex Error: \(error.localizedDescription)")
             return false
         }
+    }
+    
+    /// 닉네임 중복검사
+    /// - Returns: 중복 - true / 중복 없을 시 false
+    private func duplicateCheck() async {
+        let user = await FirebaseManager.shared.fetchWhereData(collectionName: "Users", objectType: User.self, field: "nickname", isEqualTo: text)
+        
+        isDuplicated = user.isEmpty ? false : true
     }
 }
 

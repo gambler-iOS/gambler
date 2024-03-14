@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct User: AvailableFirebase {
+struct User: AvailableFirebase, Hashable {
     var id: String
     var nickname: String
     var profileImageURL: String

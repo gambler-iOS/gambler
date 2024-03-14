@@ -10,6 +10,7 @@ import SwiftUI
 
 struct RegisterTermsOfUseView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @State private var isDisabled: Bool = true
     @State private var agreedAll: Bool = false
     @State private var agreedFirstItem: Bool = false
@@ -29,6 +30,9 @@ struct RegisterTermsOfUseView: View {
                     if newValue {
                         agreedFirstItem = true
                         agreedSecondItem = true
+                    } else {
+                        agreedFirstItem = false
+                        agreedSecondItem = false
                     }
                 }
             
@@ -65,17 +69,22 @@ struct RegisterTermsOfUseView: View {
                 // 1. Auth에 등록
                 // 2. Firestore에 올리기
                 // 3. 로그인하기
-                guard let user = loginViewModel.currentUser else {
-                    print(#fileID, #function, #line, "- 회원가입 실패 ")
-                    return
-                }
+//                guard let user = loginViewModel.dummyUser else {
+//                    print(#fileID, #function, #line, "- 회원가입 실패 ")
+//                    return
+//                }
                 
-                AuthService.shared.uploadUserToFirestore(userId: user.id,
-                                                         name: user.nickname,
-                                                         profileImageURL: user.profileImageURL,
-                                                         apnsToken: user.apnsToken ?? "없음",
-                                                         loginPlatform: user.loginPlatform)
+                AuthService.shared.uploadUserToFirestore(user: AuthService.shared.dummyUser)
+                loginViewModel.authState = .signedIn
                 
+                // TODO: 루트뷰 가기
+//                    .onTapGesture {
+//                        appNavigationPath.loginViewPath.removeLast()
+//                    }
+                // 루트뷰로 가야함
+                // 이렇게 만들고 코드 대폭 수정해야 함....
+                // 어쨌든 마이페이지 뷰가 보인다는 것은 signIn이 되었다가 firstSignin이 된다는 것,, 문제 많다
+                appNavigationPath.loginViewPath = .init()
             }
             .padding(.bottom, 24)
         }

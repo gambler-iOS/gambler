@@ -10,25 +10,36 @@ import SwiftUI
 import AuthenticationServices
 
 struct LoginView: View {
-    // 여기는 회원가입 뷰를 추가할 예정이라 private 없이 진행하도록 하겠습니다!
     @EnvironmentObject var loginViewModel: LoginViewModel
-
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @State private var showRegisterationView: Bool = false
-    
+
 #warning("뷰 padding 수정 필요")
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $appNavigationPath.loginViewPath) {
             VStack(spacing: .zero) {
                 HStack {
-                    Text("문구 문구 문구문구문구")
-                        .font(.head1B)
-                        .foregroundStyle(Color.gray900)
-                        .frame(width: 166, height: 96)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("GAMBLER")
+                            .foregroundStyle(Color.primaryDefault)
+                        Text("주변 보드게임을")
+                        Text("한 손에!")
+                            .foregroundStyle(Color.gray900)
+                    }
+                    .font(.head1B)
                     Spacer()
                 }
-                .padding(.top, 123)
-                
+                .padding(.top, 71)  // 비율이 있는지..?
                 Spacer()
+                
+                HStack {
+                    Spacer()
+                    Image("logo")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 254, height: 203)
+                        .padding(.bottom, 42)
+                }
                 
                 VStack(spacing: 16) {
                     Image("kakaoLogin")
@@ -39,6 +50,9 @@ struct LoginView: View {
                             Task {
                                 // Bool 값을 보내줘야 할 듯...
                                 await loginViewModel.signInWithKakao()
+                                if loginViewModel.authState == .creatingAccount {
+                                    appNavigationPath.loginViewPath.append("회원가입 뷰")
+                                }
                             }
                         }
                     
@@ -51,9 +65,12 @@ struct LoginView: View {
                                 AppleAuthService.shared.requestAppleAuthorization(request)
                             } onCompletion: { result in
                                 loginViewModel.handleAppleID(result)
+                                
+                                if loginViewModel.authState == .creatingAccount {
+                                    appNavigationPath.loginViewPath.append("회원가입 뷰")
+                                }
                             }
                             .blendMode(.overlay)
-                            
                         }
                     
                     Image("googleLogin")
@@ -63,14 +80,20 @@ struct LoginView: View {
                         .onTapGesture {
                             Task {
                                 await loginViewModel.signInWithGoogle()
+                                print(loginViewModel.currentUser)
+                                
+                                if loginViewModel.authState == .creatingAccount {
+                                    appNavigationPath.loginViewPath.append("회원가입 뷰")
+                                }
                             }
-                        }
-                        .navigationDestination(isPresented: $loginViewModel.isRegisterationViewPop) {
-                            RegistrationView()
-                                .environmentObject(loginViewModel)
                         }
                 }
                 .padding(.bottom, 32)
+                .navigationDestination(for: String.self) { _ in
+                    RegistrationView()
+                        .environmentObject(loginViewModel)
+                        .environmentObject(appNavigationPath)
+                }
             }
             .padding(.horizontal, 24)
         }
@@ -80,4 +103,5 @@ struct LoginView: View {
 #Preview {
     LoginView()
         .environmentObject(LoginViewModel())
+        .environmentObject(AppNavigationPath())
 }
