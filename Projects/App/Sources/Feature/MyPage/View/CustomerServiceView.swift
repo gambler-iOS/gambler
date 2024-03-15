@@ -115,11 +115,7 @@ struct CustomerServiceView: View {
     }
     
     private func updateDisabledButton() {
-        if !serviceContent.isEmpty {
-            disabledButton = false
-        } else {
-            disabledButton = true
-        }
+        disabledButton = serviceContent.isEmpty
     }
 }
 
