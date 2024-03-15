@@ -83,7 +83,7 @@ final class MyPageViewModel: ObservableObject {
                     minPlayerCount: 2,
                     maxPlayerCount: 4,
                     playTime: 2,
-                    genre: .fantasy)
+                    genre: [.fantasy])
                 ))
         }
     }

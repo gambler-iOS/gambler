@@ -14,34 +14,57 @@ final class GameDetailViewModel: ObservableObject {
     @Published var similarGenreGames: [Game] = []
     @Published var similarPlayerGames: [Game] = []
     
+    private let firebaseManager = FirebaseManager.shared
+    
     init() {
-        generateDummyData()
-        game.reviewRatingAverage = 4.0
+        //        generateDummyData()
     }
-
-    func generateDummyData() {
-        for num in 1...3 {
-            reviews.append(Review.dummyGameReview)
-            similarGenreGames.append(
-                Game(id: UUID().uuidString, gameName: "game\(num)",
-                     gameImage: "https://weefun.co.kr/shopimages/weefun/007009000461.jpg?1596805186",
-                     descriptionContent: "게임 상세 설명",
-                     descriptionImage: ["https://boardm5.godohosting.com/goods/2024/02/dt01.png"],
-                     gameLink: "link\(num)", createdDate: Date(),
-                     reviewCount: 1 + num, reviewRatingAverage: 3.5 + (0.1 * Double(num)),
-                     gameIntroduction: GameIntroduction(difficulty: 3.1, minPlayerCount: 2 + num,
-                                                        maxPlayerCount: 4 + num, playTime: 2 + num,
-                                                        genre: .fantasy)))
-            similarPlayerGames.append(
-                Game(id: UUID().uuidString, gameName: "game1\(num)",
-                     gameImage: "https://weefun.co.kr/shopimages/weefun/007009000461.jpg?1596805186",
-                     descriptionContent: "게임 상세 설명",
-                     descriptionImage: ["https://boardm5.godohosting.com/goods/2024/02/dt01.png"],
-                     gameLink: "link\(num)", createdDate: Date(),
-                     reviewCount: 1 + num, reviewRatingAverage: 3.5 + (0.1 * Double(num)),
-                     gameIntroduction: GameIntroduction(difficulty: 3.1, minPlayerCount: 2 + num,
-                                                        maxPlayerCount: 4 + num, playTime: 2 + num,
-                                                        genre: .fantasy)))
+    
+    private func generateDummyData() {
+        similarGenreGames = Game.dummyGameList
+        similarPlayerGames = Game.dummyGameList
+        reviews.append(Review.dummyGameReview)
+    }
+    
+    @MainActor
+    func fetchData() async {
+        similarGenreGames.removeAll()
+        similarPlayerGames.removeAll()
+        
+        do {
+            reviews = try await firebaseManager
+                .fetchWhereIsEqualToData(collectionName: AppConstants.CollectionName.reviews,
+                                         field: "postId",
+                                         isEqualTo: game.id,
+                                         limit: 3)
+            
+            similarGenreGames = try await firebaseManager
+                .fetchWhereArrayContainsData(collectionName: AppConstants.CollectionName.games,
+                                             field: "gameIntroduction.genre",
+                                             arrayContainsAny: game.gameIntroduction.genre.map { $0.rawValue },
+                                             limit: 6)
+            
+            similarPlayerGames = try await firebaseManager
+                .fetchWhereIsEqualToData(collectionName: AppConstants.CollectionName.games,
+                                         field: "gameIntroduction.maxPlayerCount",
+                                         isEqualTo: game.gameIntroduction.maxPlayerCount,
+                                         limit: 6)
+        } catch {
+            print("Error fetching GameDetailViewModel : \(error.localizedDescription)")
+        }
+    }
+    
+    /// review 작성 후 게임 모델 내 리뷰 관련 데이터 업데이트된 내용 화면에 다시 출력하기 위해 사용
+    @MainActor
+    func fetchGameInfo() async {
+        do {
+            if let data: Game = try await firebaseManager
+                .fetchOneData(collectionName: AppConstants.CollectionName.games, byId: game.id) {
+                
+                game = data
+            }
+        } catch {
+            print("Error fetching GameInfo GameDetailViewModel : \(error.localizedDescription)")
         }
     }
 }

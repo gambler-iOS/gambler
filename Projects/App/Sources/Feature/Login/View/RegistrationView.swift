@@ -55,13 +55,17 @@ struct RegistrationView: View {
         .navigationTitle("회원가입")
     }
     
-    
     /// 닉네임 중복검사
     /// - Returns: 중복 - true / 중복 없을 시 false
     private func duplicateCheck() async {
-        let user = await FirebaseManager.shared.fetchWhereData(collectionName: "Users", objectType: User.self, field: "nickname", isEqualTo: nicknameText)
-        
-        isDuplicated = user.isEmpty ? false : true
+        do {
+            let user: [User] = try await FirebaseManager.shared
+                .fetchWhereIsEqualToData(collectionName: "Users", field: "nickname", isEqualTo: nicknameText)
+            
+            isDuplicated = user.isEmpty ? false : true
+        } catch {
+            print("Error fetching RegistrationView : \(error.localizedDescription)")
+        }
     }
 }
 
