@@ -20,7 +20,6 @@ final class GameListViewModel: ObservableObject {
         games.first?.gameIntroduction.genre.map { $0.rawValue } ?? []
     }
     
-    private var genre: String = ""
     private func convertStringToGenre(koreanName: String) -> [String] {
         if let theme = GameTheme.allCases.first(where: { $0.koreanName == koreanName }) {
             return [theme.rawValue]
@@ -41,7 +40,7 @@ final class GameListViewModel: ObservableObject {
         var tempGames: [Game] = []
         games.removeAll()
         do {
-            if title.contains("인기") || title.contains("Best"){
+            if title.contains("인기") || title.contains("Best") {
                 tempGames = try await firebaseManager.fetchOrderData(collectionName: collectionName,
                                                                  orderBy: "reviewCount", limit: 5)
             } else if title.contains("신규") {
