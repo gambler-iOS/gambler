@@ -73,7 +73,7 @@ struct CustomerServiceView: View {
                                                          complainCategory: choiceCategory,
                                                          complainContent: serviceContent,
                                                          complainImage: try await ImageUploader
-                                                    .uploadCustomerServiceImage(selectedPhotosData,
+                                                    .uploadImages(selectedPhotosData,
                                                                                 type: .customerService),
                                                          createdDate: Date()))
             isShowingToast = true

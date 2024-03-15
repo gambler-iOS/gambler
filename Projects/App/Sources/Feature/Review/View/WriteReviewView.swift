@@ -92,7 +92,7 @@ struct WriteReviewView: View {
                                                    reviewRating: rating,
                                                    reviewImage: 
                                                     try await ImageUploader
-                                                .uploadCustomerServiceImage(selectedPhotosData,
+                                                .uploadImages(selectedPhotosData,
                                                                             type: .review),
                                                    createdDate: Date()) )
             await reviewViewModel.fetchData()

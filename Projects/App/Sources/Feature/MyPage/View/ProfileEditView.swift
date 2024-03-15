@@ -15,7 +15,7 @@ struct ProfileEditView: View {
     @State private var email: String = ""
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var imageData: Data?
-    @State private var isShowingResingModal: Bool = false
+    @State private var isShowingResignModal: Bool = false
     @Environment(\.presentationMode) var presentationMode
     
 #warning("임시")
@@ -50,18 +50,18 @@ struct ProfileEditView: View {
                         }
                     }
                 }
-                .navigationBarHidden(isShowingResingModal)
+                .navigationBarHidden(isShowingResignModal)
             }
             
-            if isShowingResingModal {
+            if isShowingResignModal {
                 Color.black.opacity(0.5)
                     .frame(height: UIScreen.main.bounds.height)
                     .ignoresSafeArea()
                 
-                CustomModalView(isShowingModal: $isShowingResingModal,
+                CustomModalView(isShowingModal: $isShowingResignModal,
                                 title: "정말 탈퇴하시겠어요?",
                                 content: "탈퇴 후에는 작성하신 리뷰를 수정 혹은 삭제할 수 없어요. 탈퇴 신청 전에 꼭 확인해주세요.") {
-                    isShowingResingModal = false
+                    isShowingResignModal = false
                 }
             }
         }
@@ -155,7 +155,7 @@ struct ProfileEditView: View {
                     }
                 }
             Button {
-                isShowingResingModal = true
+                isShowingResignModal = true
             } label: {
                 ProfileButtonView(text: "회원 탈퇴하기", width: 109, height: 30, isDefaultButton: true, isDisabled: false)
             }
