@@ -109,7 +109,8 @@ final class StorageManager {
         guard let currentUid = Auth.auth().currentUser?.uid else { return }
         
         guard let imageUrl = try? await self.uploadImage(image, folder: folder) else { return }
-        try await FirebaseManager.shared.updateData(collectionName: "Users", objectType: User.self, byId: currentUid, data: ["profileImageURL": imageUrl])
+        try await FirebaseManager.shared.updateData(collectionName: "Users", byId: currentUid,
+                                                    data: ["profileImageURL": imageUrl])
     }
     
     /// 이미지를 Storage에 올린 후 url 반환

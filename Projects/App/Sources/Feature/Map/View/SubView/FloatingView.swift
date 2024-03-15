@@ -29,7 +29,9 @@ struct FloatingView: View {
     private var showListButtonView: some View {
         Button(action: {
             shopStore.fetchUserAreaShopList(userPoint: userLocate)
-            isShowingSheet = true
+            withAnimation {
+                isShowingSheet = true
+            }
         }, label: {
             RoundedRectangle(cornerRadius: 15)
                 .stroke(Color.gray200)

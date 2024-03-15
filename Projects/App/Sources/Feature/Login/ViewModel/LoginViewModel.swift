@@ -202,13 +202,12 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
-    
     /// 새로 가입한 유저인지 확인
     /// - Parameter user: 파이어베이스 어스의 유저
     /// - Returns: 새로 가입하는 유저 - true / 기존 유저 - false
     fileprivate func isNewUser(uid: String) async throws -> Bool {
         // Store에 해당 데이터가 있는지로 봐야할 듯..?
-        guard let registered = await FirebaseManager.shared.fetchOneData(collectionName: "Users", objectType: User.self, byId: uid) else {
+        guard let registered: User = try await FirebaseManager.shared.fetchOneData(collectionName: "Users", byId: uid) else {
             print("첫 로그인")
             return true
         }
@@ -230,7 +229,7 @@ final class LoginViewModel: ObservableObject {
         print("UID = \(currentUid)")
         
         do {
-            currentUser = await FirebaseManager.shared.fetchOneData(collectionName: "Users", objectType: User.self, byId: currentUid)
+            currentUser = try await FirebaseManager.shared.fetchOneData(collectionName: "Users", byId: currentUid)
             
             guard let user = currentUser else {
                 print("파이어스토어에 유저 정보 없음")
@@ -238,6 +237,8 @@ final class LoginViewModel: ObservableObject {
             }
             print("유저 데이터 읽기 성공")
             dump(currentUser)
+        } catch {
+            print("Error fetching LoginViewModel : \(error.localizedDescription)")
         }
     }
     

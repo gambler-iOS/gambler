@@ -7,27 +7,52 @@
 //
 
 import Foundation
+import SwiftUI
 
 final class GameListViewModel: ObservableObject {
     @Published var games: [Game] = []
     @Published var showGrid: Bool = false
     
+    private let firebaseManager = FirebaseManager.shared
+    private let collectionName: String = AppConstants.CollectionName.games
+    
+    private var convertGenreToString: [String] {
+        games.first?.gameIntroduction.genre.map { $0.rawValue } ?? []
+    }
+    
     init() {
-        generateDummyData()
+//        generateDummyData()
     }
 
-    func generateDummyData() {
-        let gameImageUrl: String =
-        "https://weefun.co.kr/shopimages/weefun/007009000461.jpg?1596805186"
-        for num in 1...5 {
-            games.append(Game(id: UUID().uuidString, gameName: "game\(num)", gameImage: gameImageUrl,
-                              descriptionContent: "게임 상세 설명",
-                              descriptionImage: ["https://boardm5.godohosting.com/goods/2024/02/dt01.png"],
-                              gameLink: "link\(num)", createdDate: Date(),
-                              reviewCount: 1 + num, reviewRatingAverage: 3.5 + (0.1 * Double(num)),
-                              gameIntroduction: GameIntroduction(difficulty: 3.1, minPlayerCount: 2 + num,
-                                                                 maxPlayerCount: 4 + num, playTime: 2 + num,
-                                                                 genre: .fantasy)))
+    private func generateDummyData() {
+        games = Game.dummyGameList
+    }
+    
+    @MainActor
+    func fetchData(title: String) async {
+        var tempGames: [Game] = []
+        games.removeAll()
+        do {
+            if title.contains("인기") {
+                tempGames = try await firebaseManager.fetchOrderData(collectionName: collectionName,
+                                                                 orderBy: "reviewCount", limit: 5)
+            } else if title.contains("신규") {
+                tempGames = try await firebaseManager.fetchOrderData(collectionName: collectionName,
+                                                                 orderBy: "createdDate", limit: 5)
+            } else if title.contains("비슷한 장르") {
+                tempGames = try await firebaseManager
+                    .fetchWhereArrayContainsData(collectionName: collectionName, field: "genre",
+                                                 arrayContainsAny: convertGenreToString, limit: 5)
+            } else if title.contains("비슷한 인원수") {
+                tempGames = try await firebaseManager
+                    .fetchWhereIsEqualToData(collectionName: collectionName,
+                                             field: "gameIntroduction.maxPlayerCount",
+                                             isEqualTo: games.first?.gameIntroduction.maxPlayerCount ?? 0,
+                                             limit: 5)
+            }
+        } catch {
+            print("Error fetching \(collectionName) : \(error.localizedDescription)")
         }
+        self.games = tempGames
     }
 }

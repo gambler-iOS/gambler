@@ -62,8 +62,12 @@ enum AppConstants {
     }
     
     enum CollectionName {
-        static let complains: String = "Complains"
+        static let eventBanners: String = "EventBanners"
+        static let games: String = "Games"
+        static let shops: String = "Shops"
         static let reviews: String = "Reviews"
+        static let users: String = "Users"
+        static let complains: String = "Complains"
     }
 }
 
