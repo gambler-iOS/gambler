@@ -31,7 +31,7 @@ final class MyPageViewModel: ObservableObject {
     init() {
         self.numnberOfReviews = getNumberOfReviews()
         self.numberOfLikes = getNumberOfLikes()
-        generateDummyData()
+//        generateDummyData()
     }
     
     private func generateDummyData() {
