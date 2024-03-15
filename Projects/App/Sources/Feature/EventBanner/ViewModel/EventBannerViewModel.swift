@@ -15,7 +15,7 @@ final class EventBannerViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
     
     init() {
-        generateDummyData()
+//        generateDummyData()
     }
 
     private func generateDummyData() {

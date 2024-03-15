@@ -27,8 +27,7 @@ struct EventBannerView: View {
                 } else {
                     if let url = URL(string: banners[eventBannerViewModel.currentIndex].bannerImage) {
                         NavigationLink {
-                            // WebView(siteURL: banners[eventBannerViewModel.currentIndex].linkURL)
-                            Text("WebView")
+                            EventBannerWebView(urlToLoad: banners[eventBannerViewModel.currentIndex].linkURL)
                         } label: {
                             VStack(spacing: .zero) {
                                 KFImage(url)
@@ -64,15 +63,15 @@ struct EventBannerView: View {
                                     }
                             }
                             .offset(y: (offset > 0 ? -offset : 0))
+                            .onAppear {
+                                eventBannerViewModel.startTimer()
+                            }
+                            .onDisappear {
+                                eventBannerViewModel.stopTimer()
+                            }
                         }
                     }
                 }
-            }
-            .onAppear {
-                eventBannerViewModel.startTimer()
-            }
-            .onDisappear {
-                eventBannerViewModel.stopTimer()
             }
         }
     }
