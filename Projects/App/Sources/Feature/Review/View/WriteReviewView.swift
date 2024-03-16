@@ -91,9 +91,9 @@ struct WriteReviewView: View {
                                                    reviewContent: reviewContent,
                                                    reviewRating: rating,
                                                    reviewImage: 
-                                                    try await ImageUploader
+                                                    try await StorageManager
                                                 .uploadImages(selectedPhotosData,
-                                                                            type: .review),
+                                                              folder: .review),
                                                    createdDate: Date()) )
             await reviewViewModel.fetchData()
             isUploading = false

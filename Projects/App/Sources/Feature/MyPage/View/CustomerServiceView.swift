@@ -72,9 +72,9 @@ struct CustomerServiceView: View {
                                                 Complain(id: UUID().uuidString,
                                                          complainCategory: choiceCategory,
                                                          complainContent: serviceContent,
-                                                         complainImage: try await ImageUploader
+                                                         complainImage: try await StorageManager
                                                     .uploadImages(selectedPhotosData,
-                                                                                type: .customerService),
+                                                                  folder: .complain),
                                                          createdDate: Date()))
             isShowingToast = true
         }
