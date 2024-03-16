@@ -32,6 +32,7 @@ struct RecentKeywordView: View {
                     }
                 }
             }
+            
             TagLayout(alignment: .leading, spacing: 8) {
                 ForEach(items) { item in
                     ChipView(label: item.keyword, size: .medium)

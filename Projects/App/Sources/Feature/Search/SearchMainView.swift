@@ -13,23 +13,37 @@ struct SearchMainView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [SearchKeyword]
     @State private var searchText: String = ""
+    @StateObject private var seachViewModel: SearchViewModel = SearchViewModel()
+    
+    var filteredShops: [Shop] {
+        guard !searchText.isEmpty else { return seachViewModel.shopResult }
+        return seachViewModel.shopResult.filter { $0.shopName.localizedCaseInsensitiveContains(searchText) }
+    }
+    var filteredGames: [Game] {
+        guard !searchText.isEmpty else { return seachViewModel.gameResult }
+        return seachViewModel.gameResult.filter { $0.gameName.localizedCaseInsensitiveContains(searchText) }
+    }
     
     var body: some View {
         ScrollView {
             VStack(spacing: 32) {
                 SearchBarView(searchText: $searchText)
+                    .padding(.horizontal, 24)
                 
-                RecentKeywordView()
-                
-                Button {
-                    addItem()
-                } label: {
-                    Text("추가")
+                if searchText.isEmpty {
+                    RecentKeywordView()
+                        .padding(.horizontal, 24)
+                    Button {
+                        addItem()
+                    } label: {
+                        Text("추가")
+                    }
+                } else {
+                    SearchResultView(filteredShops: filteredShops, filteredGames: filteredGames)
                 }
-
+            
                 Spacer()
             }
-            .padding(.horizontal, 24)
             .padding(.top, 24)
         }
     }

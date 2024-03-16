@@ -11,8 +11,8 @@ import Combine
 
 final class SearchViewModel: ObservableObject {
     @Published var query: String = ""
-    @Published var shopResult: [Shop] = [Shop.dummyShop,Shop.dummyShop]
-    @Published var gameResult: [Game] = [Game.dummyGame,Game.dummyGame,Game.dummyGame]
+    @Published var shopResult: [Shop] = [Shop.dummyShop, Shop.dummyShop]
+    @Published var gameResult: [Game] = [Game.dummyGame, Game.dummyGame, Game.dummyGame]
     @Published var isLoading: Bool = false
     @Published var error: Error?
     
@@ -31,5 +31,9 @@ final class SearchViewModel: ObservableObject {
 //                self?.error = error
 //            }
 //        }
+    }
+    
+    func search() {
+        
     }
 }

@@ -9,33 +9,50 @@
 import SwiftUI
 
 struct SearchResultView: View {
-    @ObservedObject var viewModel: SearchViewModel
+    var filteredShops: [Shop]
+    var filteredGames: [Game]
     
     var body: some View {
-        if viewModel.shopResult.isEmpty {
-            SectionHeaderView(title: "매장", count: 0)
+        if filteredShops.isEmpty && filteredGames.isEmpty {
+            emptyResultView
+                .padding(.horizontal, 24)
         } else {
-            SectionHeaderView(title: "매장", count: viewModel.shopResult.count)
-            ForEach(viewModel.shopResult) { shop in
-                ShopListCellView(shop: shop, likeShopIdArray: [])
-                    .padding(.horizontal, 24)
-            }
+            Group {
+                SectionHeaderView(title: "매장", count: filteredShops.count)
+                ForEach(filteredShops) { shop in
+                    ShopListCellView(shop: shop, likeShopIdArray: [])
+                    Divider()
+                }
+            } .padding(.horizontal, 24)
+            
+            BorderView()
+                .padding(.top, 32)
+            
+            Group {
+                SectionHeaderView(title: "게임", count: filteredGames.count)
+                ForEach(filteredGames) { game in
+                    GameListItemView(game: game, likeGameIdArray: [])
+                    Divider()
+                }
+            } .padding(.horizontal, 24)
         }
-        BorderView()
-            .padding(.top, 32)
-        
-        if viewModel.gameResult.isEmpty {
-            SectionHeaderView(title: "게임", count: 0)
-        } else {
-            SectionHeaderView(title: "게임", count: viewModel.gameResult.count)
-            ForEach(viewModel.gameResult) { game in
-                GameListItemView(game: game, likeGameIdArray: [])
-                    .padding(.horizontal, 24)
+    }
+    
+    private var emptyResultView: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text("검색 결과가 없습니다.")
+                    .font(.subHead2M)
+                Text("이런 검색어는 어떠세요?")
+                    .font(.caption1M)
+                    .foregroundStyle(Color.gray500)
+                    .padding(.top, 8)
             }
+            Spacer()
         }
     }
 }
 
 #Preview {
-    SearchResultView(viewModel: SearchViewModel())
+    SearchResultView(filteredShops: [Shop.dummyShop], filteredGames: [Game.dummyGame])
 }
