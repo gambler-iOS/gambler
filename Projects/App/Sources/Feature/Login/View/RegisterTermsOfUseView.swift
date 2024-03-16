@@ -10,7 +10,8 @@ import SwiftUI
 
 struct RegisterTermsOfUseView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
-    @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @EnvironmentObject private var navPathFinder: NavigationPathFinder
+
     @State private var isDisabled: Bool = true
     @State private var agreedAll: Bool = false
     @State private var agreedFirstItem: Bool = false
@@ -65,26 +66,17 @@ struct RegisterTermsOfUseView: View {
             
             Spacer()
             CTAButton(disabled: $isDisabled, title: "회원가입 완료") {
-                // 회원가입 완료
-                // 1. Auth에 등록
-                // 2. Firestore에 올리기
-                // 3. 로그인하기
-//                guard let user = loginViewModel.dummyUser else {
-//                    print(#fileID, #function, #line, "- 회원가입 실패 ")
-//                    return
-//                }
+                guard let user = AuthService.shared.dummyUser else {
+                    print("더미유저 없음 회원가입 실패")
+                    return
+                }
                 
-                AuthService.shared.uploadUserToFirestore(user: AuthService.shared.dummyUser)
-                loginViewModel.authState = .signedIn
-                
-                // TODO: 루트뷰 가기
-//                    .onTapGesture {
-//                        appNavigationPath.loginViewPath.removeLast()
-//                    }
-                // 루트뷰로 가야함
-                // 이렇게 만들고 코드 대폭 수정해야 함....
-                // 어쨌든 마이페이지 뷰가 보인다는 것은 signIn이 되었다가 firstSignin이 된다는 것,, 문제 많다
-                appNavigationPath.loginViewPath = .init()
+                Task {
+                    AuthService.shared.uploadUserToFirestore(user: user)
+                    await loginViewModel.fetchUserData()
+                    loginViewModel.authState = .signedIn
+                    navPathFinder.popToRoot()
+                }
             }
             .padding(.bottom, 24)
         }
@@ -104,10 +96,10 @@ struct RegisterTermsOfUseView: View {
         }
         .padding(.vertical, 16)
     }
-    
 }
 
 #Preview {
     RegisterTermsOfUseView()
         .environmentObject(LoginViewModel())
+        .environmentObject(NavigationPathFinder.shared)
 }

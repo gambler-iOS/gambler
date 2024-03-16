@@ -38,7 +38,7 @@ final class LoginViewModel: ObservableObject {
         verifySignInWithAppleID()
         
         Task {
-            try await fetchUserData()
+            await fetchUserData()
         }
         
     }
@@ -63,14 +63,10 @@ final class LoginViewModel: ObservableObject {
                 
                 if let currentUser {
                     self.authState = .signedIn
-                    try await self.fetchUserData()
+                    await self.fetchUserData()
                 } else {
                     self.authState = .creatingAccount
                 }
-                
-                //            Task {
-                //                await self.updateState(user: user)
-                //            }
             }
         }
     }
@@ -94,31 +90,14 @@ final class LoginViewModel: ObservableObject {
         
         let currentUser = await FirebaseManager.shared.fetchOneData(collectionName: "Users", objectType: User.self, byId: userSession?.uid ?? "")
         
-//        if !isAuthenticatedUser {
-//            self.authState = .signedOut
-//            self.currentUser = nil
-//            self.userSession = nil
-//        }
-        
         if let currentUser {
             self.authState = .signedIn
             Task {
-                try await fetchUserData()
+                await fetchUserData()
             }
         } else {
             self.authState = .creatingAccount
         }
-        
-//        if isAuthenticatedUser {
-//            self.authState = .signedIn
-//            Task {
-//                try await fetchUserData()
-//            }
-//        } else {
-//            self.authState = .signedOut
-//            self.currentUser = nil
-//            self.userSession = nil
-//        }
     }
     
     func verifySignInWithAppleID() {
@@ -218,8 +197,6 @@ final class LoginViewModel: ObservableObject {
         do {
             guard let user = Auth.auth().currentUser else { return nil }
             let result = try await user.link(with: credentials)
-            //            updateState(user: result.user)
-            
             return result
         } catch {
             print("FirebaseAuthError: link(with:) failed, \(error)")
@@ -227,7 +204,6 @@ final class LoginViewModel: ObservableObject {
                 if let code = AuthErrorCode.Code(rawValue: error.code),
                    authLinkErrors.contains(code) {
                     
-                    // If provider is "apple.com", get updated AppleID credentials from the error object.
                     let appleCredentials =
                     credentials.provider == "apple.com"
                     ? error.userInfo[AuthErrorUserInfoUpdatedCredentialKey] as? AuthCredential
@@ -240,40 +216,9 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
-    
-//    / 새로 가입한 유저인지 확인
-//    / - Parameter user: 파이어베이스 어스의 유저
-//    / - Returns: 새로 가입하는 유저 - true / 기존 유저 - false
-//    fileprivate func isNewUser(uid: String) async -> Bool {
-//        // Store에 해당 데이터가 있는지로 봐야할 듯..?
-//        guard let registered = await FirebaseManager.shared.fetchOneData(collectionName: "Users", objectType: User.self, byId: uid) else {
-//            print("첫 로그인")
-//            return true
-//        }
-//        print("기존 로그인")
-//        return false
-//        
-//    }
-    
-//    func checkRegistered(uid: String) async -> Bool {
-//        await withCheckedContinuation { continuation in
-//            Task {
-//               if await self.isNewUser(uid: uid) {
-//                    self.authState = .creatingAccount
-//                    //                    self.isRegisterationViewPop = true
-//                    continuation.resume(returning: true)
-//                } else {
-//                    //                    self.authState = .signedIn
-//                    continuation.resume(returning: false)
-//                }
-//            }
-//        }
-//    }
-    
     // MARK: - FireStore
-    
     // 유저 정보 가져오기
-    func fetchUserData() async throws {
+    func fetchUserData() async {
         self.userSession = Auth.auth().currentUser
         print("Auth.currentUser: \(String(describing: userSession))")
         
@@ -295,6 +240,7 @@ final class LoginViewModel: ObservableObject {
             } else {
                 print("파이어스토어에 유저 정보 없음 -> 회원가입해야징")
                 self.authState = .creatingAccount
+                print("회원가입하려면 AuthState: \(authState)")
                 return
             }
         }
@@ -394,12 +340,13 @@ extension LoginViewModel {
                         // 여기서 스토어에 올리던가 해야지
                         let user = result.user
                         
-                        AuthService.shared.dummyUser.id = user.uid
-                        AuthService.shared.dummyUser.nickname = user.displayName ?? "닉네임"
-                        AuthService.shared.dummyUser.profileImageURL = user.photoURL?.absoluteString ?? ""
-                        AuthService.shared.dummyUser.loginPlatform = .apple
+                        await AuthService.shared.addDummyData(id: user.uid,
+                                                        nickname: user.displayName ?? "닉네임",
+                                                        profileImage: user.photoURL?.absoluteString ?? "",
+                                                        apnsToken: "애플",
+                                                        loginPlatform: .apple)
                         
-                        try await fetchUserData()
+                        await fetchUserData()
                     }
                 } catch {
                     print("AppleAuthorization failed: \(error)")
@@ -409,7 +356,6 @@ extension LoginViewModel {
         }
         else if case let .failure(error) = result {
             print("AppleAuthorization failed: \(error)")
-            // Here you can show error message to user.
         }
     }
     
@@ -417,22 +363,10 @@ extension LoginViewModel {
     func signInWithKakao() async {
         Task {
             await KakaoAuthService.shared.handleKakaoLogin()
-            try await fetchUserData()
+            await fetchUserData()
+            print(#fileID, #function, #line, "- 카카오 로그인 정보 \(currentUser)") // - nil
         }
     }
-    
-//    func signInWithKakao() async {
-//        Task {
-//            await KakaoAuthService.shared.handleKakaoLogin()
-//            //            self.userSession = Auth.auth().currentUser
-//            guard let currentUid = userSession?.uid else {
-//                print("로그인된 유저 없음")
-//                return
-//            }
-//            
-//            try await fetchUserData()
-//        }
-//    }
     
     /// 구글 로그인
     func signInWithGoogle() async {
@@ -448,12 +382,15 @@ extension LoginViewModel {
                     if let result {
                         print("GoogleSignInSuccess: \(result.user.uid)")
                         let user = result.user  // firebase Auth의 User
-                        AuthService.shared.dummyUser.id = user.uid
-                        AuthService.shared.dummyUser.nickname = user.displayName ?? "닉네임"
-                        AuthService.shared.dummyUser.profileImageURL = user.photoURL?.absoluteString ?? ""
-                        AuthService.shared.dummyUser.loginPlatform = .google
                         
-                        try await self.fetchUserData()
+                        // 회원가입때 쓸 수 있으니 dummy에 저장함
+                        await AuthService.shared.addDummyData(id: user.uid,
+                                                        nickname: user.displayName ?? "닉네임",
+                                                        profileImage: user.photoURL?.absoluteString ?? "",
+                                                        apnsToken: nil,
+                                                        loginPlatform: .google)
+                        
+                        await self.fetchUserData()
                     }
                 } catch {
                     print("GoogleSignInError: failed to authenticate with Google, \(error))")

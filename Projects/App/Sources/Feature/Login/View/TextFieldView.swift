@@ -92,9 +92,7 @@ struct TextFieldView: View {
             }
             Text("영문, 한글, 숫자를 사용하여 \(minLength)~\(maxLength)자까지 가능합니다.")
                 .font(.caption1M)
-                .foregroundStyle(textColor)  // 조건에 따라 PrimaryDefault
-            
-            Text("중복여부: \(isDuplicated)")
+                .foregroundStyle(textColor)
         }
         .onAppear {
             self.isValid = isValidInput(input: text)

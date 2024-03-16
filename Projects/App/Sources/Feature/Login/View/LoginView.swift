@@ -11,7 +11,7 @@ import AuthenticationServices
 
 struct LoginView: View {
     @EnvironmentObject var loginViewModel: LoginViewModel
-    @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @EnvironmentObject private var navPathFinder: NavigationPathFinder
     @State private var showRegisterationView: Bool = false
     
     var body: some View {
@@ -46,10 +46,10 @@ struct LoginView: View {
                     .frame(height: 60)
                     .onTapGesture {
                         Task {
-                            // Bool 값을 보내줘야 할 듯...
                             await loginViewModel.signInWithKakao()
                             if loginViewModel.authState == .creatingAccount {
-                                appNavigationPath.loginViewPath.append("회원가입 뷰")
+                                self.navPathFinder.addPath(option: .regstrationView)
+                                print("kakaoLogin - 회원가입뷰 소환!")
                             }
                         }
                     }
@@ -65,7 +65,8 @@ struct LoginView: View {
                             loginViewModel.handleAppleID(result)
                             
                             if loginViewModel.authState == .creatingAccount {
-                                appNavigationPath.loginViewPath.append("회원가입 뷰")
+                                self.navPathFinder.addPath(option: .regstrationView)
+                                print("appleLogin - 회원가입뷰 소환!")
                             }
                         }
                         .blendMode(.overlay)
@@ -78,27 +79,22 @@ struct LoginView: View {
                     .onTapGesture {
                         Task {
                             await loginViewModel.signInWithGoogle()
-                            print(loginViewModel.currentUser)
-                            
                             if loginViewModel.authState == .creatingAccount {
-                                appNavigationPath.loginViewPath.append("회원가입 뷰")
+                                self.navPathFinder.addPath(option: .regstrationView)
+                                print("googleLogin - 회원가입뷰 소환!")
                             }
                         }
                     }
             }
             .padding(.bottom, 32)
-            .navigationDestination(for: String.self) { _ in
-                RegistrationView()
-                    .environmentObject(loginViewModel)
-                    .environmentObject(appNavigationPath)
-            }
         }
         .padding(.horizontal, 24)
         .modifier(BackButton())
+        .toolbar(.hidden, for: .tabBar)  // 툴바 안보이게 하기
     }
 }
 #Preview {
     LoginView()
         .environmentObject(LoginViewModel())
-        .environmentObject(AppNavigationPath())
+        .environmentObject(NavigationPathFinder.shared)
 }

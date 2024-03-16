@@ -29,7 +29,6 @@ final class KakaoAuthService {
         // 카카오 토큰이 존재한다면
         if AuthApi.hasToken() {
             UserApi.shared.accessTokenInfo { _, error in
-                
                 if let error {
                     print("DEBUG: 카카오톡 토큰 가져오기 에러 \(error.localizedDescription)")
                     self.kakaoLogin()
@@ -92,12 +91,10 @@ final class KakaoAuthService {
             } else {
                 print("DEBUG: 카카오톡 사용자 정보가져오기 success.")
                 
-                let email: String = user?.kakaoAccount?.email ?? ""
-                let password: String = String(describing: user?.id)
-                guard let name = user?.kakaoAccount?.profile?.nickname else { 
-                    
-                    return }
+                guard let email = user?.kakaoAccount?.email else { return }
+                guard let name = user?.kakaoAccount?.profile?.nickname else { return }
                 guard let profileImageURL = user?.kakaoAccount?.profile?.profileImageUrl?.absoluteString else { return }
+                let password: String = String(describing: user?.id)
                 
                 // 파이어베이스 유저 생성 (이메일로 회원가입)
                 Task {
@@ -198,11 +195,10 @@ final class KakaoAuthService {
             
             // 로그인 되면 그냥 로그인, 안되면 회원가입 후 로그인
             Task {
-                //                let isLogedin = await AuthService.shared.loginWithEmail(email: email, password: password)
                 if await AuthService.shared.loginWithEmail(email: email, password: password) {
                     print("카카오 이메일 로그인 성공")
                 } else {
-                    try await AuthService.shared.createUser(email: email,
+                    await AuthService.shared.createUser(email: email,
                                                             password: password,
                                                             name: name,
                                                             profileImageURL: profileImageURL)

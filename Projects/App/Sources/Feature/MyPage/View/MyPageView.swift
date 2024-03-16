@@ -23,11 +23,11 @@ struct MyPageView: View {
     }
     
     var body: some View {
-        if loginViewModel.authState == .signedOut {
-           MyPageSignedOutView()
-                .environmentObject(loginViewModel)
-                .environmentObject(appNavigationPath)
-        } else {
+        if loginViewModel.authState != .signedIn {
+                MyPageSignedOutView()
+                    .environmentObject(loginViewModel)
+                    .environmentObject(NavigationPathFinder.shared)
+        } else { // SignedIn
             NavigationStack {
                 ScrollView {
                     VStack(spacing: .zero) {

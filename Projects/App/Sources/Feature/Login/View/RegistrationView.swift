@@ -10,12 +10,11 @@ import SwiftUI
 
 struct RegistrationView: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @EnvironmentObject var loginViewModel: LoginViewModel
+    @EnvironmentObject private var navPathFinder: NavigationPathFinder
     
     @State private var isDisabled: Bool = true
     @State private var nicknameText: String = ""
-    @State private var showTermsOfUseView: Bool = false
     @State private var isDuplicated: Bool = false
     @State private var showToast = false
     private let textField: String = "닉네임을 입력해주세요."
@@ -39,16 +38,10 @@ struct RegistrationView: View {
             }
             
             CTAButton(disabled: $isDisabled, title: "다음") {
-                // 유저 닉네임 받아들이기
                 loginViewModel.currentUser?.nickname = nicknameText
-                showTermsOfUseView.toggle()
+                navPathFinder.addPath(option: .temsOfAgreeView)
             }
             .padding(.bottom, 24)
-            .navigationDestination(isPresented: $showTermsOfUseView) {
-                RegisterTermsOfUseView()
-                    .environmentObject(loginViewModel)
-                    .environmentObject(appNavigationPath)
-            }
         }
         .padding(.horizontal, 24)
         .navigationBarBackButtonHidden(true)
@@ -59,8 +52,16 @@ struct RegistrationView: View {
         }
         .navigationTitle("회원가입")
         .onAppear {
-            self.nicknameText = AuthService.shared.dummyUser.nickname
-        }        
+            Task {
+                await loginViewModel.fetchUserData()
+                
+                guard let user = AuthService.shared.dummyUser else {
+                    print("DummyUser 없음 - 가져오기 실패")
+                    return
+                }
+                self.nicknameText = user.nickname
+            }
+        }
     }
     
     private var backButton: some View {
@@ -85,5 +86,5 @@ struct RegistrationView: View {
 #Preview {
     RegistrationView()
         .environmentObject(LoginViewModel())
-        .environmentObject(AppNavigationPath())
+        .environmentObject(NavigationPathFinder.shared)
 }
