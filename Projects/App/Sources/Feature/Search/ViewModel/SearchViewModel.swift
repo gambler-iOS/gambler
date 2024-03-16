@@ -10,9 +10,13 @@ import Foundation
 import Combine
 
 final class SearchViewModel: ObservableObject {
+    private let firebaseManager = FirebaseManager.shared
+    private let shopCollectionName = AppConstants.CollectionName.shops
+    private let GameCollectionName = AppConstants.CollectionName.games
+    
     @Published var query: String = ""
-    @Published var shopResult: [Shop] = [Shop.dummyShop, Shop.dummyShop]
-    @Published var gameResult: [Game] = [Game.dummyGame, Game.dummyGame, Game.dummyGame]
+    @Published var shopResult: [Shop] = []
+    @Published var gameResult: [Game] = []
     @Published var isLoading: Bool = false
     @Published var error: Error?
     
@@ -20,8 +24,8 @@ final class SearchViewModel: ObservableObject {
 //        self.searchService = searchService
 //    }
     
-    func search() {
-        isLoading = true
+    //    func search() {
+    //    isLoading = true
 //        searchService.search(query: query) { [weak self] result in
 //            self?.isLoading = false
 //            switch result {
@@ -31,9 +35,29 @@ final class SearchViewModel: ObservableObject {
 //                self?.error = error
 //            }
 //        }
-    }
-    
-    func search() {
+  //  }
+ 
+    func fetchData() async {
+        var tempShop: [Shop] = []
+        var tempGame: [Game] = []
+        
+        shopResult.removeAll()
+        gameResult.removeAll()
+        
+        do {
+            tempShop = try await firebaseManager.fetchAllData(collectionName: shopCollectionName)
+        } catch {
+            print("Error fetching \(shopCollectionName) : \(error.localizedDescription)")
+        }
+        
+        do {
+            tempGame = try await firebaseManager.fetchAllData(collectionName: GameCollectionName)
+        } catch {
+            print("Error fetching \(GameCollectionName) : \(error.localizedDescription)")
+        }
+
+        self.shopResult = tempShop
+        self.gameResult = tempGame
         
     }
 }

@@ -13,8 +13,10 @@ struct SearchMainView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [SearchKeyword]
     @State private var searchText: String = ""
-    @StateObject private var seachViewModel: SearchViewModel = SearchViewModel()
     
+    // 그냥 shop, game의 뷰모델을 가져와서 fetch하면 안되나..?
+    let seachViewModel: SearchViewModel = SearchViewModel()
+   
     var filteredShops: [Shop] {
         guard !searchText.isEmpty else { return seachViewModel.shopResult }
         return seachViewModel.shopResult.filter { $0.shopName.localizedCaseInsensitiveContains(searchText) }
@@ -45,6 +47,9 @@ struct SearchMainView: View {
                 Spacer()
             }
             .padding(.top, 24)
+        }
+        .task {
+            await seachViewModel.fetchData()
         }
     }
     
