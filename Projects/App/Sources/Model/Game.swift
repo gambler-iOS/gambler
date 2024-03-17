@@ -23,6 +23,36 @@ struct Game: AvailableFirebase, AvailableAggregateReview, Hashable {
     var reviewCount: Int
     var reviewRatingAverage: Double
     let gameIntroduction: GameIntroduction
+    
+    private var difficultyToString: String {
+        switch gameIntroduction.difficulty {
+        case ...1.0:
+            return "최하"
+        case ...2.0:
+            return "하"
+        case ...3.0:
+            return "중"
+        case ...4.0:
+            return "상"
+        case ...4.5:
+            return "최상"
+        default:
+            return "Unknown"
+        }
+    }
+    
+    var chipViewLabel: [String] {
+        var labelArray: [String] = [
+            "👥 \(gameIntroduction.minPlayerCount) - \(gameIntroduction.maxPlayerCount)명",
+            "🕛 \(gameIntroduction.playTime)분 내외",
+            "🟡 난이도 \(difficultyToString)"
+        ]
+        
+        for genre in gameIntroduction.genre {
+            labelArray.append(genre.koreanName)
+        }
+        return labelArray
+    }
 }
 
 struct GameIntroduction: Codable, Hashable {

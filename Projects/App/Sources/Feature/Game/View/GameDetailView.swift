@@ -13,7 +13,9 @@ struct GameDetailView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @EnvironmentObject private var gameDetailViewModel: GameDetailViewModel
     @State private var offsetY: CGFloat = CGFloat.zero
-    private let mainImageHeight: CGFloat = 290
+    @State private var isWriteReviewButton: Bool = false
+    @State private var isHeartButton: Bool = false
+    private let headerImageHeight: CGFloat = 290
     let game: Game
     
     var body: some View {
@@ -33,35 +35,22 @@ struct GameDetailView: View {
                         .clipped()
                         .frame(
                             width: geometry.size.width,
-                            height: mainImageHeight + (offset > 0 ? offset : 0)
+                            height: headerImageHeight + (offset > 0 ? offset : 0)
                         )
                         .offset(y: (offset > 0 ? -offset : 0))
                 }
+                RoundCornerView
+                    .offset(y: headerImageHeight - 20)
             }
-            .frame(minHeight: mainImageHeight)
+            .frame(minHeight: headerImageHeight)
             
             VStack(alignment: .leading, spacing: 32) {
-                HStack(alignment: .center, spacing: 8) {
-                    Text(game.gameName)
-                        .font(.subHead1B)
-                    ReviewRatingCellView(rating: gameDetailViewModel.game.reviewRatingAverage)
-                }
-                .padding(.leading, 24)
-                .padding(.top, 32)
+                titleView
+                    .padding(.horizontal, 24)
                 
-                HStack(alignment: .center, spacing: .zero) {
-                    ItemButtonView(image: GamblerAsset.heartGray.swiftUIImage, buttonName: "찜하기") {
-                        
-                    }
-                    
-                    Spacer()
-                    
-                    ItemButtonView(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
-                        
-                    }
-                }
-                .frame(height: 72)
-                .padding(EdgeInsets(top: -10, leading: 71, bottom: -32, trailing: 71))
+                gameItemButtonsView
+                    .frame(height: 72)
+                    .padding(EdgeInsets(top: -10, leading: 71, bottom: -32, trailing: 71))
                 
                 BorderView()
                 
@@ -82,19 +71,19 @@ struct GameDetailView: View {
                 GameSimilarHScrollView(title: "비슷한 인원수의 게임", games: gameDetailViewModel.similarPlayerGames)
             }
             .background(Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: 16.0))
+//            .clipShape(RoundedRectangle(cornerRadius: 16.0))
         }
         .onAppear {
-            print("detail appear")
             setGameInViewModel()
         }
         .task {
-            print("detail task")
             await gameDetailViewModel.fetchData()
         }
         .ignoresSafeArea(.all, edges: .top)
-        .navigationTitle(offsetY < -5 ? "\(game.gameName)" : "")
+        .navigationTitle(offsetY < -headerImageHeight + 40 ? "\(game.gameName)" : "")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarHidden(offsetY < -headerImageHeight + 40 ? false : true)
+        .animation(.easeInOut, value: offsetY)
         .modifier(BackButton())
     }
     
@@ -109,6 +98,61 @@ struct GameDetailView: View {
             self.offsetY = offset
         }
         return EmptyView()
+    }
+    
+    private var RoundCornerView: some View {
+        Rectangle()
+            .foregroundColor(.white)
+            .frame(width: UIScreen.main.bounds.width, height: 40)
+            .clipShape(TempRoundedCorner(radius: 20, corners: [.topLeft, .topRight]))
+    }
+    
+    private var titleView: some View {
+        HStack(alignment: .center, spacing: 8) {
+            Text(game.gameName)
+                .font(.subHead1B)
+            ReviewRatingCellView(rating: gameDetailViewModel.game.reviewRatingAverage)
+        }
+    }
+    
+    private var gameItemButtonsView: some View {
+        HStack(alignment: .center, spacing: .zero) {
+            ItemButtonView(
+                image: isHeartButton == false ?
+                GamblerAsset.heartGray.swiftUIImage : GamblerAsset.heartRed.swiftUIImage,
+                buttonName: "찜하기") {
+                    
+                    isHeartButton.toggle()
+                    if isHeartButton {
+                        /// 유저 데이터에 찜 등록
+                    } else {
+                        /// 유저 데이터에서 찜 삭제
+                    }
+                }
+            
+            Spacer()
+            
+            ItemButtonView(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
+                isWriteReviewButton = true
+            }
+            .navigationDestination(isPresented: $isWriteReviewButton) {
+                WriteReviewView(reviewableItem: game)
+            }
+        }
+    }
+}
+
+/// 팀원이 공통뷰에 RoundedCorner 제작 중인데 PR 이 아직 올라오지 않아 임시로 추가함.
+private struct TempRoundedCorner: Shape {
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+    
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect,
+                                byRoundingCorners: corners,
+                                cornerRadii: CGSize(width: radius, height: radius))
+        
+        return Path(path.cgPath)
     }
 }
 

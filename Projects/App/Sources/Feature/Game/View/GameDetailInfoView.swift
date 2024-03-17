@@ -15,10 +15,9 @@ struct GameDetailInfoView: View {
     var body: some View {
         VStack(spacing: 32) {
             TagLayout {
-                ChipView(label: "👥 3 - 10명", size: .medium)
-                ChipView(label: "🕛 10분 내외", size: .medium)
-                ChipView(label: "📖 마피아", size: .medium)
-                ChipView(label: "🟡 난이도 하", size: .medium)
+                ForEach(game.chipViewLabel, id: \.self) { label in
+                    ChipView(label: label, size: .medium)
+                }
             }
             VStack(spacing: 24) {
                 VStack(alignment: .leading, spacing: 8) {

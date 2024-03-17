@@ -62,7 +62,6 @@ final class GameListViewModel: ObservableObject {
                     .fetchWhereArrayContainsData(collectionName: collectionName, field: "gameIntroduction.genre",
                                                  arrayContainsAny: convertStringToGenre(koreanName: title),
                                                  limit: 5)
-                print(tempGames, title)
             }
         } catch {
             print("Error fetching \(collectionName) : \(error.localizedDescription)")
