@@ -23,7 +23,9 @@ struct CustomModalView: View {
                         .frame(height: 221)
                 }
                 .padding(24)
-        }
+        }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.black.opacity(0.3))
+            .background(ClearBackground())
     }
     
     private var modalCellView: some View {

@@ -22,50 +22,42 @@ struct ProfileEditView: View {
     @State private var user: User = User.dummyUser
     
     var body: some View {
-        ZStack {
-            VStack {
-                ScrollView {
-                    VStack {
-                        profileView
-                            .padding(24)
-                        BorderView()
-                        defaultInfoView
-                            .padding(24)
-                        BorderView()
-                        pluginView
-                            .padding(24)
-                    }
-                    .padding(.bottom, 60)
+        VStack {
+            ScrollView {
+                VStack {
+                    profileView
+                        .padding(24)
+                    BorderView()
+                    defaultInfoView
+                        .padding(24)
+                    BorderView()
+                    pluginView
+                        .padding(24)
                 }
-                .navigationTitle("프로필 수정")
-                .modifier(BackButton())
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            reply()
-                        } label: {
-                            Text("완료")
-                                .font(.body2M)
-                                .foregroundStyle(Color.gray900)
-                        }
+                .padding(.bottom, 60)
+            }
+            .navigationTitle("프로필 수정")
+            .modifier(BackButton())
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        reply()
+                    } label: {
+                        Text("완료")
+                            .font(.body2M)
+                            .foregroundStyle(Color.gray900)
                     }
                 }
-                .navigationBarHidden(isShowingResignModal)
             }
-            
-            if isShowingResignModal {
-                Color.black.opacity(0.5)
-                    .frame(height: UIScreen.main.bounds.height)
-                    .ignoresSafeArea()
-                
-                CustomModalView(isShowingModal: $isShowingResignModal,
-                                title: "정말 탈퇴하시겠어요?",
-                                content: "탈퇴 후에는 작성하신 리뷰를 수정 혹은 삭제할 수 없어요. 탈퇴 신청 전에 꼭 확인해주세요.") {
-                    isShowingResignModal = false
-                }
+        } .fullScreenCover(isPresented: $isShowingResignModal) {
+            CustomModalView(isShowingModal: $isShowingResignModal,
+                            title: "정말 탈퇴하시겠어요?",
+                            content: "탈퇴 후에는 작성하신 리뷰를 수정 혹은 삭제할 수 없어요. 탈퇴 신청 전에 꼭 확인해주세요.") {
+                isShowingResignModal = false
             }
-        }
-        
+        }.transaction({ transaction in
+            transaction.disablesAnimations = true
+        })
     }
     
     private func reply() {
