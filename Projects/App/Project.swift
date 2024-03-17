@@ -13,7 +13,7 @@ let project = Project.makeModule(
     platform: .iOS,
     product: .app,
     packages: [
-        .remote(url: "https://github.com/firebase/firebase-ios-sdk", requirement: .upToNextMajor(from: "10.4.0")),
+        .remote(url: "https://github.com/firebase/firebase-ios-sdk", requirement: .exact("10.22.1")),
         .remote(url: "https://github.com/Alamofire/Alamofire", requirement: .upToNextMajor(from: "5.8.1")),
         .remote(url: "https://github.com/onevcat/Kingfisher", requirement: .upToNextMajor(from: "7.0.0")),
         .remote(url: "https://github.com/kakao-mapsSDK/KakaoMapsSDK-SPM.git", requirement: .upToNextMajor(from: "2.9.0")),

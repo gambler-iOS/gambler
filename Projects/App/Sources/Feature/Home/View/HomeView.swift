@@ -40,7 +40,7 @@ struct HomeView: View {
                         }
                 })
                 .navigationDestination(for: Shop.self) { shop in
-                    ShopDetailView(shop: shop)
+                    ShopDetailInfoView(shop: shop)
                 }
                 .navigationDestination(for: Game.self) { game in
                     GameDetailView(game: game)

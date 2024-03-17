@@ -36,7 +36,7 @@ final class HomeViewModel: ObservableObject {
             popularShops.append(Shop(id: UUID().uuidString, shopName: "shop\(num)", shopAddress: "address\(num)",
                                      shopImage: shopImageUrl, location: GeoPoint(latitude: 120.1, longitude: 140),
                                      shopPhoneNumber: "010-5555", menu: ["커피": 1000],
-                                     openingHour: "10시", amenity: ["주차"], shopDetailImage: ["detailImage\(num)"],
+                                     openingHour: ["10시"], amenity: ["주차"], shopDetailImage: ["detailImage\(num)"],
                                      createdDate: Date(), reviewCount: 3 + num,
                                      reviewRatingAverage: 3.5 + (0.1 * Double(num))))
             newGames.append(Game(id: UUID().uuidString, gameName: "game\(num)", gameImage: gameImageUrl,
@@ -50,7 +50,7 @@ final class HomeViewModel: ObservableObject {
             newShops.append(Shop(id: UUID().uuidString, shopName: "shop\(num)", shopAddress: "address\(num)",
                                      shopImage: shopImageUrl, location: GeoPoint(latitude: 120.1, longitude: 140),
                                      shopPhoneNumber: "010-5555", menu: ["커피": 1000],
-                                     openingHour: "10시", amenity: ["주차"], shopDetailImage: ["detailImage\(num)"],
+                                     openingHour: ["10시"], amenity: ["주차"], shopDetailImage: ["detailImage\(num)"],
                                      createdDate: Date(), reviewCount: 4 + num,
                                      reviewRatingAverage: 3.5 + (0.1 * Double(num))))
         }

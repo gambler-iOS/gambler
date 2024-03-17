@@ -19,7 +19,6 @@ struct GamblerApp: App {
         SDKInitializer.InitSDK(appKey: "\(kakaoAppKey)")
     }
     
-    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             SearchKeyword.self

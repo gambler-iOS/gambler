@@ -11,81 +11,104 @@ import Kingfisher
 
 struct ShopDetailInfoView: View {
     @State private var offsetY: CGFloat = CGFloat.zero
+    @State private var isShowingFullScreen: Bool = false
+    @State private var url: URL?
     let mainImageHeight: CGFloat = 200
     let shop: Shop
     
-    let testImage: String = "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20201221_142%2F1608531845610Jg8jX_JPEG%2FFlbld1H3ZDskqlZNz7t6Kk4_.jpg"
-    
     var body: some View {
-        ScrollView {
-            GeometryReader { geometry in
-                let offset = geometry.frame(in: .global).minY
-                setOffset(offset: offset)
-                KFImage(URL(string: shop.shopImage))
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .clipped()
-                    .frame(
-                        width: geometry.size.width,
-                        height: mainImageHeight + (offset > 0 ? offset : 0)
-                    )
-                    .offset(y: (offset > 0 ? -offset : 0))
-                RoundCornerView
-                    .offset(y: mainImageHeight - 20)
-            }
-            .frame(minHeight: mainImageHeight)
-            
-            TitleView
-                .padding(.horizontal, 24)
-            
-            AddressView
-                .padding(.horizontal, 24)
-                .padding(.top, 16)
-            
-            ItemButtonSetView(type: .shop)
-                .padding(.horizontal, 24)
-                .padding(.top, 32)
-            
-            BorderView()
-            /// 이 부분에 게임 이너뷰 추가하시면 됩니다!
-            ShopCostDetailView(shop: shop)
-                .padding(.horizontal, 24)
-                .padding(.top, 32)
-            
-            BorderView()
-                .padding(.top, 32)
-            
-            ShopDetailHeaderView(shop: shop)
-                .padding(.horizontal, 24)
-                .padding(.top, 32)
-            
-            ScrollView(.horizontal) {
-                HStack {
-                    ForEach(0..<shop.reviewCount) { _ in
-                        ReviewListCellView(review: .dummyShopReview)
+        ZStack {
+            ScrollView {
+                GeometryReader { geometry in
+                    let offset = geometry.frame(in: .global).minY
+                    setOffset(offset: offset)
+                    KFImage(URL(string: shop.shopImage))
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .clipped()
+                        .frame(
+                            width: geometry.size.width,
+                            height: mainImageHeight + (offset > 0 ? offset : 0)
+                        )
+                        .offset(y: (offset > 0 ? -offset : 0))
+                    RoundCornerView
+                        .offset(y: mainImageHeight - 20)
+                }
+                .frame(minHeight: mainImageHeight)
+                
+                TitleView
+                    .padding(.horizontal, 24)
+                
+                AddressView
+                    .padding(.horizontal, 24)
+                    .padding(.top, 16)
+                
+                ItemButtonSetView(type: .shop)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 32)
+                
+                BorderView()
+                /// 이 부분에 게임 이너뷰 추가하시면 됩니다!
+                ShopCostDetailView(shop: shop)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 32)
+                
+                if !(shop.shopDetailImage?.isEmpty ?? true) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("매장 추가 사진")
+                            .font(.body1B)
+                        ShopDetailImageListView(shop: shop, isShowingFullScreen: $isShowingFullScreen, url: $url)
+                            .padding(.top, 16)
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 24)
+                }
+                
+                BorderView()
+                    .padding(.top, 32)
+                
+                ShopDetailHeaderView(shop: shop)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 32)
+                
+                ScrollView(.horizontal) {
+                    HStack {
+                        ForEach(0..<shop.reviewCount) { _ in
+                            ReviewListCellView(review: .dummyShopReview)
+                        }
                     }
                 }
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, 8)
-            
-            BorderView()
-                .padding(.top, 32)
-            
-            mapHeaderView
                 .padding(.horizontal, 24)
-                .padding(.top, 32)
+                .padding(.top, 8)
+                
+                BorderView()
+                    .padding(.top, 32)
+                
+                mapHeaderView
+                    .padding(.horizontal, 24)
+                    .padding(.top, 32)
+                
+                MapTestView()
+            }
+            .background(.white)
+            .overlay(
+                safetyAreaScreenView, alignment: .top
+            )
+            
+            
+            if isShowingFullScreen {
+                withAnimation(.smooth()) {
+                    FullScreenImageView(isShowingFullScreen: $isShowingFullScreen, url: $url)
+                }
+            }
         }
-        .background(.white)
-        .overlay(
-            safetyAreaScreenView, alignment: .top
-        )
+        
     }
     
     private var RoundCornerView: some View {
         Rectangle()
             .foregroundColor(.white)
-            .frame(width: UIScreen.main.bounds.width, height: 40)
+            .frame(width: UIScreen.main.bounds.width, height: 60)
             .roundedCorner(20, corners: [.topLeft, .topRight])
     }
     

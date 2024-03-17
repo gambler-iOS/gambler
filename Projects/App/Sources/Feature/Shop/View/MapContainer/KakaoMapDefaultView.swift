@@ -98,5 +98,5 @@ struct KakaoMapDefaultView: UIViewRepresentable {
 }
 
 #Preview {
-    KakaoMapDefaultView(draw: .constant(false))
+    KakaoMapDefaultView(draw: .constant(true))
 }

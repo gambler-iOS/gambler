@@ -9,13 +9,17 @@
 import SwiftUI
 
 struct MapTestView: View {
-    @State var draw: Bool = false   //뷰의 appear 상태를 전달하기 위한 변수.
+    @State var draw: Bool = false
+    // 뷰의 appear 상태를 전달하기 위한 변수.
     var body: some View {
-        KakaoMapDefaultView(draw: $draw).onAppear(perform: {
-            self.draw = true
-        }).onDisappear(perform: {
-            self.draw = false
-        }).frame(maxWidth: .infinity, maxHeight: .infinity)
+        KakaoMapDefaultView(draw: $draw)
+            .onAppear(perform: {
+                self.draw = true
+            })
+            .onDisappear(perform: {
+                self.draw = false
+            })
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 #Preview {
