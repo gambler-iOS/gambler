@@ -71,7 +71,6 @@ struct GameDetailView: View {
                 GameSimilarHScrollView(title: "비슷한 인원수의 게임", games: gameDetailViewModel.similarPlayerGames)
             }
             .background(Color.white)
-//            .clipShape(RoundedRectangle(cornerRadius: 16.0))
         }
         .onAppear {
             setGameInViewModel()
@@ -80,10 +79,8 @@ struct GameDetailView: View {
             await gameDetailViewModel.fetchData()
         }
         .ignoresSafeArea(.all, edges: .top)
-        .navigationTitle(offsetY < -headerImageHeight + 40 ? "\(game.gameName)" : "")
+        .navigationTitle(offsetY < -5 ? "\(game.gameName)" : "")
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarHidden(offsetY < -headerImageHeight + 40 ? false : true)
-        .animation(.easeInOut, value: offsetY)
         .modifier(BackButton())
     }
     
