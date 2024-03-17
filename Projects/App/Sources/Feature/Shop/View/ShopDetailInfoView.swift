@@ -10,6 +10,7 @@ import SwiftUI
 import Kingfisher
 
 struct ShopDetailInfoView: View {
+    
     @State private var offsetY: CGFloat = CGFloat.zero
     @State private var isShowingFullScreen: Bool = false
     @State private var url: URL?
@@ -94,8 +95,7 @@ struct ShopDetailInfoView: View {
             .overlay(
                 safetyAreaScreenView, alignment: .top
             )
-            
-            
+
             if isShowingFullScreen {
                 withAnimation(.smooth()) {
                     FullScreenImageView(isShowingFullScreen: $isShowingFullScreen, url: $url)
@@ -108,7 +108,7 @@ struct ShopDetailInfoView: View {
     private var RoundCornerView: some View {
         Rectangle()
             .foregroundColor(.white)
-            .frame(width: UIScreen.main.bounds.width, height: 60)
+            .frame(width: UIScreen.main.bounds.width, height: 80)
             .roundedCorner(20, corners: [.topLeft, .topRight])
     }
     
@@ -160,4 +160,5 @@ struct ShopDetailInfoView: View {
 
 #Preview {
     ShopDetailInfoView(shop: Shop.dummyShop)
+        .environmentObject(ShopListViewModel())
 }

@@ -51,12 +51,12 @@ struct GameListItemView: View {
 
                     ReviewRatingCellView(rating: game.reviewRatingAverage)
                     
-                    TagLayout {
-                        ChipView(label: "👥 3 - 10명", size: .small)
-                        ChipView(label: "🕛 10분 내외", size: .small)
-                        ChipView(label: "📖 마피아", size: .small)
-                        ChipView(label: "🟡 난이도 하", size: .small)
-                    }
+//                    TagLayout {
+//                        ChipView(label: "👥 3 - 10명", size: .small)
+//                        ChipView(label: "🕛 10분 내외", size: .small)
+//                        ChipView(label: "📖 마피아", size: .small)
+//                        ChipView(label: "🟡 난이도 하", size: .small)
+//                    }
 //                    Spacer()
                 }
                 .foregroundStyle(.black)

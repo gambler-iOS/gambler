@@ -13,11 +13,20 @@ struct ShopListView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     
     let title: String
-    #warning("수정 필요 NavigationLink 오류")
+    
+    private var titleType: ListTypeEnum {
+        if title.contains("인기") {
+            return .popular
+        } else if title.contains("신규") {
+            return .newly
+        } else {
+            return .normal
+        }
+    }
     
     var body: some View {
         VStack(spacing: 12) {
-            headerView(title: title, showGrid: shopListViewModel.showGrid)
+            headerView(title: title)
             
             ScrollView {
                 VStack(spacing: 24) {
@@ -35,10 +44,13 @@ struct ShopListView: View {
         }
         .padding(.horizontal, 24)
         .navigationBarBackButtonHidden()
+        .task {
+            await shopListViewModel.fetchData(type: titleType)
+        }
     }
     
     @ViewBuilder
-    private func headerView(title: String, showGrid: Bool) -> some View {
+    private func headerView(title: String) -> some View {
         HStack(alignment: .center, spacing: .zero) {
             GamblerAsset.arrowLeft.swiftUIImage
                 .resizable()
@@ -54,6 +66,9 @@ struct ShopListView: View {
                 .foregroundStyle(.black)
             
             Spacer()
+            
+            Text("")
+                .frame(width: 24, height: 24)
         }
         .frame(height: 30)
     }

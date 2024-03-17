@@ -49,6 +49,9 @@ struct HomeView: View {
                     if title.contains("게임") {
                         GameListView(title: title)
                     }
+                    if title.contains("매장") {
+                        ShopListView(title: title)
+                    }
                 }
             }
             .coordinateSpace(name: "HOMESCROLL")
