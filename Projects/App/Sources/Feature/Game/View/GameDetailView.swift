@@ -82,6 +82,7 @@ struct GameDetailView: View {
         .navigationTitle(offsetY < -5 ? "\(game.gameName)" : "")
         .navigationBarTitleDisplayMode(.inline)
         .modifier(BackButton())
+        .buttonStyle(HiddenClickAnimationButtonStyle())
     }
     
     private func setGameInViewModel() {

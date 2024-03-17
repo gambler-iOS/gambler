@@ -48,7 +48,7 @@ struct HomeView: View {
                         GameListView(title: title)
                     }
                 }
-                .buttonStyle(CustomButtonStyle())
+                .buttonStyle(HiddenClickAnimationButtonStyle())
             }
             .coordinateSpace(name: "HOMESCROLL")
             .ignoresSafeArea(.all, edges: .top)
@@ -95,10 +95,10 @@ struct HomeView: View {
     }
 }
 
-struct CustomButtonStyle: ButtonStyle {
+struct HiddenClickAnimationButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .background(configuration.isPressed ? Color.gray.opacity(0.3) : Color.clear)
+            .background(Color.clear)
     }
 }
 
