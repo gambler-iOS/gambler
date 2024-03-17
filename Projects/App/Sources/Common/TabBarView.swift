@@ -10,18 +10,22 @@ import SwiftUI
 
 struct TabBarView: View {
     @State private var selectedTab = 0
+    @State private var draw = false
     @StateObject private var myPageViewModel = MyPageViewModel()
-    @StateObject private var reviewViewModel = ReviewViewModel()
+    @StateObject private var loginViewModel = LoginViewModel()
     @StateObject private var appNavigationPath = AppNavigationPath()
+    @StateObject private var homeViewModel = HomeViewModel()
+    @StateObject private var gameListViewModel = GameListViewModel()
+    @StateObject private var gameDetailViewModel = GameDetailViewModel()
     
     var body: some View {
         TabView(selection: $selectedTab) {
             
             HomeView()
-                .environmentObject(HomeViewModel())
+                .environmentObject(homeViewModel)
                 .environmentObject(appNavigationPath)
-                .environmentObject(GameListViewModel())
-                .environmentObject(GameDetailViewModel())
+                .environmentObject(gameListViewModel)
+                .environmentObject(gameDetailViewModel)
                 .tabItem {
                     HStack {
                         (selectedTab == 0 ?
@@ -31,7 +35,7 @@ struct TabBarView: View {
                 }
                 .tag(0)
             
-            MapView()
+            MapView(draw: $draw)
                 .tabItem {
                     HStack {
                         (selectedTab == 1 ?
@@ -54,7 +58,7 @@ struct TabBarView: View {
             
             MyPageView()
                 .environmentObject(myPageViewModel)
-                .environmentObject(reviewViewModel)
+                .environmentObject(loginViewModel)
                 .tabItem {
                     HStack {
                         (selectedTab == 3 ?
@@ -65,6 +69,13 @@ struct TabBarView: View {
                 .tag(3)
         }
         .tint(Color.primaryDefault)
+        .onAppear {
+            self.draw = true
+        }
+        .onDisappear {
+            self.draw = false
+        }
+    
     }
 }
 

@@ -16,8 +16,10 @@ let project = Project.makeModule(
         .remote(url: "https://github.com/firebase/firebase-ios-sdk", requirement: .exact("10.22.1")),
         .remote(url: "https://github.com/Alamofire/Alamofire", requirement: .upToNextMajor(from: "5.8.1")),
         .remote(url: "https://github.com/onevcat/Kingfisher", requirement: .upToNextMajor(from: "7.0.0")),
-        .remote(url: "https://github.com/kakao-mapsSDK/KakaoMapsSDK-SPM.git", requirement: .upToNextMajor(from: "2.9.0")),
+        .remote(url: "https://github.com/kakao-mapsSDK/KakaoMapsSDK-SPM.git", requirement: .upToNextMinor(from: "2.9.0")),
         .remote(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", requirement: .upToNextMajor(from: "4.0.0")),
+        .remote(url: "https://github.com/kakao/kakao-ios-sdk", requirement: .upToNextMajor(from: "2.20.0")),
+                .remote(url: "https://github.com/google/GoogleSignIn-iOS", requirement: .upToNextMajor(from: "7.0.0"))
     ],
     dependencies: [
         .package(product: "Alamofire"),
@@ -29,6 +31,8 @@ let project = Project.makeModule(
         .package(product: "FirebaseFirestore"),
         .package(product: "FirebaseFirestoreSwift"),
         .package(product: "FirebaseMessaging"),
+        .package(product: "KakaoSDK"),
+        .package(product: "GoogleSignIn")
     ],
     resources: ["Resources/**"],
     infoPlist: .file(path: "Resources/gambler-Info.plist"),

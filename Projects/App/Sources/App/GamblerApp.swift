@@ -9,14 +9,21 @@
 import SwiftUI
 import CoreLocation
 import SwiftData
+import KakaoSDKCommon
+import KakaoSDKAuth
 import KakaoMapsSDK
+import GoogleSignIn
 
 @main
 struct GamblerApp: App {
-    
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
     init() {
         let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_APP_KEY"] ?? ""
         SDKInitializer.InitSDK(appKey: "\(kakaoAppKey)")
+        KakaoSDK.initSDK(appKey: kakaoAppKey as? String ?? "")
+        
+      UITabBar.appearance().scrollEdgeAppearance = .init()
     }
     
     var sharedModelContainer: ModelContainer = {
@@ -40,6 +47,11 @@ struct GamblerApp: App {
                         await startTask()
                     }
                 }
+                .onOpenURL { url in
+                    if AuthApi.isKakaoTalkLoginUrl(url) {
+                        _ = AuthController.handleOpenUrl(url: url)
+                    }
+                }
 //            MainView()
         }
         .modelContainer(sharedModelContainer)
@@ -52,8 +64,7 @@ struct GamblerApp: App {
             DispatchQueue.main.async {
                 UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
             }
-        }
-        else if authorizationStatus == .restricted || authorizationStatus == .notDetermined {
+        } else if authorizationStatus == .restricted || authorizationStatus == .notDetermined {
             locationManager.requestWhenInUseAuthorization()
         }
     }

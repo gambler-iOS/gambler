@@ -38,6 +38,7 @@ enum LoginPlatform: Codable {
     case kakakotalk
     case apple
     case google
+    case none
     
     var description: String {
         switch self {
@@ -47,6 +48,8 @@ enum LoginPlatform: Codable {
             return "애플"
         case .google:
             return "구글"
+        case .none:
+            return "로그아웃"
         }
     }
 }

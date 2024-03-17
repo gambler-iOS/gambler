@@ -12,7 +12,7 @@ struct GameListView: View {
     @EnvironmentObject private var gameListViewModel: GameListViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     let title: String
-    let columns: [GridItem] = Array(repeating:
+    private let columns: [GridItem] = Array(repeating:
             .init(.flexible(minimum: 124, maximum: 200),
                   spacing: 17, alignment: .leading), count: 2)
     
@@ -47,6 +47,9 @@ struct GameListView: View {
         }
         .padding(.horizontal, 24)
         .navigationBarBackButtonHidden()
+        .task {
+            await gameListViewModel.fetchData(title: title)
+        }
     }
         
     @ViewBuilder
