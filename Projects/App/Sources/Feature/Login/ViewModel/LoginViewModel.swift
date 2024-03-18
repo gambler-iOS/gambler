@@ -59,14 +59,12 @@ final class LoginViewModel: ObservableObject {
             }
             
             Task {
-                let currentUser = await FirebaseManager.shared.fetchOneData(collectionName: "Users", objectType: User.self, byId: self.userSession?.uid ?? "")
-                
-                if let currentUser {
-                    self.authState = .signedIn
-                    await self.fetchUserData()
-                } else {
+                guard let currentUser: User = try await FirebaseManager.shared.fetchOneData(collectionName: "Users", byId: self.userSession?.uid ?? "") else {
                     self.authState = .creatingAccount
+                    return
                 }
+                self.authState = .signedIn
+                await self.fetchUserData()
             }
         }
     }
@@ -88,15 +86,13 @@ final class LoginViewModel: ObservableObject {
             return
         }
         
-        let currentUser = await FirebaseManager.shared.fetchOneData(collectionName: "Users", objectType: User.self, byId: userSession?.uid ?? "")
-        
-        if let currentUser {
-            self.authState = .signedIn
-            Task {
-                await fetchUserData()
+        Task {
+            guard let currentUser: User = try await FirebaseManager.shared.fetchOneData(collectionName: "Users", byId: self.userSession?.uid ?? "") else {
+                self.authState = .creatingAccount
+                return
             }
-        } else {
-            self.authState = .creatingAccount
+            self.authState = .signedIn
+            await self.fetchUserData()
         }
     }
     
@@ -230,19 +226,18 @@ final class LoginViewModel: ObservableObject {
         print("UID = \(currentUid)")
         
         do {
-            currentUser = await FirebaseManager.shared.fetchOneData(collectionName: "Users", objectType: User.self, byId: currentUid)
-            
-            if let user = currentUser {
-                print("유저 데이터 읽기 성공")
-                print("로그인 상태::: \(authState)")
-                self.authState = .signedIn
-                dump(currentUser)
-            } else {
+            currentUser
+            guard let user: User = try await FirebaseManager.shared.fetchOneData(collectionName: "Users", byId: currentUid) else {
                 print("파이어스토어에 유저 정보 없음 -> 회원가입해야징")
                 self.authState = .creatingAccount
                 print("회원가입하려면 AuthState: \(authState)")
                 return
             }
+            print("로그인 상태::: \(authState)")
+            self.authState = .signedIn
+            dump(currentUser)
+        } catch {
+            print("Error fetching LoginViewModel : \(error.localizedDescription)")
         }
     }
     
@@ -341,10 +336,10 @@ extension LoginViewModel {
                         let user = result.user
                         
                         await AuthService.shared.addDummyData(id: user.uid,
-                                                        nickname: user.displayName ?? "닉네임",
-                                                        profileImage: user.photoURL?.absoluteString ?? "",
-                                                        apnsToken: "애플",
-                                                        loginPlatform: .apple)
+                                                              nickname: user.displayName ?? "닉네임",
+                                                              profileImage: user.photoURL?.absoluteString ?? "",
+                                                              apnsToken: "애플",
+                                                              loginPlatform: .apple)
                         
                         await fetchUserData()
                     }
@@ -385,10 +380,10 @@ extension LoginViewModel {
                         
                         // 회원가입때 쓸 수 있으니 dummy에 저장함
                         await AuthService.shared.addDummyData(id: user.uid,
-                                                        nickname: user.displayName ?? "닉네임",
-                                                        profileImage: user.photoURL?.absoluteString ?? "",
-                                                        apnsToken: nil,
-                                                        loginPlatform: .google)
+                                                              nickname: user.displayName ?? "닉네임",
+                                                              profileImage: user.photoURL?.absoluteString ?? "",
+                                                              apnsToken: nil,
+                                                              loginPlatform: .google)
                         
                         await self.fetchUserData()
                     }
