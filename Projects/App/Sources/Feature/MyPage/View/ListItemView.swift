@@ -39,7 +39,7 @@ struct ListItemView: View {
                 Group {
                     HStack {
                         Text("버전 정보")
-                        Text(myPageViewModel.appVersion)  // 이거는 변수로 받아야 함
+                        Text(myPageViewModel.appVersion ?? "unknown")  // 이거는 변수로 받아야 함
                     }
                     
                     listBodyView(title: "개발자 정보", destination: AboutDevelopersView())

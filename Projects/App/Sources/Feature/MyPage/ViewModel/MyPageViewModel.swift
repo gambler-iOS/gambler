@@ -23,7 +23,7 @@ final class MyPageViewModel: ObservableObject {
     @Published var gameReviews: [Review] = []
     @Published var likeShops: [Shop] = []
     @Published var likeGames: [Game] = []
-    var appVersion: String = "1.0.1"
+    var appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String 
     
     var numnberOfReviews: String = ""
     var numberOfLikes: String = ""
