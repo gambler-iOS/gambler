@@ -50,6 +50,7 @@ struct LoginView: View {
                             if loginViewModel.authState == .creatingAccount {
                                 self.navPathFinder.addPath(option: .regstrationView)
                                 print("kakaoLogin - 회원가입뷰 소환!")
+                                print("dummy - \(AuthService.shared.tempUser)")
                             }
                         }
                     }

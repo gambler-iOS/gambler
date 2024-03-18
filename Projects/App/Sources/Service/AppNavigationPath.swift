@@ -37,7 +37,7 @@ enum LoginViewOptions: Hashable {
     @ViewBuilder func view() -> some View {
         switch self {
         case .loginView: 
-            LoginView()  // 넘길 연관값이 없음 - 있다면 User 정보?? - 필요하면 수정하자
+            LoginView()
         case .regstrationView:
             RegistrationView()
         case .temsOfAgreeView: 

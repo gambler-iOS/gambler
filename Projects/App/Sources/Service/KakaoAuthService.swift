@@ -148,6 +148,17 @@ final class KakaoAuthService {
         }
     }
     
+    func unlinkKakao() async {
+        UserApi.shared.unlink { (error) in
+            if let error = error {
+                print(error)
+            }
+            else {
+                print("unlink() success.")
+            }
+        }
+    }
+    
     /// 카카오 앱을 통해 로그인
     fileprivate func handleLoginWithKakaoTalkApp() async {
         UserApi.shared.loginWithKakaoTalk {(oauthToken, error) in
@@ -199,9 +210,9 @@ final class KakaoAuthService {
                     print("카카오 이메일 로그인 성공")
                 } else {
                     await AuthService.shared.createUser(email: email,
-                                                            password: password,
-                                                            name: name,
-                                                            profileImageURL: profileImageURL)
+                                                        password: password,
+                                                        name: name,
+                                                        profileImageURL: profileImageURL)
                     
                     print("카카오 회원가입 성공~")
                     //                    await AuthService.shared.loginWithEmail(email: email, password: password)

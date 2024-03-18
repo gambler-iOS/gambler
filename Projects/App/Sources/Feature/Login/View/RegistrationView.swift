@@ -38,7 +38,7 @@ struct RegistrationView: View {
             }
             
             CTAButton(disabled: $isDisabled, title: "다음") {
-                loginViewModel.currentUser?.nickname = nicknameText
+                AuthService.shared.tempUser?.nickname = nicknameText
                 navPathFinder.addPath(option: .temsOfAgreeView)
             }
             .padding(.bottom, 24)
@@ -55,7 +55,7 @@ struct RegistrationView: View {
             Task {
                 await loginViewModel.fetchUserData()
                 
-                guard let user = AuthService.shared.dummyUser else {
+                guard let user = AuthService.shared.tempUser else {
                     print("DummyUser 없음 - 가져오기 실패")
                     return
                 }

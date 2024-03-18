@@ -66,12 +66,13 @@ struct RegisterTermsOfUseView: View {
             
             Spacer()
             CTAButton(disabled: $isDisabled, title: "회원가입 완료") {
-                guard let user = AuthService.shared.dummyUser else {
+                guard let user = AuthService.shared.tempUser else {
                     print("더미유저 없음 회원가입 실패")
                     return
                 }
                 
                 Task {
+                    print("dummyUser - \(user)")
                     AuthService.shared.uploadUserToFirestore(user: user)
                     await loginViewModel.fetchUserData()
                     loginViewModel.authState = .signedIn

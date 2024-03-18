@@ -226,15 +226,15 @@ final class LoginViewModel: ObservableObject {
         print("UID = \(currentUid)")
         
         do {
-            currentUser
             guard let user: User = try await FirebaseManager.shared.fetchOneData(collectionName: "Users", byId: currentUid) else {
                 print("파이어스토어에 유저 정보 없음 -> 회원가입해야징")
                 self.authState = .creatingAccount
                 print("회원가입하려면 AuthState: \(authState)")
                 return
             }
-            print("로그인 상태::: \(authState)")
             self.authState = .signedIn
+            print("로그인 상태::: \(authState)")
+            self.currentUser = user
             dump(currentUser)
         } catch {
             print("Error fetching LoginViewModel : \(error.localizedDescription)")
@@ -292,7 +292,7 @@ final class LoginViewModel: ObservableObject {
                         // 토큰을 없앰
                         switch self.currentUser?.loginPlatform {
                         case .kakakotalk:
-                            await KakaoAuthService.shared.handleKakaoLogout()
+                            await KakaoAuthService.shared.unlinkKakao()
                             try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
                         case .apple:
                             AppleAuthService.shared.signOutFromApple()

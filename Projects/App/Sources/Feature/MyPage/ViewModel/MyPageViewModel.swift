@@ -18,7 +18,7 @@ final class MyPageViewModel: ObservableObject {
         case game = "게임"
     }
     
-    @Published var user: User = User.dummyUser
+    @Published var user: User? = User.dummyUser
     @Published var shopReviews: [Review] = []
     @Published var gameReviews: [Review] = []
     @Published var likeShops: [Shop] = []
@@ -94,8 +94,8 @@ final class MyPageViewModel: ObservableObject {
     }
     
     private func getNumberOfLikes() -> String {
-        let likeGames = user.likeGameId ?? []
-        let likeShops = user.likeShopId ?? []
+        let likeGames = user?.likeGameId ?? []
+        let likeShops = user?.likeShopId ?? []
         
         let numberOfReviewInt = likeGames.count + likeShops.count
         return "\(numberOfReviewInt)"
