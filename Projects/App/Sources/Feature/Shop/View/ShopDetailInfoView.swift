@@ -105,6 +105,7 @@ struct ShopDetailInfoView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, 24)
                     .padding(.bottom, 24)
+                    .disabled(true)
             }
             .background(.white)
             .overlay(
@@ -123,7 +124,7 @@ struct ShopDetailInfoView: View {
     private var RoundCornerView: some View {
         Rectangle()
             .foregroundColor(.white)
-            .frame(width: UIScreen.main.bounds.width, height: 80)
+            .frame(width: UIScreen.main.bounds.width, height: 180)
             .roundedCorner(20, corners: [.topLeft, .topRight])
     }
     

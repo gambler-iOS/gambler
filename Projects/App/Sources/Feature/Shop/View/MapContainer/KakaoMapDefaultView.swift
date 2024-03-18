@@ -11,7 +11,7 @@ import KakaoMapsSDK
 import CoreLocation
 
 struct KakaoMapDefaultView: UIViewRepresentable {
-    let shopLocate: GeoPoint
+    @Binding var shopLocate: GeoPoint
     @Binding var draw: Bool
     
     /// UIView를 상속한 KMViewContainer를 생성한다.
@@ -42,7 +42,7 @@ struct KakaoMapDefaultView: UIViewRepresentable {
     
     /// Coordinator 생성
     func makeCoordinator() -> KakaoMapDefaultCoordinator {
-        return KakaoMapDefaultCoordinator(shopLocate: shopLocate)
+        return KakaoMapDefaultCoordinator(shopLocate: $shopLocate)
     }
     
     /// Cleans up the presented `UIView` (and coordinator) in
@@ -53,14 +53,13 @@ struct KakaoMapDefaultView: UIViewRepresentable {
     
     /// Coordinator 구현. KMControllerDelegate를 adopt한다.
     final class KakaoMapDefaultCoordinator: NSObject, MapControllerDelegate {
-        let shopLocate: GeoPoint
-        
+        @Binding var shopLocate: GeoPoint
         let locationManager = CLLocationManager()
         var controller: KMController?
         var first: Bool
         
-        init(shopLocate: GeoPoint) {
-            self.shopLocate = shopLocate
+        init(shopLocate: Binding<GeoPoint>) {
+            self._shopLocate = shopLocate
             first = true
             super.init()
         }
@@ -77,7 +76,7 @@ struct KakaoMapDefaultView: UIViewRepresentable {
         /// 원하는 뷰를 생성한다.
         func addViews() {
             let defaultPosition: MapPoint = MapPoint(longitude: shopLocate.longitude, latitude: shopLocate.latitude)
-            let mapviewInfo: MapviewInfo = MapviewInfo(viewName: "shopmapview", viewInfoName: "map", defaultPosition: defaultPosition, defaultLevel: 7)
+            let mapviewInfo: MapviewInfo = MapviewInfo(viewName: "shopmapview", viewInfoName: "map", defaultPosition: defaultPosition, defaultLevel: 15)
             
             controller?.addView(mapviewInfo)
         }
@@ -94,14 +93,14 @@ struct KakaoMapDefaultView: UIViewRepresentable {
         
         /// KMViewContainer 리사이징 될 때 호출.
         func containerDidResized(_ size: CGSize) {
-            if let mapView = controller?.getView("mapview") as? KakaoMap {
+            if let mapView = controller?.getView("shopmapview") as? KakaoMap {
                 mapView.viewRect = CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: size)
                 if first {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         let cameraUpdate: CameraUpdate = CameraUpdate
                             .make(target: MapPoint(longitude: self.shopLocate.longitude,
                                                    latitude: self.shopLocate.latitude),
-                                  zoomLevel: 15, mapView: mapView)
+                                  zoomLevel: 16, mapView: mapView)
                         mapView.moveCamera(cameraUpdate)
                     }
                     first = false

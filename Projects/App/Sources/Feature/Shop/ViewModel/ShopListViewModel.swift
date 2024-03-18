@@ -33,7 +33,7 @@ final class ShopListViewModel: ObservableObject {
         do {
             switch type {
             case .normal:
-                tempShops = try await firebaseManager.fetchOrderData(collectionName: collectionName, orderBy: "createdDate", limit: 30)
+                tempShops = try await firebaseManager.fetchOrderData(collectionName: collectionName, orderBy: "createdDate", limit: 10)
             case .popular:
                 tempShops = try await firebaseManager.fetchOrderData(collectionName: collectionName,orderBy: "reviewCount", limit: 5)
             case .newly:
