@@ -23,6 +23,9 @@ struct ShopDetailHeaderView: View {
                     .padding(.leading, 8)
             } else {
                 Text("0.0(0)")
+                    .font(.body1B)
+                    .foregroundStyle(Color.primaryDefault)
+                    .padding(.leading, 8)
             }
             
             Spacer()

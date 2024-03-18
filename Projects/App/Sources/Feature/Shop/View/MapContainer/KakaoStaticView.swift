@@ -8,11 +8,12 @@
 
 import SwiftUI
 
-struct MapTestView: View {
-    @State var draw: Bool = false
+struct KakaoStaticView: View {
+    let shop: Shop
+    @State private var draw: Bool = false
     // 뷰의 appear 상태를 전달하기 위한 변수.
     var body: some View {
-        KakaoMapDefaultView(draw: $draw)
+        KakaoMapDefaultView(shopLocate: shop.location, draw: $draw)
             .onAppear(perform: {
                 self.draw = true
             })
@@ -22,6 +23,7 @@ struct MapTestView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
-#Preview {
-    MapTestView()
-}
+//
+//#Preview {
+//    KakaoStaticView(shop: <#Shop#>)
+//}

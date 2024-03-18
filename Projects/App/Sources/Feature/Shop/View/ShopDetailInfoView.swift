@@ -72,15 +72,26 @@ struct ShopDetailInfoView: View {
                     .padding(.horizontal, 24)
                     .padding(.top, 32)
                 
-                ScrollView(.horizontal) {
-                    HStack {
-                        ForEach(0..<shop.reviewCount) { _ in
-                            ReviewListCellView(review: .dummyShopReview)
+                if shop.reviewCount != 0 {
+                    ScrollView(.horizontal) {
+                        HStack {
+                            ForEach(0..<shop.reviewCount) { _ in
+                                ReviewListCellView(review: .dummyShopReview)
+                            }
                         }
                     }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 8)
+                } else {
+                    VStack {
+                        Text("첫 번째 리뷰를 남겨주세요!")
+                            .font(.body2M)
+                            .foregroundStyle(Color.gray400)
+                    }
+                    .frame(height: 114)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 24)
                 }
-                .padding(.horizontal, 24)
-                .padding(.top, 8)
                 
                 BorderView()
                     .padding(.top, 32)
@@ -89,7 +100,11 @@ struct ShopDetailInfoView: View {
                     .padding(.horizontal, 24)
                     .padding(.top, 32)
                 
-                MapTestView()
+                KakaoStaticView(shop: shop)
+                    .frame(height: 215)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 24)
             }
             .background(.white)
             .overlay(
