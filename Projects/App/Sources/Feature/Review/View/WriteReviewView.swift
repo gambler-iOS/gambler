@@ -17,8 +17,10 @@ struct WriteReviewView: View {
     @State private var reviewContent: String = ""
     @State private var rating: Double = 0.0
     @State private var disabledButton: Bool = true
-    
-    let placeholder: String = "리뷰를 남겨주세요."
+    @State private var showToast: Bool = false
+
+    private let toastMessage: String = "리뷰 작성이 완료되었습니다."
+    private let placeholder: String = "리뷰를 남겨주세요."
     let reviewableItem: AvailableAggregateReview
     
     var body: some View {
@@ -37,9 +39,17 @@ struct WriteReviewView: View {
                 
                 AddImageView(topPadding: .constant(16))
                 Spacer()
+                
+                if showToast {
+                    Toast(message: toastMessage, show: $showToast)
+                        .padding(.bottom, 16)
+                }
+                
                 CTAButton(disabled: $disabledButton, title: "완료") {
+                    showToast.toggle()
                     print("완료 버튼 눌림")
                     // 해당 리뷰를 파베에 올림
+                    // 루트뷰로 이동
                 }
                 .padding(.bottom, 24)
                 
