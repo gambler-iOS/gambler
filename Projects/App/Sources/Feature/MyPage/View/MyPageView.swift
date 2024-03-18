@@ -73,6 +73,12 @@ struct MyPageView: View {
         .padding(.vertical, 40)
     }
     
+//    private func setGameInViewModel() {
+//        DispatchQueue.main.async {
+//            gameDetailViewModel.game = game
+//        }
+//    }
+    
     @ViewBuilder
     private func navigationView(title: String, destination: some View, count: String) -> some View {
         NavigationLink {
