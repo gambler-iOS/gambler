@@ -12,7 +12,7 @@ import Kingfisher
 
 struct EventBannerView: View {
     @ObservedObject var eventBannerViewModel: EventBannerViewModel
-    let bannerImageHeight: CGFloat
+    private let bannerImageHeight: CGFloat = 400
     
     private var banners: [EventBanner] {
         eventBannerViewModel.eventBanners
@@ -60,9 +60,10 @@ struct EventBannerView: View {
                                         }
                                         .padding(.bottom, 40)
                                         .padding(.leading, 24)
+                                        .offset(x: (offset > 0 ? offset / 2 : 0))
                                     }
                             }
-                            .offset(y: (offset > 0 ? -offset : 0))
+                            .offset(x: (offset > 0 ? -offset / 2 : 0), y: (offset > 0 ? -offset : 0))
                             .onAppear {
                                 eventBannerViewModel.startTimer()
                             }
@@ -74,11 +75,12 @@ struct EventBannerView: View {
                 }
             }
         }
+        .frame(minHeight: bannerImageHeight)
     }
 }
 
 #Preview {
     NavigationStack {
-        EventBannerView(eventBannerViewModel: EventBannerViewModel(), bannerImageHeight: 400)
+        EventBannerView(eventBannerViewModel: EventBannerViewModel())
     }
 }
