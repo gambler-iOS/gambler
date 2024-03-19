@@ -16,6 +16,7 @@ struct KakaoMapView: UIViewRepresentable {
     @Binding var draw: Bool
     @Binding var isShowingSheet: Bool
     @Binding var isLoading: Bool
+    @ObservedObject var shopStore: ShopStore
     
     func makeUIView(context: Self.Context) -> KMViewContainer {
         let view: KMViewContainer = KMViewContainer()
@@ -38,7 +39,10 @@ struct KakaoMapView: UIViewRepresentable {
     
     func makeCoordinator() -> KakaoMapCoordinator {
         return KakaoMapCoordinator(userLocate: $userLocate,
-                                   isShowingSheet: $isShowingSheet, tappedShop: $selectedShop, isLoading: $isLoading)
+                                   isShowingSheet: $isShowingSheet,
+                                   tappedShop: $selectedShop,
+                                   isLoading: $isLoading,
+                                   shopStore: _shopStore)
     }
     
     static func dismantleUIView(_ uiView: KMViewContainer, coordinator: KakaoMapCoordinator) {
@@ -50,6 +54,7 @@ struct KakaoMapView: UIViewRepresentable {
         @Binding var selectedShop: Shop
         @Binding var isShowingSheet: Bool
         @Binding var isLoading: Bool
+        @ObservedObject var shopStore: ShopStore
         
         let locationManager = CLLocationManager()
         var controller: KMController?
@@ -62,12 +67,13 @@ struct KakaoMapView: UIViewRepresentable {
         var firstTap: Bool = true
         
         init (userLocate: Binding<GeoPoint>, isShowingSheet: Binding<Bool>,
-              tappedShop: Binding<Shop>, isLoading: Binding<Bool>) {
+              tappedShop: Binding<Shop>, isLoading: Binding<Bool>, shopStore: ObservedObject<ShopStore>) {
             first = true
             self._userLocate = userLocate
             self._isShowingSheet = isShowingSheet
             self._selectedShop = tappedShop
             self._isLoading = isLoading
+            self._shopStore = shopStore
             super.init()
         }
         
@@ -94,10 +100,6 @@ struct KakaoMapView: UIViewRepresentable {
                 mapView.setLogoPosition(
                     origin: GuiAlignment(vAlign: .bottom, hAlign: .right),
                     position: CGPoint(x: 10.0, y: -UIScreen.main.bounds.height * 0.2 + 20))
-                cameraStartHandler = mapView
-                    .addCameraWillMovedEventHandler(target: self, handler: KakaoMapCoordinator.cameraWillMove)
-                cameraStoppedHandler = mapView
-                    .addCameraStoppedEventHandler(target: self, handler: KakaoMapCoordinator.onCameraStopped)
                 getUserLocation()
                 createLabelLayer()
                 createPoiStyle()
@@ -105,10 +107,21 @@ struct KakaoMapView: UIViewRepresentable {
                 createPoisOnMap()
                 createSpriteGUI()
                 moveCameraToFocus(MapPoint(longitude: userLocate.longitude,  latitude: userLocate.latitude))
+                cameraStartHandler = mapView
+                    .addCameraWillMovedEventHandler(target: self, handler: KakaoMapCoordinator.cameraWillMove)
+                cameraStoppedHandler = mapView
+                    .addCameraStoppedEventHandler(target: self, handler: KakaoMapCoordinator.onCameraStopped)
+                Task {
+                    let m = mapView.getPosition(CGPoint(x: mapView.viewRect.width * 0.5, y: mapView.viewRect.height * 0.5))
+                    print(m.wgsCoord.latitude)
+                    print(m.wgsCoord.longitude)
+                    await shopStore.fetchMap(position: GeoPoint(latitude: m.wgsCoord.latitude, longitude: m.wgsCoord.longitude))
+                }
             }
         }
         
         func cameraWillMove(_ param: CameraActionEventParam) {
+            print("이건 됩니까..?")
             if param.by == .notUserAction {
                 print("[Action: Camera will move]")
                 cameraStartHandler?.dispose()
@@ -116,10 +129,20 @@ struct KakaoMapView: UIViewRepresentable {
         }
         
         func onCameraStopped(_ param: CameraActionEventParam) {
-            if param.by == .notUserAction {
-                cameraStoppedHandler?.dispose()
+            print("되냐. ")
+            if let mapView = controller?.getView("mapview") as? KakaoMap {
+                Task {
+                    let m = mapView.getPosition(CGPoint(x: mapView.viewRect.width * 0.5, y: mapView.viewRect.height * 0.5))
+                    print(m.wgsCoord.latitude)
+                    print(m.wgsCoord.longitude)
+                    await shopStore.fetchMap(position: GeoPoint(latitude: m.wgsCoord.latitude, longitude: m.wgsCoord.longitude))
+                    print(shopStore.shopList)
+                    createPoisOnMap()
+                }
             }
-        
+           /* if param.by == .notUserAction {
+                cameraStoppedHandler?.dispose()
+            }*/
         }
         
         func containerDidResized(_ size: CGSize) {

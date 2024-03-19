@@ -99,12 +99,13 @@ extension KakaoMapView.KakaoMapCoordinator {
           }
       }
     
+    @MainActor
     func createPoisOnMap() {
         if let mapView = controller?.getView("mapview") as? KakaoMap {
             let manager = mapView.getLabelManager()
             let layer = manager.getLabelLayer(layerID: "PoiLayer")
             
-            for markerData in Shop.dummyShopList {
+            for markerData in shopStore.shopList {
                 let poiOption = PoiOptions(styleID: "shopPoiIconStyle")
                 poiOption.rank = 0
                 poiOption.transformType = .decal

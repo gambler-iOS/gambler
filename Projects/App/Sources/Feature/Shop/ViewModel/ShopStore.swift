@@ -11,12 +11,27 @@ import CoreLocation
 import SwiftUI
 
 final class ShopStore: ObservableObject {
+    
     @Published var shopList: [Shop]
     @Published var userAreaShopList: [Shop]
+    private let firebaseManager = FirebaseManager.shared
+    private let collectionName: String = AppConstants.CollectionName.shops
     
     init() {
-        shopList = Shop.dummyShopList
+        shopList = []
         userAreaShopList = []
+    }
+    
+    @MainActor
+    func fetchMap(position: GeoPoint) async {
+        do { 
+            shopList.removeAll()
+            shopList = try await firebaseManager.fetchWhereDataInArea(collectionName: collectionName, field: "location", position: position)
+            print("여긴 패치중 \(shopList)")
+            
+        } catch {
+            print("Error add ShopStore : \(error.localizedDescription)")
+        }
     }
     
     func fetchUserAreaShopList(userPoint: GeoPoint) {

@@ -19,10 +19,9 @@ struct MapView: View {
     @State private var isShowingSheet: Bool = false
     @State private var selectedShop: Shop = Shop.dummyShop
     @State private var userLocate: GeoPoint = GeoPoint.defaultPoint
-    
     var body: some View {
         KakaoMapView(userLocate: $userLocate, selectedShop: $selectedShop,
-                     draw: $draw, isShowingSheet: $isShowingSheet, isLoading: $isLoading)
+                     draw: $draw, isShowingSheet: $isShowingSheet, isLoading: $isLoading, shopStore: shopStore)
         .overlay {
             if !isShowingSheet && !isLoading {
                 FloatingView(shopStore: shopStore, selectedShop: $selectedShop,
@@ -79,5 +78,5 @@ struct MapView: View {
 
 #Preview {
     KakaoMapView(userLocate: .constant(GeoPoint.defaultPoint), selectedShop: .constant(Shop.dummyShop),
-                 draw: .constant(true), isShowingSheet: .constant(false), isLoading: .constant(false))
+                 draw: .constant(true), isShowingSheet: .constant(false), isLoading: .constant(false), shopStore: ShopStore())
 }
