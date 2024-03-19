@@ -35,7 +35,7 @@ final class AuthService: ObservableObject {
     
     private init() { }
     
-    func addDummyData(id: String, nickname: String, profileImage: String, apnsToken: String?, loginPlatform: LoginPlatform) async {
+    func setTempUser(id: String, nickname: String, profileImage: String, apnsToken: String?, loginPlatform: LoginPlatform) async {
         tempUser = User(id: id,
                          nickname: nickname,
                          profileImageURL: profileImage,
@@ -49,92 +49,59 @@ final class AuthService: ObservableObject {
     }
     
     /// 이메일 로그인
-    func loginWithEmail(email: String, password: String) async -> Bool {
+    func loginWithEmail(email: String, password: String, name: String, profileImageURL: String) async -> Bool {
         await withCheckedContinuation { continuation in
             Auth.auth().signIn(withEmail: email, password: password) { result, error in
                 if let error {
                     print(error.localizedDescription)
+                    print("로그인 실패???")
                     continuation.resume(returning: false)
                 }
                 
                 if let result {
-                    print("카카오톡 로그인 성공")
-                    continuation.resume(returning: true)
+                    Task {
+                        print("카카오톡 로그인 성공")
+                        await self.setTempUser(id: result.user.uid,
+                                               nickname: name,
+                                               profileImage: profileImageURL,
+                                               apnsToken: "카카오",
+                                               loginPlatform: .kakakotalk)
+                        continuation.resume(returning: true)
+                    }
                 }
             }
         }
     }
     
     @MainActor
-    func loginFirebase(email: String, password: String, name: String, profileImageURL: String) async {
+    func loginKakaoTalk(email: String, password: String, name: String, profileImageURL: String) async {
         Task {
-            if await loginWithEmail(email: email, password: password) {
+            if await loginWithEmail(email: email, password: password, name: name, profileImageURL: profileImageURL) {
                 // 로그인 성공
                 print(#fileID, #function, #line, "- email 로그인 성공 ~~~ ")
             } else {
                 // 로그인 실패 - 회원가입 해야함
-                Auth.auth().createUser(withEmail: email, password: password) { result, error in
-                    if let error {
-                        print("DEBUG: 파이어베이스 사용자 생성 실패 \(error.localizedDescription)")
-                        //                        Auth.auth().signIn(withEmail: email, password: password)
-                        print("카카오톡 로그인 성공")
-                        // 여기서 패치해야하나
-                    } else {
-                        print("DEBUG: 파이어베이스 사용자 생성")
-                        guard let uid = result?.user.uid else { return }
-                        
-                        self.tempUser = User(id: uid,
-                                              nickname: name,
-                                              profileImageURL: profileImageURL,
-                                              apnsToken: "",
-                                              createdDate: Date(),
-                                              likeGameId: [],
-                                              likeShopId: [],
-                                              myReviewsCount: 0,
-                                              myLikesCount: 0,
-                                              loginPlatform: .kakakotalk)
-                    }
-                }
+                print("createUser 실행")
+                await createUser(email: email, password: password, name: name, profileImageURL: profileImageURL)
             }
-            
         }
     }
     
-    
-    /// 이메일 회원가입(FirebaseStore에도 등록) ->  카카오가입할때
-    @MainActor
     func createUser(email: String, password: String, name: String, profileImageURL: String) async {
+        
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
-            if let error {
-                print("DEBUG: 파이어베이스 사용자 생성 실패 \(error.localizedDescription)")
-                Auth.auth().signIn(withEmail: email, password: password) { result, error in
-                    if let error {
-                        print("DEBUG: 로그인 실패 실패 \(error.localizedDescription)")
-                    } else {
-                        Task {
-                            guard let uid = result?.user.uid else { return }
-                            
-                            await self.addDummyData(id: uid,
-                                                    nickname: name,
-                                                    profileImage: profileImageURL,
-                                                    apnsToken: "카카오",
-                                                    loginPlatform: .kakakotalk)
-                        }
-                    }
-                }
-                print("카카오톡 로그인 성공")
-                // 여기서 패치해야하나
-            } else {
-                Task {
+            Task {
+                if let error {
+                    print("DEBUG: 파이어베이스 사용자 생성 실패 \(error.localizedDescription)")
+                } else {
                     print("DEBUG: 파이어베이스 사용자 생성")
                     guard let uid = result?.user.uid else { return }
                     
-                    await self.addDummyData(id: uid,
-                                            nickname: name,
-                                            profileImage: profileImageURL,
-                                            apnsToken: "카카오",
-                                            loginPlatform: .kakakotalk)
-                    
+                    await self.setTempUser(id: uid,
+                                           nickname: name,
+                                           profileImage: profileImageURL,
+                                           apnsToken: "카카오",
+                                           loginPlatform: .kakakotalk)
                 }
             }
         }

@@ -37,7 +37,7 @@ final class AppleAuthService {
         request.nonce = sha256(Self.currentNonce ?? "")
     }
     
-    func signOutFromApple() {
+    func signOutFromApple() async {
         // TODO: Revoke Apple ID
         let firebaseAuth = Auth.auth()
         do {

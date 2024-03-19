@@ -28,7 +28,7 @@ final class KakaoAuthService {
     func handleKakaoLogin() async {
         // 카카오 토큰이 존재한다면
         if AuthApi.hasToken() {
-            UserApi.shared.accessTokenInfo { _, error in
+            kakao.accessTokenInfo { _, error in
                 if let error {
                     print("DEBUG: 카카오톡 토큰 가져오기 에러 \(error.localizedDescription)")
                     self.kakaoLogin()
@@ -98,42 +98,11 @@ final class KakaoAuthService {
                 
                 // 파이어베이스 유저 생성 (이메일로 회원가입)
                 Task {
-                    await AuthService.shared.createUser(email: email,
+                    await AuthService.shared.loginKakaoTalk(email: email,
                                                         password: password,
                                                         name: name,
                                                         profileImageURL: profileImageURL)
                 }
-            }
-        }
-    }
-    
-    
-    
-    // MARK: - 기존 코드~
-    //    func handleKakaoLogin() async {
-    //        if AuthApi.hasToken() {
-    //            UserApi.shared.accessTokenInfo { _, error in
-    //                Task {
-    //                    if error != nil {
-    //                        // 토큰이 유효하지 않으면 로그인(로그인 시켜서 토큰을 다시 받음)
-    //                        self.handleKakaoLoginLogic()
-    //                    } else {
-    //                        await self.loadingInfoDidKakaoAuth()
-    //                    }
-    //                }
-    //            }
-    //        } else { // 토큰 없으면 로그인
-    //            self.handleKakaoLoginLogic()
-    //        }
-    //    }
-    
-    private func handleKakaoLoginLogic() {
-        Task {
-            // 카카오톡 설치 여부 확인 -
-            if UserApi.isKakaoTalkLoginAvailable() {  // 설치 되어있을 때(앱으로 로그인)
-                await handleLoginWithKakaoTalkApp()
-            } else {  // 설치 안되어있을 때(웹뷰로 로그인)
-                await handleLoginWithKakaoAccount()
             }
         }
     }
@@ -152,78 +121,8 @@ final class KakaoAuthService {
         UserApi.shared.unlink { (error) in
             if let error = error {
                 print(error)
-            }
-            else {
+            } else {
                 print("unlink() success.")
-            }
-        }
-    }
-    
-    /// 카카오 앱을 통해 로그인
-    fileprivate func handleLoginWithKakaoTalkApp() async {
-        UserApi.shared.loginWithKakaoTalk {(oauthToken, error) in
-            if let error {
-                print("Kakao Sign In Error: \(error)")
-            } else {
-                print("loginWithKakaoTalk() success.")
-                _ = oauthToken
-                
-                Task {
-                    await self.loadingInfoDidKakaoAuth()
-                }
-            }
-        }
-    }
-    
-    /// 카카오 웹뷰로 로그인
-    fileprivate func handleLoginWithKakaoAccount() async {
-        UserApi.shared.loginWithKakaoAccount {(oauthToken, error) in
-            if let error {
-                print(#fileID, #function, #line, "- 카카오 앱을 통한 로그인 실패 - \(error) ")
-            } else {
-                print("loginWithKakaoAccount() success.")
-                _ = oauthToken
-                
-                Task {
-                    await self.loadingInfoDidKakaoAuth()
-                }
-            }
-        }
-    }
-    
-    func loadingInfoDidKakaoAuth() async {  // 사용자 정보 불러오기
-        UserApi.shared.me { kakaoUser, error in
-            if error != nil {
-                print("카카오톡 사용자 정보 불러오는데 실패했습니다.")
-                
-                return
-            }
-            
-            guard let email = kakaoUser?.kakaoAccount?.email else { return }
-            guard let name = kakaoUser?.kakaoAccount?.profile?.nickname else { return }
-            guard let profileImageURL = kakaoUser?.kakaoAccount?.profile?.profileImageUrl?.absoluteString else { return }
-            let password = String(describing: kakaoUser?.id)
-            
-            // 로그인 되면 그냥 로그인, 안되면 회원가입 후 로그인
-            Task {
-                if await AuthService.shared.loginWithEmail(email: email, password: password) {
-                    print("카카오 이메일 로그인 성공")
-                } else {
-                    await AuthService.shared.createUser(email: email,
-                                                        password: password,
-                                                        name: name,
-                                                        profileImageURL: profileImageURL)
-                    
-                    print("카카오 회원가입 성공~")
-                    //                    await AuthService.shared.loginWithEmail(email: email, password: password)
-                }
-                
-                //                if !isLogedin {
-                //                    try await AuthService.shared.createUser(email: email,
-                //                                                            password: password,
-                //                                                            name: name,
-                //                                                            profileImageURL: profileImageURL)
-                //                }
             }
         }
     }

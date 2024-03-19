@@ -37,9 +37,9 @@ final class LoginViewModel: ObservableObject {
         // Check AppleID credentials
         verifySignInWithAppleID()
         
-        Task {
-            await fetchUserData()
-        }
+        //        Task {
+        //            await fetchUserData()
+        //        }
         
     }
     
@@ -55,15 +55,11 @@ final class LoginViewModel: ObservableObject {
                 // 유효한 사용자가 없기 때문에 로그인되지 않았음을 의미
                 print("User is nil")
                 self.authState = .signedOut
+                self.currentUser = nil
                 return
             }
             
             Task {
-                guard let currentUser: User = try await FirebaseManager.shared.fetchOneData(collectionName: "Users", byId: self.userSession?.uid ?? "") else {
-                    self.authState = .creatingAccount
-                    return
-                }
-                self.authState = .signedIn
                 await self.fetchUserData()
             }
         }
@@ -247,16 +243,21 @@ final class LoginViewModel: ObservableObject {
         
         switch platform {
         case .apple:
-            AppleAuthService.shared.signOutFromApple()
+            Task {
+                await AppleAuthService.shared.signOutFromApple()
+                print("AuthState - 로그아웃 \(self.authState)")
+            }
             
         case .google:
             Task {
                 await GoogleAuthSerVice.shared.signOutFromGoogle()
+                print("AuthState - 로그아웃 \(self.authState)")
             }
         case .kakakotalk:
             Task {
                 try Auth.auth().signOut()
                 await KakaoAuthService.shared.handleKakaoLogout()
+                print("AuthState - 로그아웃 \(self.authState)")
             }
         default:
             break
@@ -295,7 +296,7 @@ final class LoginViewModel: ObservableObject {
                             await KakaoAuthService.shared.unlinkKakao()
                             try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
                         case .apple:
-                            AppleAuthService.shared.signOutFromApple()
+                            await AppleAuthService.shared.signOutFromApple()
                             try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
                         case .google:
                             try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
@@ -335,13 +336,11 @@ extension LoginViewModel {
                         // 여기서 스토어에 올리던가 해야지
                         let user = result.user
                         
-                        await AuthService.shared.addDummyData(id: user.uid,
-                                                              nickname: user.displayName ?? "닉네임",
-                                                              profileImage: user.photoURL?.absoluteString ?? "",
-                                                              apnsToken: "애플",
-                                                              loginPlatform: .apple)
-                        
-                        await fetchUserData()
+                        await AuthService.shared.setTempUser(id: user.uid,
+                                                             nickname: user.displayName ?? "닉네임",
+                                                             profileImage: user.photoURL?.absoluteString ?? "",
+                                                             apnsToken: "애플",
+                                                             loginPlatform: .apple)
                     }
                 } catch {
                     print("AppleAuthorization failed: \(error)")
@@ -356,11 +355,8 @@ extension LoginViewModel {
     
     // 카카오 로그인
     func signInWithKakao() async {
-        Task {
-            await KakaoAuthService.shared.handleKakaoLogin()
-            await fetchUserData()
-            print(#fileID, #function, #line, "- 카카오 로그인 정보 \(currentUser)") // - nil
-        }
+        await KakaoAuthService.shared.handleKakaoLogin()
+        print(#fileID, #function, #line, "- 카카오 로그인 정보 \(self.currentUser)") 
     }
     
     /// 구글 로그인
@@ -379,19 +375,16 @@ extension LoginViewModel {
                         let user = result.user  // firebase Auth의 User
                         
                         // 회원가입때 쓸 수 있으니 dummy에 저장함
-                        await AuthService.shared.addDummyData(id: user.uid,
-                                                              nickname: user.displayName ?? "닉네임",
-                                                              profileImage: user.photoURL?.absoluteString ?? "",
-                                                              apnsToken: nil,
-                                                              loginPlatform: .google)
-                        
-                        await self.fetchUserData()
+                        await AuthService.shared.setTempUser(id: user.uid,
+                                                             nickname: user.displayName ?? "닉네임",
+                                                             profileImage: user.photoURL?.absoluteString ?? "",
+                                                             apnsToken: nil,
+                                                             loginPlatform: .google)
                     }
                 } catch {
                     print("GoogleSignInError: failed to authenticate with Google, \(error))")
                 }
             }
-            
         }
     }
     
