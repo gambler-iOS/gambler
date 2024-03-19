@@ -24,7 +24,7 @@ struct HomeView: View {
                     HomeShopListView(title: "인기 매장", shops: homeViewModel.popularShops)
                     BorderView()
                     HomeGameCardHScrollView(title: "흥미진진 신규게임", games: homeViewModel.newGames)
-                    HomeGameCategoryHScrollView(title: "종류별 Best 게임", categoryNames: homeViewModel.popularGenre)
+                    HomeGameGenreHScrollView(title: "종류별 Best 게임", genres: homeViewModel.popularGenre)
                     HomeShopListView(title: "신규 매장", shops: homeViewModel.newShops)
                         .padding(.bottom, 50)
                     
@@ -38,7 +38,7 @@ struct HomeView: View {
                 .navigationDestination(for: Game.self) { game in
                     GameDetailView(game: game)
                 }
-                .navigationDestination(for: GameTheme.self) { genre in
+                .navigationDestination(for: GameGenre.self) { genre in
                     GameListView(title: genre.koreanName)
                 }
                 .navigationDestination(for: String.self) { title in

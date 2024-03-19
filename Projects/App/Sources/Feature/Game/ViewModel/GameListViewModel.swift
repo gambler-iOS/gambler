@@ -21,7 +21,7 @@ final class GameListViewModel: ObservableObject {
     }
     
     private func convertStringToGenre(koreanName: String) -> [String] {
-        if let theme = GameTheme.allCases.first(where: { $0.koreanName == koreanName }) {
+        if let theme = GameGenre.allCases.first(where: { $0.koreanName == koreanName }) {
             return [theme.rawValue]
         }
         return []
