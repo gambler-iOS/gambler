@@ -23,16 +23,6 @@ final class AuthService: ObservableObject {
     
     var tempUser: User?  // 회원가입 시 유저 데이터를 담을 임시 변수
     
-    // 1. 이 리스너는 사용자의 로그인 상태가 바뀔 때마다 호출됨
-    private var authStateHandle: AuthStateDidChangeListenerHandle!
-    
-    /// Common auth link errors.
-    private let authLinkErrors: [AuthErrorCode.Code] = [
-        .emailAlreadyInUse,
-        .credentialAlreadyInUse,
-        .providerAlreadyLinked
-    ]
-    
     private init() { }
     
     func setTempUser(id: String, nickname: String, profileImage: String, apnsToken: String?, loginPlatform: LoginPlatform) async {

@@ -53,8 +53,6 @@ struct RegistrationView: View {
         .navigationTitle("회원가입")
         .onAppear {
             Task {
-                await loginViewModel.fetchUserData()
-                
                 guard let user = AuthService.shared.tempUser else {
                     print("DummyUser 없음 - 가져오기 실패")
                     return
@@ -69,6 +67,7 @@ struct RegistrationView: View {
             Task {
                 do {
                     dismiss()
+                    await loginViewModel.deleteAuth()
                     try await loginViewModel.signOut()
                 } catch {
                     print("로그아웃 실패 Error: \(error)")

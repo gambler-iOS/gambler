@@ -8,6 +8,7 @@
 
 import Foundation
 import GoogleSignIn
+import FirebaseAuth
 
 @MainActor
 final class GoogleAuthSerVice {
@@ -40,6 +41,9 @@ final class GoogleAuthSerVice {
     
     /// Sign out from `Google`.
     func signOutFromGoogle() async {
-        GIDSignIn.sharedInstance.signOut()
+        Task {
+            try Auth.auth().signOut()
+            GIDSignIn.sharedInstance.signOut()
+        }
     }
 }

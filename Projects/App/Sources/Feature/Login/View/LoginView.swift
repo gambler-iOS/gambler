@@ -47,11 +47,7 @@ struct LoginView: View {
                     .onTapGesture {
                         Task {
                             await loginViewModel.signInWithKakao()
-                            if loginViewModel.authState == .creatingAccount {
-                                self.navPathFinder.addPath(option: .regstrationView)
-                                print("kakaoLogin - 회원가입뷰 소환!")
-                                print("dummy - \(AuthService.shared.tempUser)")
-                            }
+                            print("카카오 로그인 버튼 클릭 - authState \(loginViewModel.authState)")
                         }
                     }
                 
@@ -64,11 +60,6 @@ struct LoginView: View {
                             AppleAuthService.shared.requestAppleAuthorization(request)
                         } onCompletion: { result in
                             loginViewModel.handleAppleID(result)
-                            
-                            if loginViewModel.authState == .creatingAccount {
-                                self.navPathFinder.addPath(option: .regstrationView)
-                                print("appleLogin - 회원가입뷰 소환!")
-                            }
                         }
                         .blendMode(.overlay)
                     }
@@ -80,16 +71,19 @@ struct LoginView: View {
                     .onTapGesture {
                         Task {
                             await loginViewModel.signInWithGoogle()
-                            if loginViewModel.authState == .creatingAccount {
-                                self.navPathFinder.addPath(option: .regstrationView)
-                                print("googleLogin - 회원가입뷰 소환!")
-                            }
                         }
                     }
             }
             .padding(.bottom, 32)
         }
         .padding(.horizontal, 24)
+        .onReceive(loginViewModel.$authState) { authState in
+            print("Auth가 지금 바뀝니다용 \(authState)")
+            if authState == .creatingAccount && loginViewModel.userSession != nil {
+                self.navPathFinder.addPath(option: .regstrationView)
+                print("회원가입 뷰로 이동~")
+            }
+        }
         .modifier(BackButton())
         .toolbar(.hidden, for: .tabBar)  // 툴바 안보이게 하기
     }
