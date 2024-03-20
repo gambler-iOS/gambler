@@ -46,4 +46,22 @@ final class GoogleAuthSerVice {
             GIDSignIn.sharedInstance.signOut()
         }
     }
+    
+    func deleteGoogleAccount() async {
+        if let user = Auth.auth().currentUser {
+            user.delete { error in
+                Task {  // 카카오톡일 때 로그아웃 후 삭제 -> 토큰 문제
+                    if let error = error {
+                        print("Firebase Error : ",error)
+                    } else {
+                        try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
+                        print("구글 유저 데이트 삭제 성공")
+                    }
+                }
+            }
+        } else {
+            print("로그인 정보가 존재하지 않습니다")
+        }
+    }
+    
 }

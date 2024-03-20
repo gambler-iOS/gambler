@@ -51,6 +51,13 @@ struct LoginView: View {
                         }
                     }
                 
+                // 기능 확인 완료
+                SignInWithAppleButton(.signIn) { request in
+                    AppleAuthService.shared.handleSignInWithAppleRequest(request)
+                } onCompletion: { result in
+                    AppleAuthService.shared.handleSignInWithAppleCompletion(result)
+                }
+                
                 Image("appleLogin")
                     .resizable()
                     .aspectRatio(contentMode: .fill)

@@ -52,7 +52,7 @@ extension AppleAuthService {
     /// 암호화적으로 안전한 "nonce"인 임의의 문자열을 생성하여 앱의 인증 요청에 대한 응답으로 ID 토큰이 특별히 부여되었는지 확인하는 데 사용
     /// - parameter length: integer
     /// - returns: 암호학적으로 안전한 "nonce"가 포함된 문자열
-    private func randomNonceString(length: Int = 32) -> String {
+    func randomNonceString(length: Int = 32) -> String {
         precondition(length > 0)
         var randomBytes = [UInt8](repeating: 0, count: length)
         let errorCode = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
@@ -242,5 +242,164 @@ fileprivate struct AppleTokenResponse: Codable {
     
     enum CodingKeys: String, CodingKey {
         case refresh_token = "refresh_token"
+    }
+}
+
+
+// 유튭 보고 따라하는 revoke jwt
+extension AppleAuthService {
+    func handleSignInWithAppleRequest(_ request: ASAuthorizationAppleIDRequest) {
+        request.requestedScopes = [.fullName, .email]
+        let nonce = randomNonceString2()
+        Self.currentNonce = nonce
+        request.nonce = sha256(nonce)
+    }
+    
+    func handleSignInWithAppleCompletion(_ result: Result<ASAuthorization, Error>) {
+        if case .failure(let failure) = result {
+            print(#fileID, #function, #line, "- \(failure.localizedDescription)")
+        }
+        else if case .success(let authorization) = result {
+            if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+                guard let nonce = Self.currentNonce else {
+                    fatalError("Invalid state: a login callback was received, but no login request was sent.")
+                }
+                guard let appleIDToken = appleIDCredential.identityToken else {
+                    print("Unable to fetdch identify token.")
+                    return
+                }
+                guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+                    print("Unable to serialise token string from data: \(appleIDToken.debugDescription)")
+                    return
+                }
+                
+                let credential = OAuthProvider.appleCredential(withIDToken: idTokenString,
+                                                               rawNonce: nonce,
+                                                               fullName: appleIDCredential.fullName)
+                
+                Task {
+                    do {
+                        let result = try await Auth.auth().signIn(with: credential)
+                        await AuthService.shared.setTempUser(id: result.user.uid,
+                                                             nickname: result.user.displayName ?? "known",
+                                                             profileImage: result.user.photoURL?.absoluteString ?? "",
+                                                             apnsToken: "애플",
+                                                             loginPlatform: .apple)
+                        
+                        print(#fileID, #function, #line, "- tempUSer ")
+                        dump(AuthService.shared.tempUser)
+                        
+                    }
+                    catch {
+                        print("Error authenticating: \(error.localizedDescription)")
+                    }
+                }
+            }
+        }
+    }
+    
+    func randomNonceString2(length: Int = 32) -> String {
+        precondition(length > 0)
+        let charset: [Character] =
+        Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        var result = ""
+        var remainingLength = length
+        
+        while remainingLength > 0 {
+            let randoms: [UInt8] = (0 ..< 16).map { _ in
+                var random: UInt8 = 0
+                let errorCode = SecRandomCopyBytes(kSecRandomDefault, 1, &random)
+                if errorCode != errSecSuccess {
+                    fatalError(
+                        "Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)"
+                    )
+                }
+                return random
+            }
+            
+            randoms.forEach { random in
+                if remainingLength == 0 {
+                    return
+                }
+                
+                if random < charset.count {
+                    result.append(charset[Int(random)])
+                    remainingLength -= 1
+                }
+            }
+        }
+        
+        return result
+    }
+    
+}
+
+extension ASAuthorizationAppleIDCredential {
+    func displayName() -> String {
+        return [self.fullName?.givenName, self.fullName?.familyName]
+            .compactMap( {$0})
+            .joined(separator: " ")
+    }
+}
+
+final class SignInWithApple: NSObject, ASAuthorizationControllerDelegate {
+    
+    private var continuation : CheckedContinuation<ASAuthorizationAppleIDCredential, Error>?
+    
+    func callAsFunction() async throws -> ASAuthorizationAppleIDCredential {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.continuation = continuation
+            let appleIDProvider = ASAuthorizationAppleIDProvider()
+            let request = appleIDProvider.createRequest()
+            request.requestedScopes = [.fullName, .email]
+            
+            let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+            authorizationController.delegate = self
+            authorizationController.performRequests()
+        }
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        if case let appleIDCredential as ASAuthorizationAppleIDCredential = authorization.credential {
+            continuation?.resume(returning: appleIDCredential)
+        }
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        continuation?.resume(throwing: error)
+    }
+}
+
+final class TokenRevocationHelper: NSObject, ASAuthorizationControllerDelegate {
+    
+    private var continuation : CheckedContinuation<Void, Error>?
+    
+    func revokeToken() async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            self.continuation = continuation
+            let appleIDProvider = ASAuthorizationAppleIDProvider()
+            let request = appleIDProvider.createRequest()
+            request.requestedScopes = [.fullName, .email]
+            
+            let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+            authorizationController.delegate = self
+            authorizationController.performRequests()
+        }
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        if case let appleIDCredential as ASAuthorizationAppleIDCredential = authorization.credential {
+            guard let authorizationCode = appleIDCredential.authorizationCode else { return }
+            guard let authCodeString = String(data: authorizationCode, encoding: .utf8) else { return }
+            
+            Task {
+                try await Auth.auth().revokeToken(withAuthorizationCode: authCodeString)
+                continuation?.resume()
+            }
+        }
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        continuation?.resume(throwing: error)
     }
 }

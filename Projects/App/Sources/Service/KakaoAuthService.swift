@@ -99,9 +99,9 @@ final class KakaoAuthService {
                 // 파이어베이스 유저 생성 (이메일로 회원가입)
                 Task {
                     await AuthService.shared.loginKakaoTalk(email: email,
-                                                        password: password,
-                                                        name: name,
-                                                        profileImageURL: profileImageURL)
+                                                            password: password,
+                                                            name: name,
+                                                            profileImageURL: profileImageURL)
                 }
             }
         }
@@ -126,4 +126,22 @@ final class KakaoAuthService {
             }
         }
     }
+    
+    func deleteKakaoAccount() async {
+        if let user = Auth.auth().currentUser {
+            user.delete { error in
+                Task {  // 카카오톡일 때 로그아웃 후 삭제 -> 토큰 문제
+                    if let error = error {
+                        print("Firebase Error : ",error)
+                    } else {
+                        try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
+                        await KakaoAuthService.shared.unlinkKakao()
+                    }
+                }
+            }
+        } else {
+            print("로그인 정보가 존재하지 않습니다")
+        }
+    }
+    
 }

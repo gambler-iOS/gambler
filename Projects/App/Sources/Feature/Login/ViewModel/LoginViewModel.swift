@@ -109,20 +109,21 @@ final class LoginViewModel: ObservableObject {
         
         if let appleProviderData = providerData?.first(where: { $0.providerID == "apple.com" }) {
             Task {
-                let credentialState = try await appleIDProvider.credentialState(forUserID: appleProviderData.uid)
-                switch credentialState {
-                case .authorized:
-                    break // The Apple ID credential is valid.
-                case .revoked, .notFound:
-                    // The Apple ID credential is either revoked or was not found, so show the sign-in UI.
-                    do {
+                do {
+                    let credentialState = try await appleIDProvider.credentialState(forUserID: appleProviderData.uid)
+                    switch credentialState {
+                    case .authorized:
+                        break // The Apple ID credential is valid.
+                    case .revoked, .notFound:
+                        // The Apple ID credential is either revoked or was not found, so show the sign-in UI.
                         try await self.signOut()
                         //                        AppleAuthService.shared.signOutFromApple()
-                    } catch {
-                        print("FirebaseAuthError: signOut() failed. \(error)")
+                    default:
+                        break
                     }
-                default:
-                    break
+                }
+                catch {
+                    print("FirebaseAuthError: signOut() failed. \(error)")
                 }
             }
         }
@@ -294,36 +295,35 @@ final class LoginViewModel: ObservableObject {
     // 다 토큰 없애야 할듯..?
     /// 계정삭제 - 회원탈퇴
     func deleteAccount() async {
-        if let user = Auth.auth().currentUser {
-            user.delete { error in
-                Task {  // 카카오톡일 때 로그아웃 후 삭제 -> 토큰 문제
-                    if let error = error {
-                        print("Firebase Error : ",error)
-                    } else {
-                        print("회원탈퇴 성공!")
-                        print("현재 로그인 플랫폼? - \(self.currentUser?.loginPlatform)")
-                        
-                        // 토큰을 없앰
-                        switch AuthService.shared.tempUser?.loginPlatform {
-                        case .kakakotalk:
-                            try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
-                            await KakaoAuthService.shared.unlinkKakao()
-                        case .apple:
-                            await AppleAuthService.shared.signOutFromApple()
-                            try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
-                        case .google:
-                            try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
-                            print("Firestore - 현재 User 삭제 성공")
-                        default:
-                            print("회원탈퇴 실패~~ 플랫폼이 nil임")
-                        }
-                        self.authState = .signedOut
-                    }
-                }
-            }
-        } else {
-            print("로그인 정보가 존재하지 않습니다")
+        guard let user = Auth.auth().currentUser else {
+            print("회원탈퇴하려는데 현재 로그인한 유저가 없넹?")
+            return
         }
+
+        Task {
+            switch AuthService.shared.tempUser?.loginPlatform {
+            case .kakakotalk:
+                await KakaoAuthService.shared.deleteKakaoAccount()
+            case .apple:
+                if await self.deleteAppleAccount() {
+                    print("계정 삭제 성공")
+                    do {
+                        try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
+                    } catch {
+                        print("실패")
+                    }
+                } else {
+                    print("애플 - jwt revoke 실패")
+                }
+            case .google:
+                await GoogleAuthSerVice.shared.deleteGoogleAccount()
+            default:
+                print("회원탈퇴 실패~~ 플랫폼이 nil임")
+            }
+        }
+        self.authState = .signedOut
+        
+        
     }
     
     // TODO: 계정별로 token revoke 등의 행위를 해줘야 함
@@ -358,85 +358,152 @@ final class LoginViewModel: ObservableObject {
         }
     }
 }
-    
-    // MARK: - Login 메서드
-    extension LoginViewModel {
-        // 애플 로그인
-        func handleAppleID(_ result: Result<ASAuthorization, Error>) {
-            if case let .success(auth) = result {
-                guard let appleIDCredentials = auth.credential as? ASAuthorizationAppleIDCredential else {
-                    print("AppleAuthorization failed: AppleID credential not available")
-                    return
-                }
-                
-                Task {
-                    do {
-                        let result = try await self.appleAuth(
-                            appleIDCredentials,
-                            nonce: AppleAuthService.nonce
-                        )
-                        if let result = result {
-                            print("애플 로그인 성공 - \(result)")
-                            dump(result.user)
-                            let user = result.user
-                            print("애플 회원가입 - user.nickname = \(user.displayName)")
-                            
-                            // 닉네임은 다르게 가져와야 함!!!
-                            if let fullName = appleIDCredentials.fullName {
-                                let name = "\(fullName.givenName ?? "") \(fullName.familyName ?? "")"
-                            }
-                            
-                            // TODO: id 빼고 못가져오기 때문에, 이름까지 가져오도록 수정
-                            await AuthService.shared.setTempUser(id: user.uid,
-                                                                 nickname: user.displayName ?? "닉네임",
-                                                                 profileImage: user.photoURL?.absoluteString ?? "",
-                                                                 apnsToken: "애플",
-                                                                 loginPlatform: .apple)
+
+// MARK: - Login 메서드
+extension LoginViewModel {
+    // 애플 로그인
+    func handleAppleID(_ result: Result<ASAuthorization, Error>) {
+        if case let .success(auth) = result {
+            guard let appleIDCredentials = auth.credential as? ASAuthorizationAppleIDCredential else {
+                print("AppleAuthorization failed: AppleID credential not available")
+                return
+            }
+            
+            Task {
+                do {
+                    let result = try await self.appleAuth(
+                        appleIDCredentials,
+                        nonce: AppleAuthService.nonce
+                    )
+                    if let result = result {
+                        print("애플 로그인 성공 - \(result)")
+                        dump(result.user)
+                        let user = result.user
+                        print("애플 회원가입 - user.nickname = \(user.displayName)")
+                        
+                        // 닉네임은 다르게 가져와야 함!!!
+                        if let fullName = appleIDCredentials.fullName {
+                            let name = "\(fullName.givenName ?? "") \(fullName.familyName ?? "")"
                         }
-                    } catch {
-                        print("AppleAuthorization failed: \(error)")
-                        // Here you can show error message to user.
+                        
+                        // TODO: id 빼고 못가져오기 때문에, 이름까지 가져오도록 수정
+                        await AuthService.shared.setTempUser(id: user.uid,
+                                                             nickname: user.displayName ?? "닉네임",
+                                                             profileImage: user.photoURL?.absoluteString ?? "",
+                                                             apnsToken: "애플",
+                                                             loginPlatform: .apple)
                     }
-                }
-            }
-            else if case let .failure(error) = result {
-                print("AppleAuthorization failed: \(error)")
-            }
-        }
-        
-        // 카카오 로그인
-        func signInWithKakao() async {
-            await KakaoAuthService.shared.handleKakaoLogin()
-            print(#fileID, #function, #line, "- 카카오 로그인 정보 \(self.currentUser)")
-        }
-        
-        /// 구글 로그인
-        func signInWithGoogle() async {
-            await GoogleAuthSerVice.shared.signInWithGoogle { user, error in
-                if let error {
-                    print("GoogleSignInError: failed to sign in with Google, \(error))")
-                }
-                
-                guard let gidUser = user else { return }
-                Task {
-                    do {
-                        let result = try await self.googleAuth(gidUser)
-                        if let result {
-                            print("GoogleSignInSuccess: \(result.user.uid)")
-                            let user = result.user  // firebase Auth의 User
-                            
-                            // 회원가입때 쓸 수 있으니 dummy에 저장함
-                            await AuthService.shared.setTempUser(id: user.uid,
-                                                                 nickname: user.displayName ?? "닉네임",
-                                                                 profileImage: user.photoURL?.absoluteString ?? "",
-                                                                 apnsToken: nil,
-                                                                 loginPlatform: .google)
-                        }
-                    } catch {
-                        print("GoogleSignInError: failed to authenticate with Google, \(error))")
-                    }
+                } catch {
+                    print("AppleAuthorization failed: \(error)")
+                    // Here you can show error message to user.
                 }
             }
         }
-        
+        else if case let .failure(error) = result {
+            print("AppleAuthorization failed: \(error)")
+        }
     }
+    
+    // 카카오 로그인
+    func signInWithKakao() async {
+        await KakaoAuthService.shared.handleKakaoLogin()
+        print(#fileID, #function, #line, "- 카카오 로그인 정보 \(self.currentUser)")
+    }
+    
+    /// 구글 로그인
+    func signInWithGoogle() async {
+        await GoogleAuthSerVice.shared.signInWithGoogle { user, error in
+            if let error {
+                print("GoogleSignInError: failed to sign in with Google, \(error))")
+            }
+            
+            guard let gidUser = user else { return }
+            Task {
+                do {
+                    let result = try await self.googleAuth(gidUser)
+                    if let result {
+                        print("GoogleSignInSuccess: \(result.user.uid)")
+                        let user = result.user  // firebase Auth의 User
+                        
+                        // 회원가입때 쓸 수 있으니 dummy에 저장함
+                        await AuthService.shared.setTempUser(id: user.uid,
+                                                             nickname: user.displayName ?? "닉네임",
+                                                             profileImage: user.photoURL?.absoluteString ?? "",
+                                                             apnsToken: nil,
+                                                             loginPlatform: .google)
+                    }
+                } catch {
+                    print("GoogleSignInError: failed to authenticate with Google, \(error))")
+                }
+            }
+        }
+    }
+    
+}
+
+
+// MARK: - deleteAppleAccount
+extension LoginViewModel {
+    func deleteAppleAccount() async -> Bool {
+        guard let user = userSession else { return false }
+        guard let lastSignInDate = user.metadata.lastSignInDate else { return false }
+        let needsReauth = !lastSignInDate.isWithinPast(minutes: 5)  // 지난 5분동안 로그인했는지 확인
+        let needsTokenRevocation = user.providerData.contains { $0.providerID == "apple.com" }
+        
+        do {
+            // 재인증 흐름을 위해 사용자에게 재로그인하도록 요청하는 코드
+            if needsReauth || needsTokenRevocation {
+                let signInWithApple = SignInWithApple()
+                let appleIDCredential = try await signInWithApple()
+                
+                guard let appleIDToken = appleIDCredential.identityToken else {
+                    print("Unable to fetdch identify token.")
+                    return false
+                }
+                guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+                    print("Unable to serialise token string from data: \(appleIDToken.debugDescription)")
+                    return false
+                }
+                
+                // 사용자가 로그인하면 공급자로부터 반환된 정보를 사용하여 새로운 credential을 만듦
+                let nonce = AppleAuthService.shared.randomNonceString2()
+                let credential = OAuthProvider.credential(withProviderID: "apple.com",
+                                                          idToken: idTokenString,
+                                                          rawNonce: nonce)
+                
+                if needsReauth {  // 사용자가 제공한 자격 증명으로, 서버에서 유효성을 검사
+                    try await user.reauthenticate(with: credential)
+                }
+                if needsTokenRevocation {
+                    guard let authorizationCode = appleIDCredential.authorizationCode else { return false }
+                    guard let authCodeString = String(data: authorizationCode, encoding: .utf8) else { return false }
+                    
+                    // 사용자가 다시 로그인하면, 인증 코드를 사용하여 auth.revokeToken을 호출할 수 있음
+                    // Firebase는 사용자와 연결된 acess Token을 검색한 다음 Apple의 revokeToken endpoint를 호출하여 토큰을 취소
+                    try await Auth.auth().revokeToken(withAuthorizationCode: authCodeString)
+                    print("revokeToken 성공")
+                }
+            }
+            
+            try await user.delete()  // user.delete를 비동기식으로 호출
+            return true
+        }
+        catch {  // 오류 처리 코드
+            print(#fileID, #function, #line, "- \(error.localizedDescription)")
+            return false
+        }
+    }
+    
+    func deleteAccountWithRevocationHelper() async -> Bool {
+        do {
+            // add code to find out if the user is connected to SiwA
+            try await TokenRevocationHelper().revokeToken()
+            try await userSession?.delete()
+            return true
+        }
+        catch {
+            print(#fileID, #function, #line, "- \(error.localizedDescription)")
+            return false
+        }
+    }
+}
