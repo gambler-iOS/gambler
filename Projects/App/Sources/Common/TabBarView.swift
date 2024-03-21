@@ -57,7 +57,6 @@ struct TabBarView: View {
             
             MyPageView()
                 .environmentObject(myPageViewModel)
-                .environmentObject(loginViewModel)
                 .tabItem {
                     HStack {
                         (selectedTab == 3 ?
@@ -68,6 +67,7 @@ struct TabBarView: View {
                 .tag(3)
         }
         .tint(Color.primaryDefault)
+        .environmentObject(loginViewModel)
     }
 }
 

@@ -68,6 +68,11 @@ enum AppConstants {
         static let reviews: String = "Reviews"
         static let users: String = "Users"
     }
+    
+    enum PostType {
+        case shop
+        case game
+    }
 }
 
 extension AppConstants.MyPageFilter: Sequence {

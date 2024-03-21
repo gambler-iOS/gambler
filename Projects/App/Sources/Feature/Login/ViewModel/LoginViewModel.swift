@@ -242,6 +242,19 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
+    /// 찜하기 버튼 클릭 시 유저의 찜한 데이터 업데이트
+    func updateLikeList(likePostIds: [AnyHashable: Any]) async {
+        if let userId = currentUser?.id {
+            do {
+                try await FirebaseManager.shared.updateData(collectionName: AppConstants.CollectionName.users,
+                                                            byId: userId,
+                                                            data: likePostIds)
+            } catch {
+                print("Error updateLikeList LoginViewModel : \(error.localizedDescription)")
+            }
+        }
+    }
+    
     /// 각 플랫폼 별 로그아웃 - 로그인되어있는 유저의 loginPlatform으로 분기
     func firebaseProviderSignOut() async {
         let platform = currentUser?.loginPlatform

@@ -48,7 +48,7 @@ struct GameListItemView: View {
                         
                         Spacer()
                         
-                        HeartCellView(isLike: isLike)
+                        HeartCellView(isLike: isLike, postId: game.id, postType: AppConstants.PostType.game)
                     }
 
                     ReviewRatingCellView(rating: game.reviewRatingAverage)
