@@ -69,24 +69,20 @@ struct TextFieldView: View {
                 if !text.isEmpty {
                     Text("중복확인")
                         .font(.body1B)
-                        .foregroundStyle(!isDuplicated ? Color.gray200 : Color.gray500)
+                        .foregroundStyle(!isDuplicated || !isValid ? Color.gray200 : Color.gray500)
                     
                         .padding(EdgeInsets(top: 18, leading: 8, bottom: 18, trailing: 8))  // 이거로는 높이가 좀 다름
                         .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray200, lineWidth: 1.0))
                         .onTapGesture {
                             Task {
-                                if isDuplicated {  // 중복일 떈 중복체크
+                                if isDuplicated && isValid {
                                     await duplicateCheck()
                                     print("중복여부: \(isDuplicated)")
                                     withAnimation(.easeIn(duration: 0.4)) {
                                         isShowingToast = true
                                     }
                                     
-                                    if isValid && !isDuplicated { // 가능한 문자 & 중복x
-                                        isDisabled = false
-                                    } else {
-                                        isDisabled = true
-                                    }
+                                    isDisabled = isDuplicated ? true : false
                                 }
                             }
                         }
