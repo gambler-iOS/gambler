@@ -36,6 +36,8 @@ final class ShopListViewModel: ObservableObject {
                 tempShops = try await firebaseManager.fetchOrderData(collectionName: collectionName, orderBy: "createdDate", limit: 10)
             case .popular:
                 tempShops = try await firebaseManager.fetchOrderData(collectionName: collectionName,orderBy: "reviewCount", limit: 5)
+//                tempShops = try await firebaseManager.fetchAllData(collectionName: collectionName)
+//                print(tempShops.count)
             case .newly:
                 tempShops = try await firebaseManager.fetchOrderData(collectionName: collectionName,orderBy: "createdDate", limit: 5)
             }
