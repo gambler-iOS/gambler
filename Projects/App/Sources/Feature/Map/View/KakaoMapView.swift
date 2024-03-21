@@ -100,23 +100,18 @@ struct KakaoMapView: UIViewRepresentable {
                 mapView.setLogoPosition(
                     origin: GuiAlignment(vAlign: .bottom, hAlign: .right),
                     position: CGPoint(x: 10.0, y: -UIScreen.main.bounds.height * 0.2 + 20))
+                fetchMapPoi()
                 getUserLocation()
                 createLabelLayer()
                 createPoiStyle()
                 createUserLocationPoi()
-                createPoisOnMap()
                 createSpriteGUI()
                 moveCameraToFocus(MapPoint(longitude: userLocate.longitude,  latitude: userLocate.latitude))
                 cameraStartHandler = mapView
                     .addCameraWillMovedEventHandler(target: self, handler: KakaoMapCoordinator.cameraWillMove)
                 cameraStoppedHandler = mapView
                     .addCameraStoppedEventHandler(target: self, handler: KakaoMapCoordinator.onCameraStopped)
-                Task {
-                    let m = mapView.getPosition(CGPoint(x: mapView.viewRect.width * 0.5, y: mapView.viewRect.height * 0.5))
-                    print(m.wgsCoord.latitude)
-                    print(m.wgsCoord.longitude)
-                    await shopStore.fetchMap(position: GeoPoint(latitude: m.wgsCoord.latitude, longitude: m.wgsCoord.longitude))
-                }
+                createPoisOnMap()
             }
         }
         
@@ -130,19 +125,37 @@ struct KakaoMapView: UIViewRepresentable {
         
         func onCameraStopped(_ param: CameraActionEventParam) {
             print("되냐. ")
-            if let mapView = controller?.getView("mapview") as? KakaoMap {
-                Task {
+            fetchMapPoi()
+        }
+        
+        func fetchMapPoi() {
+            Task {
+                if let mapView = controller?.getView("mapview") as? KakaoMap {
                     let m = mapView.getPosition(CGPoint(x: mapView.viewRect.width * 0.5, y: mapView.viewRect.height * 0.5))
-                    print(m.wgsCoord.latitude)
-                    print(m.wgsCoord.longitude)
-                    await shopStore.fetchMap(position: GeoPoint(latitude: m.wgsCoord.latitude, longitude: m.wgsCoord.longitude))
-                    print(shopStore.shopList)
-                    createPoisOnMap()
+                    let mapCountry = await shopStore.getCountry(mapPoint: GeoPoint(latitude: m.wgsCoord.latitude, longitude: m.wgsCoord.longitude))
+                    print("주소 가져옴 : \(mapCountry)")
+                    if !shopStore.markPlace.contains(mapCountry) {
+                        print("이 주소는 찍힙니다!")
+                        print("\(mapCountry)")
+                        await shopStore.fetchMapArea(countryString: mapCountry)
+                        createPoisOnMap()
+                        shopStore.markPlace.append(mapCountry)
+                    }
+                    print("포인트: \(GeoPoint(latitude: m.wgsCoord.latitude, longitude: m.wgsCoord.longitude))")
+                    print("현재 주소: \(mapCountry)")
                 }
             }
-           /* if param.by == .notUserAction {
-                cameraStoppedHandler?.dispose()
-            }*/
+        }
+        
+        func fetchAll() {
+            Task {
+                if let mapView = controller?.getView("mapview") as? KakaoMap {
+                    let m = mapView.getPosition(CGPoint(x: mapView.viewRect.width * 0.5, y: mapView.viewRect.height * 0.5))
+                    await shopStore.fetchAllMap()
+                    createPoisOnMap()
+                    print("포인트: \(GeoPoint(latitude: m.wgsCoord.latitude, longitude: m.wgsCoord.longitude))")
+                }
+            }
         }
         
         func containerDidResized(_ size: CGSize) {

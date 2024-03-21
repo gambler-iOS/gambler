@@ -16,12 +16,12 @@ struct MapSheetView: View {
             Text("내 주변")
                 .bold()
                 .padding(10)
-            if shopStore.userAreaShopList.isEmpty {
+            if shopStore.shopList.isEmpty {
                 Text("없음")
             } else {
                 ScrollView {
                     VStack {
-                        ForEach(shopStore.userAreaShopList) { i in
+                        ForEach(shopStore.shopList) { i in
                             Text("\(i.shopName)")
                         }
                     }
