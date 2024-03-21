@@ -19,8 +19,7 @@ let project = Project.makeModule(
         .remote(url: "https://github.com/kakao-mapsSDK/KakaoMapsSDK-SPM.git", requirement: .upToNextMinor(from: "2.9.0")),
         .remote(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", requirement: .upToNextMajor(from: "4.0.0")),
         .remote(url: "https://github.com/kakao/kakao-ios-sdk", requirement: .upToNextMajor(from: "2.20.0")),
-        .remote(url: "https://github.com/google/GoogleSignIn-iOS", requirement: .upToNextMajor(from: "7.0.0")),
-        .remote(url: "https://github.com/Kitura/Swift-JWT.git", requirement: .upToNextMajor(from: "4.0.1")),
+        .remote(url: "https://github.com/google/GoogleSignIn-iOS", requirement: .upToNextMajor(from: "7.0.0"))
     ],
     dependencies: [
         .package(product: "Alamofire"),
@@ -33,8 +32,7 @@ let project = Project.makeModule(
         .package(product: "FirebaseFirestoreSwift"),
         .package(product: "FirebaseMessaging"),
         .package(product: "KakaoSDK"),
-        .package(product: "GoogleSignIn"),
-        .package(product: "SwiftJWT")
+        .package(product: "GoogleSignIn")
     ],
     resources: ["Resources/**"],
     infoPlist: .file(path: "Resources/gambler-Info.plist"),

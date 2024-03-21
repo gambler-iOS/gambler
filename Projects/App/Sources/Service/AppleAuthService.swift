@@ -11,7 +11,6 @@ import CryptoKit
 import AuthenticationServices
 import FirebaseAuth
 import Alamofire
-import SwiftJWT
 
 /// 앱에서 Apple 흐름으로 로그인을 승인하고 nonce를 생성
 final class AppleAuthService {
