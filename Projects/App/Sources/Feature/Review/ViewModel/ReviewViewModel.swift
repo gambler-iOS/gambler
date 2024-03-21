@@ -9,6 +9,10 @@
 import SwiftUI
 
 final class ReviewViewModel: ObservableObject {
+    private let firebaseManager = FirebaseManager.shared
+    private let collectionName: String = AppConstants.CollectionName.reviews
+    
+    @Published var reviews: [Review] = []
     
     @Published var dummyReviews: [Review] = []
     @Published var dummyShops: [Shop] = []
@@ -17,6 +21,27 @@ final class ReviewViewModel: ObservableObject {
         generateDummyData()
     }
     
+    @MainActor
+    func addData(review: Review) async {
+        do {
+            try firebaseManager.createData(collectionName: collectionName, data: review)
+        } catch {
+            print("Error add \(collectionName) : \(error.localizedDescription)")
+        }
+    }
+    
+    @MainActor
+    func fetchData() async {
+        var tempReviews: [Review] = []
+        reviews.removeAll()
+        do {
+            tempReviews = try await firebaseManager.fetchAllData(collectionName: collectionName)
+        } catch {
+            print("Error fetching \(collectionName) : \(error.localizedDescription)")
+        }
+        self.reviews = tempReviews
+    }
+
     private func generateDummyData() {
         for _ in 1...7 {
             dummyReviews.append(Review(id: UUID().uuidString,
@@ -35,7 +60,7 @@ final class ReviewViewModel: ObservableObject {
                 shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
                 location: GeoPoint(latitude: 120.1, longitude: 140),
                 shopPhoneNumber: "010-5555", menu: ["커피": 1000],
-                openingHour: "10시",
+                openingHour: ["10시"],
                 amenity: ["주차"],
                 shopDetailImage: ["detailImage"],
                 createdDate: Date(),

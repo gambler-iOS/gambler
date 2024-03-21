@@ -15,39 +15,53 @@ struct ProfileEditView: View {
     @State private var email: String = ""
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var imageData: Data?
+    @State private var isShowingResignModal: Bool = false
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject private var loginViewModel: LoginViewModel
     
-    #warning("임시")
+#warning("임시")
     @State private var user: User = User.dummyUser
     
     var body: some View {
-        ScrollView {
-            VStack {
-                profileView
-                    .padding(24)
-                BorderView()
-                defaultInfoView
-                    .padding(24)
-                BorderView()
-                pluginView
-                    .padding(24)
+        VStack {
+            ScrollView {
+                VStack {
+                    profileView
+                        .padding(24)
+                    BorderView()
+                    defaultInfoView
+                        .padding(24)
+                    BorderView()
+                    pluginView
+                        .padding(24)
+                }
+                .padding(.bottom, 60)
             }
-            .padding(.bottom, 60)
-        }
-        .navigationTitle("프로필 수정")
-        .modifier(BackButton())
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    reply()
-                } label: {
-                    Text("완료")
-                        .font(.body2M)
-                        .foregroundStyle(Color.gray900)
+            .navigationTitle("프로필 수정")
+            .modifier(BackButton())
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        reply()
+                    } label: {
+                        Text("완료")
+                            .font(.body2M)
+                            .foregroundStyle(Color.gray900)
+                    }
                 }
             }
-        }
+        } .fullScreenCover(isPresented: $isShowingResignModal) {
+            CustomModalView(isShowingModal: $isShowingResignModal,
+                            title: "정말 탈퇴하시겠어요?",
+                            content: "탈퇴 후에는 작성하신 리뷰를 수정 혹은 삭제할 수 없어요. 탈퇴 신청 전에 꼭 확인해주세요.") {
+                Task {
+                    await loginViewModel.deleteAccountWithFireStore()
+                    isShowingResignModal = false
+                }
+            }
+        }.transaction({ transaction in
+            transaction.disablesAnimations = true
+        })
     }
     
     private func reply() {
@@ -55,7 +69,7 @@ struct ProfileEditView: View {
         presentationMode.wrappedValue.dismiss()
     }
     
-    #warning("현재 Data타입을 url로 바꾸는 방법은 storage를 거치는 방법 뿐인것같아 일단은 UIImage로 처리함")
+#warning("현재 Data타입을 url로 바꾸는 방법은 storage를 거치는 방법 뿐인것같아 일단은 UIImage로 처리함")
     private var profileView: some View {
         VStack {
             if let data = imageData, let uiImage = UIImage(data: data) {
@@ -97,8 +111,6 @@ struct ProfileEditView: View {
                 .font(.subHead1B)
                 .foregroundStyle(Color.gray700)
             profileTextField(title: "닉네임", content: $nickName)
-               
-            profileTextField(title: "이메일", content: $email)
         }
     }
 
@@ -139,11 +151,9 @@ struct ProfileEditView: View {
                     }
                 }
             Button {
-                Task {
-                    await loginViewModel.deleteAccountWithFireStore()
-                }
+                isShowingResignModal = true
             } label: {
-                ProfileButtonView(text: "회원 탈퇴하기", size: 109, isDefaultButton: true)
+                ProfileButtonView(text: "회원 탈퇴하기", width: 109, height: 30, isDefaultButton: true, isDisabled: false)
             }
         }
     }

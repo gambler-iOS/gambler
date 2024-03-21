@@ -205,7 +205,6 @@ extension AppleAuthService {
             print(#fileID, #function, #line, "- \(error.localizedDescription)")
         }
     }
-
 }
 
 // MARK: - User 이름을 반환하기 위해

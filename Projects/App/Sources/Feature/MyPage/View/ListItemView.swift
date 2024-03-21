@@ -11,6 +11,7 @@ import SwiftUI
 struct ListItemView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject private var loginViewModel: LoginViewModel
+    @Binding var isShowingToast: Bool
     
     var body: some View {
         HStack {
@@ -19,12 +20,9 @@ struct ListItemView: View {
                     .font(.subHead2B)
                 
                 Group {
-                    listBodyView(title: "프로필 수정",
-                                 destination: ProfileEditView().environmentObject(loginViewModel))
-                    
-                    listBodyView(title: "알림 설정", destination: NotificationSettingView())
-                    
-                    listBodyView(title: "고객센터", destination: CustomerServiceView())
+                    listBodyView(title: "프로필 수정", destination: ProfileEditView())
+
+                    listBodyView(title: "고객센터", destination: CustomerServiceView(isShowingToast: $isShowingToast))
                     
                     listBodyView(title: "공지사항", destination: AnnouncementsView())
                     
@@ -39,7 +37,7 @@ struct ListItemView: View {
                 Group {
                     HStack {
                         Text("버전 정보")
-                        Text(myPageViewModel.appVersion ?? "unknown")  // 이거는 변수로 받아야 함
+                        Text(myPageViewModel.appVersion ?? "unknown")
                     }
                     
                     listBodyView(title: "개발자 정보", destination: AboutDevelopersView())
@@ -47,6 +45,7 @@ struct ListItemView: View {
                     Button {
                         Task {
                             await loginViewModel.logoutFromFirebaseAndSocial()
+                            NavigationPathFinder.shared.popToRoot()
                         }
                     } label: {
                         Text("로그아웃")
@@ -79,7 +78,7 @@ struct ListItemView: View {
 }
 
 #Preview {
-    ListItemView()
+    ListItemView(isShowingToast: .constant(false))
         .environmentObject(MyPageViewModel())
         .environmentObject(LoginViewModel())
 }

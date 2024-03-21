@@ -16,7 +16,7 @@ struct RegistrationView: View {
     @State private var isDisabled: Bool = true
     @State private var nicknameText: String = ""
     @State private var isDuplicated: Bool = false
-    @State private var showToast = false
+    @State private var isShowingToast = false
     private let textField: String = "닉네임을 입력해주세요."
     private var toastMessage: String {
         isDuplicated ? "아이디가 중복됩니다. 다시 입력해주세요!": "아이디 중복확인이 완료되었습니다!"
@@ -29,11 +29,11 @@ struct RegistrationView: View {
                 .foregroundStyle(Color.black)
                 .padding(.vertical, 24)
             
-            TextFieldView(text: $nicknameText, isDisabled: $isDisabled, isDuplicated: $isDuplicated, showToast: $showToast)
+            TextFieldView(text: $nicknameText, isDisabled: $isDisabled, isDuplicated: $isDuplicated, isShowingToast: $isShowingToast)
             Spacer()
             
-            if showToast {
-                Toast(message: toastMessage, show: $showToast)
+            if isShowingToast {
+                Toast(message: toastMessage, show: $isShowingToast)
                     .padding(.bottom, 16)
             }
             
@@ -67,7 +67,6 @@ struct RegistrationView: View {
             Task {
                     dismiss()
                     await loginViewModel.deleteAuthWithSocial()
-//                    await loginViewModel.logoutFromFirebaseAndSocial()
             }
         } label: {
             Image("arrowLeft")
@@ -76,6 +75,18 @@ struct RegistrationView: View {
                 .frame(width: 24, height: 24)
         }
     }
+    
+//    private var toastMessageView: some View {
+//        CustomToastView(content: toastMessage)
+//            .offset(y: UIScreen.main.bounds.height * 0.3)
+//            .onAppear {
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+//                    withAnimation {
+//                        isShowingToast = false
+//                    }
+//                }
+//            }
+//    }
 
     /// 닉네임 중복검사
     /// - Returns: 중복 - true / 중복 없을 시 false

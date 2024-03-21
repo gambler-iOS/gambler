@@ -15,7 +15,7 @@ struct TextFieldView: View {
     @Binding var text: String
     @Binding var isDisabled: Bool
     @Binding var isDuplicated: Bool
-    @Binding var showToast: Bool
+    @Binding var isShowingToast: Bool
     
     var textColor: Color {
         isValid ? Color.gray300 : Color.primaryDefault
@@ -78,7 +78,9 @@ struct TextFieldView: View {
                                 if isDuplicated {  // 중복일 떈 중복체크
                                     await duplicateCheck()
                                     print("중복여부: \(isDuplicated)")
-                                    showToast = true
+                                    withAnimation(.easeIn(duration: 0.4)) {
+                                        isShowingToast = true
+                                    }
                                     
                                     if isValid && !isDuplicated { // 가능한 문자 & 중복x
                                         isDisabled = false
@@ -136,5 +138,5 @@ struct TextFieldView: View {
 }
 
 #Preview {
-    TextFieldView(text: .constant("User"), isDisabled: .constant(true), isDuplicated: .constant(true), showToast: .constant(false))
+    TextFieldView(text: .constant("User"), isDisabled: .constant(true), isDuplicated: .constant(true), isShowingToast: .constant(false))
 }

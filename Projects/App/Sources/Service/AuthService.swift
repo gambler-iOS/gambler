@@ -101,8 +101,11 @@ final class AuthService: ObservableObject {
             user.delete() { error in
                 Task {
                     if let error = error {
+                        print("2번 문제")
+                        print(error.localizedDescription)
                         continuation.resume(returning: false)
                     } else {
+                        print("삭제 성공")
                         continuation.resume(returning: true)
                     }
                 }

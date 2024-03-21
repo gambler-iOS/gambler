@@ -31,5 +31,5 @@ struct HeartCellView: View {
 }
 
 #Preview {
-    HeartCellView(isLike: true)
+    HeartCellView(isLike: false)
 }

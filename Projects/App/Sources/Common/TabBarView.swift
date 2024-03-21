@@ -17,6 +17,7 @@ struct TabBarView: View {
     @StateObject private var homeViewModel = HomeViewModel()
     @StateObject private var gameListViewModel = GameListViewModel()
     @StateObject private var gameDetailViewModel = GameDetailViewModel()
+    @StateObject private var shopListViewModel = ShopListViewModel()
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -26,6 +27,7 @@ struct TabBarView: View {
                 .environmentObject(appNavigationPath)
                 .environmentObject(gameListViewModel)
                 .environmentObject(gameDetailViewModel)
+                .environmentObject(shopListViewModel)
                 .tabItem {
                     HStack {
                         (selectedTab == 0 ?

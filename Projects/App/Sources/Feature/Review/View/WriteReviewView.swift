@@ -17,10 +17,12 @@ struct WriteReviewView: View {
     @State private var reviewContent: String = ""
     @State private var rating: Double = 0.0
     @State private var disabledButton: Bool = true
-    @State private var showToast: Bool = false
-
-    private let toastMessage: String = "리뷰 작성이 완료되었습니다."
-    private let placeholder: String = "리뷰를 남겨주세요."
+    @State private var selectedPhotosData: [Data] = []
+    @State private var isUploading: Bool = false
+    
+    @Binding var isShowingToast: Bool
+    
+    let placeholder: String = "리뷰를 남겨주세요."
     let reviewableItem: AvailableAggregateReview
     
     var body: some View {
@@ -37,19 +39,10 @@ struct WriteReviewView: View {
                     TextEditorView(text: $reviewContent, placeholder: placeholder)
                 }
                 
-                AddImageView(topPadding: .constant(16))
+                AddImageView(selectedPhotosData: $selectedPhotosData, topPadding: .constant(16))
                 Spacer()
-                
-                if showToast {
-                    Toast(message: toastMessage, show: $showToast)
-                        .padding(.bottom, 16)
-                }
-                
                 CTAButton(disabled: $disabledButton, title: "완료") {
-                    showToast.toggle()
-                    print("완료 버튼 눌림")
-                    // 해당 리뷰를 파베에 올림
-                    // 루트뷰로 이동
+                    submitReview()
                 }
                 .padding(.bottom, 24)
                 
@@ -68,6 +61,12 @@ struct WriteReviewView: View {
                     }
                 }
             }
+            .overlay {
+                if isUploading {
+                    ProgressView()
+                        .tint(.gray400)
+                }
+            }
             .onReceive([self.rating].publisher.first()) { _ in
                 self.updateDisabledButton()
             }
@@ -78,7 +77,29 @@ struct WriteReviewView: View {
         }
     }
     
-#warning("텍스트 에디터의 reviewContent가 바뀔 때마다 메서드를 호출하는 것은 안좋아 보임. 디바운싱이나 스로틀링을 적용하면 좋을 듯 (onReceive)")
+#warning("postId, userId 임시")
+    private func submitReview() {
+        Task {
+            isUploading = true
+            await reviewViewModel.addData(review:
+                                            Review(id: UUID().uuidString,
+                                                   postId: UUID().uuidString,
+                                                   userId: UUID().uuidString,
+                                                   reviewContent: reviewContent,
+                                                   reviewRating: rating,
+                                                   reviewImage: 
+                                                    try await StorageManager
+                                                .uploadImages(selectedPhotosData,
+                                                              folder: .review),
+                                                   createdDate: Date()) )
+            await reviewViewModel.fetchData()
+            isUploading = false
+        }
+        dismiss()
+        withAnimation(.easeIn(duration: 0.4)) {
+            isShowingToast = true
+        }
+    }
     
     @ViewBuilder
     private func headerView(reviewableItem: AvailableAggregateReview) -> some View {
@@ -96,7 +117,6 @@ struct WriteReviewView: View {
                     .font(.body1M)
                     .foregroundStyle(Color.gray700)
             }
-            
             Spacer()
         }
     }
@@ -107,6 +127,6 @@ struct WriteReviewView: View {
 }
 
 #Preview {
-    WriteReviewView(reviewableItem: Shop.dummyShop)
+    WriteReviewView(isShowingToast: .constant(false), reviewableItem: Shop.dummyShop)
         .environmentObject(ReviewViewModel())
 }

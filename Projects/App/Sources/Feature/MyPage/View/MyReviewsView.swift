@@ -44,8 +44,7 @@ struct MyReviewsView: View {
                 VStack(spacing: 24) {
                     Rectangle()
                         .frame(height: 0)
-                        .padding(.bottom, 0)
-                    
+                        .padding(.bottom, 0)         
                     
                     ForEach(reviewData, id: \.self) { review in
                         ReviewDetailCellView(reviewData: review)

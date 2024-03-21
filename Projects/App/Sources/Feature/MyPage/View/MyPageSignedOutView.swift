@@ -21,7 +21,10 @@ struct MyPageSignedOutView: View {
                     .foregroundStyle(Color.gray700)
                 
                 CTAButton(disabled: .constant(false), title: "로그인 하러가기") {
-                    navPathFinder.addPath(option: .loginView)
+                    Task {
+                        navPathFinder.addPath(option: .loginView)
+                        await loginViewModel.logoutFromFirebaseAndSocial()
+                    }
                 }
                 .frame(width: 180)
             }

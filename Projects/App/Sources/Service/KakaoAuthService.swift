@@ -99,9 +99,9 @@ final class KakaoAuthService {
                 // 파이어베이스 유저 생성 (이메일로 회원가입)
                 Task {
                     await self.loginKakaoTalk(email: email,
-                                                            password: password,
-                                                            name: name,
-                                                            profileImageURL: profileImageURL)
+                                              password: password,
+                                              name: name,
+                                              profileImageURL: profileImageURL)
                 }
             }
         }

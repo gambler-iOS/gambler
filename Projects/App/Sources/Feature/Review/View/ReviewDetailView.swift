@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ReviewDetailView: View {
     @EnvironmentObject private var reviewViewModel: ReviewViewModel
-    
+    @State private var isShowingToast: Bool = false
     let reviewableItem: AvailableAggregateReview
     
     var reviewRatingCount: String {
@@ -18,22 +18,22 @@ struct ReviewDetailView: View {
     }
     
     var body: some View {
-//        ScrollView {
-            VStack(spacing: 24) {
-                HStack(spacing: 8) {
-                    Text("리뷰")
-                        .font(.subHead1B)
-                        .foregroundStyle(Color.gray700)
-                    Text(reviewRatingCount)
-                        .font(.body1B)
-                        .foregroundStyle(Color.primaryDefault)
-                    Spacer()
-                }
-                
-                if reviewViewModel.dummyReviews.isEmpty {
-                    EmptyView()
-                } else {
-                    ScrollView {
+        //        ScrollView {
+        VStack(spacing: 24) {
+            HStack(spacing: 8) {
+                Text("리뷰")
+                    .font(.subHead1B)
+                    .foregroundStyle(Color.gray700)
+                Text(reviewRatingCount)
+                    .font(.body1B)
+                    .foregroundStyle(Color.primaryDefault)
+                Spacer()
+            }
+            
+            if reviewViewModel.dummyReviews.isEmpty {
+                EmptyView()
+            } else {
+                ScrollView {
                     VStack(spacing: 16) {
                         ForEach(reviewViewModel.dummyReviews, id: \.self) { review in
                             ReviewDetailCellView(reviewData: review)
@@ -54,7 +54,7 @@ struct ReviewDetailView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink {
-                    WriteReviewView(reviewableItem: reviewableItem)
+                    WriteReviewView(isShowingToast: $isShowingToast, reviewableItem: reviewableItem)
                 } label: {
                     Image("review")
                         .resizable()
@@ -63,6 +63,23 @@ struct ReviewDetailView: View {
                 }
             }
         }
+        .overlay {
+            if isShowingToast {
+                toastMessageView
+            }
+        }
+    }
+    
+    private var toastMessageView: some View {
+        CustomToastView(content: "리뷰 작성이 완료되었습니다!")
+            .offset(y: UIScreen.main.bounds.height * 0.3)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    withAnimation {
+                        isShowingToast = false
+                    }
+                }
+            }
     }
     
     @ViewBuilder

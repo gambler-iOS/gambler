@@ -57,7 +57,7 @@ struct GameListItemView: View {
                         ChipView(label: "📖 마피아", size: .small)
                         ChipView(label: "🟡 난이도 하", size: .small)
                     }
-//                    Spacer()
+                    Spacer()
                 }
                 .foregroundStyle(.black)
             }

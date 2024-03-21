@@ -14,8 +14,9 @@ import KakaoSDKCommon
 struct MyPageView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject var loginViewModel: LoginViewModel
-    @EnvironmentObject var appNavigationPath: AppNavigationPath
     
+    @State private var isShowingToast: Bool = false
+#warning("로그인 플랫폼 로직 구현 필요")
     let loginPlatform: String = "카카오톡"
     
     var currentUser: User? {
@@ -48,16 +49,18 @@ struct MyPageView: View {
                         .background(Color.gray50)
                         .clipShape(.rect(cornerRadius: 8))
                         
-                        ListItemView()
+                        ListItemView(isShowingToast: $isShowingToast)
                             .environmentObject(loginViewModel)
+                    } .overlay {
+                        if isShowingToast {
+                            toastMessageView
+                        }
                     }
+                   
                 }
                 .padding(.horizontal, 24)
-//                .onAppear {
-//                    setUserInViewModel()
-//                }
                 .scrollIndicators(.hidden)
-            }
+           }
         }
     }
     
@@ -76,12 +79,6 @@ struct MyPageView: View {
         .padding(.vertical, 40)
     }
     
-    private func setUserInViewModel() {
-        DispatchQueue.main.async {
-            myPageViewModel.user = loginViewModel.currentUser
-        }
-    }
-    
     @ViewBuilder
     private func navigationView(title: String, destination: some View, count: String) -> some View {
         NavigationLink {
@@ -97,11 +94,23 @@ struct MyPageView: View {
             }
         }
     }
+    
+    private var toastMessageView: some View {
+        CustomToastView(content: "신고가 완료되었어요!")
+            .offset(y: UIScreen.main.bounds.height * 0.3)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    withAnimation {
+                        isShowingToast = false
+                    }
+                }
+            }
+    }
 }
 
 #Preview {
     MyPageView()
         .environmentObject(MyPageViewModel())
         .environmentObject(LoginViewModel())
-        .environmentObject(AppNavigationPath())
+//        .environmentObject(AppNavigationPath())
 }

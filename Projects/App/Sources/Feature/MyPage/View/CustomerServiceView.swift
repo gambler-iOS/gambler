@@ -9,56 +9,79 @@
 import SwiftUI
 
 struct CustomerServiceView: View {
+    let complainViewModel: ComplainViewModel = ComplainViewModel()
+    @Environment(\.presentationMode) var presentationMode
+    
     @State private var choiceCategory: ComplainCategory = .spam
     @State private var isShowingDropMenu = false
-    
     @State private var serviceContent: String = ""
-    @State private var rating: Double = 0.0
     @State private var disabledButton: Bool = true
+    @State private var selectedPhotosData: [Data] = []
+    @Binding var isShowingToast: Bool
+   
+    let complainPlaceholder: String = "내용을 적어주세요"
     
     var body: some View {
-        VStack(alignment: .leading, spacing: .zero) {
-            titleView
-                .padding(.top, 24)
-                .padding(.bottom, 16)
-            complainTitleView(image:
-                                isShowingDropMenu ?
-                              GamblerAsset.arrowDown.swiftUIImage : GamblerAsset.arrowUp.swiftUIImage)
-            .onTapGesture {
-                isShowingDropMenu.toggle()
-            }
-            TextEditorView(text: $serviceContent, placeholder: "내용을 적어주세요")
-                .padding(.top, 16)
-            AddImageView(topPadding: .constant(16))
-            Spacer()
-            CTAButton(disabled: $disabledButton, title: "완료") {
-                print("완료 버튼 눌림")
-            }
-            .padding(.bottom, 24)
-        }
-        .background {
-            Color.white
+        GeometryReader { _ in
+            VStack(alignment: .leading, spacing: .zero) {
+                titleView
+                    .padding(.top, 24)
+                    .padding(.bottom, 16)
+                complainTitleView(image:
+                                    isShowingDropMenu ?
+                                  GamblerAsset.arrowDown.swiftUIImage : GamblerAsset.arrowUp.swiftUIImage)
                 .onTapGesture {
-                    isShowingDropMenu = false
+                    isShowingDropMenu.toggle()
                 }
-        }
-        .overlay(content: {
-            if isShowingDropMenu {
-                DropDownMemuView(isShowingDropMenu: $isShowingDropMenu, choiceCategory: $choiceCategory)
-                    .padding(.top, 50)
+                TextEditorView(text: $serviceContent, placeholder: complainPlaceholder)
+                    .padding(.top, 16)
+                AddImageView(selectedPhotosData: $selectedPhotosData, topPadding: .constant(16))
+                Spacer()
                 
+                CTAButton(disabled: $disabledButton, title: "완료") {
+                    submitComplain()
+                }
+                .padding(.bottom, 24)
             }
-        })
-        .onReceive([self.rating].publisher.first()) { _ in
-            self.updateDisabledButton()
+            .background {
+                Color.white
+                    .onTapGesture {
+                        isShowingDropMenu = false
+                    }
+            }
+            .onReceive([self.serviceContent].publisher.first()) { _ in
+                self.updateDisabledButton()
+            }
+            .padding(.horizontal, 24)
+            .navigationTitle("고객 센터")
+            .modifier(BackButton())
+            .overlay(content: {
+                if isShowingDropMenu {
+                    DropDownMemuView(isShowingDropMenu: $isShowingDropMenu, choiceCategory: $choiceCategory)
+                        .padding(.top, 50)
+                        .padding(.horizontal, 23)
+                    
+                }
+            })
         }
-        .onReceive([self.serviceContent].publisher.first()) { _ in
-            self.updateDisabledButton()
+    }
+    
+    private func submitComplain() {
+        Task {
+            await complainViewModel.addData(complain:
+                                                Complain(id: UUID().uuidString,
+                                                         complainCategory: choiceCategory,
+                                                         complainContent: serviceContent,
+                                                         complainImage: try await StorageManager
+                                                    .uploadImages(selectedPhotosData,
+                                                                  folder: .complain),
+                                                         createdDate: Date()))
+            isShowingToast = true
         }
-        .padding(.horizontal, 24)
-        .navigationTitle("고객 센터")
-        .modifier(BackButton())
-        
+        presentationMode.wrappedValue.dismiss()
+        withAnimation(.easeIn(duration: 0.4)) {
+            isShowingToast = true
+        }
     }
     
     private var titleView: some View {
@@ -92,10 +115,10 @@ struct CustomerServiceView: View {
     }
     
     private func updateDisabledButton() {
-        self.disabledButton = rating == 0.0 || serviceContent.isEmpty
+        disabledButton = serviceContent.isEmpty
     }
 }
 
 #Preview {
-    CustomerServiceView()
+    CustomerServiceView(isShowingToast: .constant(true))
 }
