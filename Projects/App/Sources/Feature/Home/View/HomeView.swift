@@ -40,7 +40,7 @@ struct HomeView: View {
                         }
                 })
                 .navigationDestination(for: Shop.self) { shop in
-                    ShopDetailView(shop: shop)
+                    ShopDetailInfoView(shop: shop)
                 }
                 .navigationDestination(for: Game.self) { game in
                     GameDetailView(game: game)
@@ -48,6 +48,9 @@ struct HomeView: View {
                 .navigationDestination(for: String.self) { title in
                     if title.contains("게임") {
                         GameListView(title: title)
+                    }
+                    if title.contains("매장") {
+                        ShopListView(title: title)
                     }
                 }
             }

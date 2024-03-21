@@ -21,7 +21,7 @@ struct ShopListCellView: View {
     
     var body: some View {
         VStack {
-            HStack(spacing: 16) {
+            HStack(alignment: .top, spacing: 16) {
                 if let url = URL(string: shop.shopImage) {
                     KFImage(url)
                         .resizable()
@@ -35,18 +35,30 @@ struct ShopListCellView: View {
                 
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text("\(shop.shopName)")
-                            .font(.body1M)
-                            .foregroundStyle(Color.gray700)
-                        
+                        VStack(alignment: .leading) {
+                            Text("\(shop.shopName)")
+                                .font(.body1M)
+                                .foregroundStyle(Color.gray700)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.6)
+                        }
                         Spacer()
                         
                         HeartCellView(isLike: isLike)
                     }
 
                     ReviewRatingCellView(rating: shop.reviewRatingAverage)
-                    
-                    Spacer()
+//                    
+//                    TagLayout {
+//                        ChipView(label: "👥 3 - 10명", size: .small)
+//                        ChipView(label: "🕛 10분 내외", size: .small)
+//                        ChipView(label: "📖 마피아", size: .small)
+//                        ChipView(label: "🟡 난이도 하", size: .small)
+//                    }
+//                    
+                    HStack {
+                        
+                    }
                 }
                 .foregroundStyle(.black)
             }
