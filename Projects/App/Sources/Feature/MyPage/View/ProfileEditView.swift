@@ -22,6 +22,10 @@ struct ProfileEditView: View {
 #warning("임시")
     @State private var user: User = User.dummyUser
     
+    var currentUser: User? {
+        return loginViewModel.currentUser
+    }
+    
     var body: some View {
         VStack {
             ScrollView {
@@ -36,6 +40,9 @@ struct ProfileEditView: View {
                         .padding(24)
                 }
                 .padding(.bottom, 60)
+            }
+            .onAppear {
+                self.nickName = currentUser?.nickname ?? ""
             }
             .navigationTitle("프로필 수정")
             .modifier(BackButton())
@@ -80,7 +87,7 @@ struct ProfileEditView: View {
                     .frame(width: 64, height: 64)
                     .clipShape(.circle)
             } else {
-                CircleImageView(imageURL: User.dummyUser.profileImageURL, size: 64)
+                CircleImageView(imageURL: currentUser?.profileImageURL ?? "" , size: 64)
             }
             pickerView
                 .padding(.top, 16)
@@ -139,15 +146,15 @@ struct ProfileEditView: View {
                     VStack {
                         PluginCellView(image: GamblerAsset.kakaotalkLogo.swiftUIImage,
                                        social: LoginPlatform.kakakotalk,
-                                       user: $user)
+                                       user: currentUser)
                             .padding(.horizontal, 16)
                         PluginCellView(image: GamblerAsset.appleLogo.swiftUIImage,
                                        social: LoginPlatform.apple,
-                                       user: $user)
+                                       user: currentUser)
                             .padding(.horizontal, 16)
                         PluginCellView(image: GamblerAsset.googleLogo.swiftUIImage,
                                        social: LoginPlatform.google,
-                                       user: $user)
+                                       user: currentUser)
                             .padding(.horizontal, 16)
                     }
                 }

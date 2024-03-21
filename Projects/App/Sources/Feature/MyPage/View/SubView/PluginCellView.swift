@@ -12,11 +12,11 @@ struct PluginCellView: View {
     let image: Image
     let social: LoginPlatform
     private var isUserSocial: Bool {
-        user.loginPlatform == social
+        user?.loginPlatform == social
     }
     
     #warning("임시")
-    @Binding var user: User
+    let user: User?
    
     var body: some View {
         HStack {
@@ -37,5 +37,5 @@ struct PluginCellView: View {
     }
 }
 #Preview {
-    PluginCellView(image: GamblerAsset.kakaotalkLogo.swiftUIImage, social:.apple, user: .constant(User.dummyUser))
+    PluginCellView(image: GamblerAsset.kakaotalkLogo.swiftUIImage, social:.apple, user: User.dummyUser)
 }
