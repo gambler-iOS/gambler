@@ -75,11 +75,34 @@ final class GoogleAuthSerVice {
         }
     }
     
-    func deleteGoogleAccount() async {
-        if await AuthService.shared.deleteAuth() {
-            print("구글 삭제 성공")
-        } else {
-            print("Firebase Error : 삭제 실패")
+    func deleteGoogleAccount() async -> Bool {
+        await withCheckedContinuation { continuation in
+            Task {
+                do {
+                    guard let user = Auth.auth().currentUser else {
+                        continuation.resume(returning: false)
+                        return
+                    }
+                    
+                    try Auth.auth().signOut()
+                    await self.signOutFromGoogle()
+                    
+                    user.delete() { error in
+                        Task {
+                            if let error = error {
+                                print(#fileID, #function, #line, "- \(error.localizedDescription) ")
+                                continuation.resume(returning: false)
+                            } else {
+                                try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
+                                continuation.resume(returning: true)
+                            }
+                        }
+                    }
+                } catch let error as NSError {
+                    print(#fileID, #function, #line, "- Error signing out Google:  \(error.localizedDescription) ")
+                    
+                }
+            }
         }
     }
     
@@ -90,7 +113,7 @@ final class GoogleAuthSerVice {
         guard let idToken = user.idToken?.tokenString else { return nil }
         
         let credentials = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: user.accessToken.tokenString)
-
+        
         do {
             return try await googleAuthSignIn(credentials: credentials)
         } catch {

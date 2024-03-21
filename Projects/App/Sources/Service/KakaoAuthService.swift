@@ -141,11 +141,28 @@ final class KakaoAuthService {
         }
     }
     
-    func deleteKakaoAccount() async {
-        if await AuthService.shared.deleteAuth() {
-            await KakaoAuthService.shared.unlinkKakao()
-            print("카카오 계정 지우기 성공!")
-        } else {
+    func deleteKakaoAccount() async -> Bool {
+        await withCheckedContinuation { continuation in
+            guard let user = Auth.auth().currentUser else {
+                continuation.resume(returning: false)
+                return
+            }
+            user.delete() { error in
+                Task {
+                    if let error = error {
+                        print(#fileID, #function, #line, "- \(error.localizedDescription) ")
+                        continuation.resume(returning: false)
+                    } else {
+                        do {
+                            await KakaoAuthService.shared.unlinkKakao()
+                            try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
+                            continuation.resume(returning: true)
+                        } catch {
+                            print(#fileID, #function, #line, "- Error remove Firestore kakaoUSer: \(error.localizedDescription) ")
+                        }
+                    }
+                }
+            }
         }
     }
     

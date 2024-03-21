@@ -38,7 +38,7 @@ final class LoginViewModel: ObservableObject {
             print("Auth changed: \(user != nil)")
             print("configureAuthStateChanges - \(self.authState)")
             
-            guard let user else {
+            guard let user = user else {
                 // 유효한 사용자가 없기 때문에 로그인되지 않았음을 의미
                 print("User is nil")
                 self.authState = .signedOut
@@ -63,8 +63,7 @@ final class LoginViewModel: ObservableObject {
         self.userSession = nil
         AuthService.shared.tempUser = nil
     }
-    
-    
+     
     /// 유저 정보 가져오기 및 authState 변경
     func fetchUserData() async {
         self.userSession = Auth.auth().currentUser
@@ -115,39 +114,38 @@ final class LoginViewModel: ObservableObject {
     }
     
     /// Firebase Auth 삭제 및 Firestore 데이터 삭제
-    func deleteAccountWithFireStore() async {
-        guard let user = Auth.auth().currentUser else { return }
+    private func deleteAccount() async -> Bool {
         
-        Task {
-            do {
-                await deleteAuthWithSocial()
-                try await
-                FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
-            } catch {
-                print("실패")
+        guard let user = Auth.auth().currentUser else { return false }
+        var success = false
+        
+        for profile in user.providerData {
+            switch profile.providerID {
+            case "apple.com":
+                success = await AppleAuthService.shared.deleteAppleAccount()
+            case "google.com":
+                success = await GoogleAuthSerVice.shared.deleteGoogleAccount()
+            case "password":
+                success = await KakaoAuthService.shared.deleteKakaoAccount()
+            default:
+                success = false
+            }
+            
+            if success {
+                return true
             }
         }
+        return success
     }
     
-    /// Firebase Auth 계정삭제
-    func deleteAuthWithSocial() async {
-        guard let user = Auth.auth().currentUser else { return }
+    /// 계정 삭제 후 성공하면 AuthData 리셋
+    /// - Returns: Bool - 계정 삭제 성공 여부
+    func deleteAndResetAuth() async -> Bool {
+        let success = await deleteAccount()
         
-        Task {
-            for profile in user.providerData {
-                switch profile.providerID {
-                case "password":
-                    await KakaoAuthService.shared.deleteKakaoAccount()
-                case "apple.com":
-                    await AppleAuthService.shared.deleteAppleAccount()
-                case "google.com":
-                    await GoogleAuthSerVice.shared.deleteGoogleAccount()
-                default:
-                    print("다른 방법으로 로그인함")
-                }
-                self.resetAuth()
-                print("서비스 제공자: \(profile.providerID)")
-            }
+        if success {
+            self.resetAuth()
         }
+        return success
     }
 }

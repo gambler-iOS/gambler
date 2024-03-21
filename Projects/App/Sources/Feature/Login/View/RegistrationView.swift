@@ -65,8 +65,9 @@ struct RegistrationView: View {
     private var backButton: some View {
         Button {
             Task {
+                if await loginViewModel.deleteAndResetAuth() {
                     dismiss()
-                    await loginViewModel.deleteAuthWithSocial()
+                }
             }
         } label: {
             Image("arrowLeft")

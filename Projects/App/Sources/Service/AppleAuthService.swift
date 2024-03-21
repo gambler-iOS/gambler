@@ -44,8 +44,7 @@ final class AppleAuthService {
                     default:
                         break
                     }
-                }
-                catch {
+                } catch {
                     print("FirebaseAuthError: signOut() failed. \(error)")
                 }
             }
@@ -114,8 +113,7 @@ extension AppleAuthService {
     func handleSignInWithAppleCompletion(_ result: Result<ASAuthorization, Error>) {
         if case .failure(let failure) = result {
             print(#fileID, #function, #line, "- \(failure.localizedDescription)")
-        }
-        else if case .success(let authorization) = result {
+        } else if case .success(let authorization) = result {
             if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
                 guard let nonce = Self.currentNonce else {
                     fatalError("Invalid state: a login callback was received, but no login request was sent.")
@@ -146,9 +144,7 @@ extension AppleAuthService {
                         
                         print(#fileID, #function, #line, "- tempUSer ")
                         dump(AuthService.shared.tempUser)
-                        
-                    }
-                    catch {
+                    } catch {
                         print("Error authenticating: \(error.localizedDescription)")
                     }
                 }
@@ -156,53 +152,65 @@ extension AppleAuthService {
         }
     }
     
-    func deleteAppleAccount() async {
-        guard let user = Auth.auth().currentUser else {
-            print("현재 로그인 유저 없음")
-            return
-        }
-        guard let lastSignInDate = user.metadata.lastSignInDate else { return }
-        let needsReauth = !lastSignInDate.isWithinPast(minutes: 5)  // 지난 5분동안 로그인했는지 확인
-        let needsTokenRevocation = user.providerData.contains { $0.providerID == "apple.com" }
-        
-        do {
-            // 재인증 흐름을 위해 사용자에게 재로그인하도록 요청하는 코드
-            if needsReauth || needsTokenRevocation {
-                let signInWithApple = SignInWithApple()
-                let appleIDCredential = try await signInWithApple()
-                
-                guard let appleIDToken = appleIDCredential.identityToken else {
-                    print("Unable to fetdch identify token.")
-                    return
-                }
-                guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
-                    print("Unable to serialise token string from data: \(appleIDToken.debugDescription)")
-                    return
-                }
-                
-                // 사용자가 로그인하면 공급자로부터 반환된 정보를 사용하여 새로운 credential을 만듦
-                let nonce = AppleAuthService.shared.randomNonceString()
-                let credential = OAuthProvider.credential(withProviderID: "apple.com",
-                                                          idToken: idTokenString,
-                                                          rawNonce: nonce)
-                
-                if needsReauth {  // 사용자가 제공한 자격 증명으로, 서버에서 유효성을 검사
-                    try await user.reauthenticate(with: credential)
-                }
-                if needsTokenRevocation {
-                    guard let authorizationCode = appleIDCredential.authorizationCode else { return }
-                    guard let authCodeString = String(data: authorizationCode, encoding: .utf8) else { return }
-                    
-                    // 사용자가 다시 로그인하면, 인증 코드를 사용하여 auth.revokeToken을 호출할 수 있음
-                    // Firebase는 사용자와 연결된 acess Token을 검색한 다음 Apple의 revokeToken endpoint를 호출하여 토큰을 취소
-                    try await Auth.auth().revokeToken(withAuthorizationCode: authCodeString)
-                    print("revokeToken 성공")
-                }
+    func deleteAppleAccount() async -> Bool {
+        await withCheckedContinuation { continuation in
+            guard let user = Auth.auth().currentUser else {
+                print("현재 로그인 유저 없음")
+                continuation.resume(returning: false)
+                return
+            }
+            guard let lastSignInDate = user.metadata.lastSignInDate else {
+                continuation.resume(returning: false)
+                return
             }
             
-            try await user.delete()  // user.delete를 비동기식으로 호출
-        } catch {  // 오류 처리 코드
-            print(#fileID, #function, #line, "- \(error.localizedDescription)")
+            let needsReauth = !lastSignInDate.isWithinPast(minutes: 5)  // 지난 5분동안 로그인했는지 확인
+            let needsTokenRevocation = user.providerData.contains { $0.providerID == "apple.com" }
+            Task {
+                do {
+                    // 재인증 흐름을 위해 사용자에게 재로그인하도록 요청하는 코드
+                    if needsReauth || needsTokenRevocation {
+                        let signInWithApple = SignInWithApple()
+                        let appleIDCredential = try await signInWithApple()
+                        
+                        guard let appleIDToken = appleIDCredential.identityToken else {
+                            print("Unable to fetdch identify token.")
+                            return
+                        }
+                        guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+                            print("Unable to serialise token string from data: \(appleIDToken.debugDescription)")
+                            return
+                        }
+                        
+                        // 사용자가 로그인하면 공급자로부터 반환된 정보를 사용하여 새로운 credential을 만듦
+                        let nonce = AppleAuthService.shared.randomNonceString()
+                        let credential = OAuthProvider.credential(withProviderID: "apple.com",
+                                                                  idToken: idTokenString,
+                                                                  rawNonce: nonce)
+                        
+                        if needsReauth {  // 사용자가 제공한 자격 증명으로, 서버에서 유효성을 검사
+                            try await user.reauthenticate(with: credential)
+                        }
+                        if needsTokenRevocation {
+                            guard let authorizationCode = appleIDCredential.authorizationCode else { return }
+                            guard let authCodeString = String(data: authorizationCode, encoding: .utf8) else { return }
+                            
+                            // 사용자가 다시 로그인하면, 인증 코드를 사용하여 auth.revokeToken을 호출할 수 있음
+                            // Firebase는 사용자와 연결된 acess Token을 검색한 다음 Apple의 revokeToken endpoint를 호출하여 토큰을 취소
+                            try await Auth.auth().revokeToken(withAuthorizationCode: authCodeString)
+                            print("revokeToken 성공")
+                        }
+                    }
+                    
+                    try await user.delete()  // user.delete를 비동기식으로 호출
+                    try await
+                    FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
+                    continuation.resume(returning: true)
+                } catch {  // 오류 처리 코드
+                    print(#fileID, #function, #line, "- \(error.localizedDescription)")
+                    continuation.resume(returning: false)
+                }
+            }
         }
     }
 }
@@ -217,7 +225,7 @@ extension ASAuthorizationAppleIDCredential {
 }
 
 final class SignInWithApple: NSObject, ASAuthorizationControllerDelegate {
-    private var continuation : CheckedContinuation<ASAuthorizationAppleIDCredential, Error>?
+    private var continuation: CheckedContinuation<ASAuthorizationAppleIDCredential, Error>?
     
     func callAsFunction() async throws -> ASAuthorizationAppleIDCredential {
         return try await withCheckedThrowingContinuation { continuation in

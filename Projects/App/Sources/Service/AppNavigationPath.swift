@@ -13,7 +13,6 @@ final class AppNavigationPath: ObservableObject {
     
 }
 
-
 final class NavigationPathFinder: ObservableObject {
     static let shared = NavigationPathFinder()
     private init() { }
