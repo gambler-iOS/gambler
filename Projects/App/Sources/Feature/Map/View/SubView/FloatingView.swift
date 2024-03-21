@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct FloatingView: View {
-    @ObservedObject var shopStore: ShopStore
+    @ObservedObject var mapViewModel: MapViewModel
     @Binding var selectedShop: Shop
     @Binding var isShowingSheet: Bool
     @Binding var userLocate: GeoPoint
@@ -33,9 +33,11 @@ struct FloatingView: View {
     
     private var showListButtonView: some View {
         Button(action: {
-            shopStore.fetchUserAreaShopList(userPoint: userLocate)
-            withAnimation {
-                isShowingSheet = true
+            Task {
+                await mapViewModel.fetchUserAreaShopList(userPoint: userLocate)
+                withAnimation {
+                    isShowingSheet = true
+                }
             }
         }, label: {
             RoundedRectangle(cornerRadius: 15)
@@ -51,7 +53,7 @@ struct FloatingView: View {
 }
 
 #Preview {
-    FloatingView(shopStore: ShopStore(), 
+    FloatingView(mapViewModel: MapViewModel(),
                  selectedShop: .constant(Shop.dummyShop),
                  isShowingSheet: .constant(true),
                  userLocate: .constant(GeoPoint(latitude: 13.00, longitude: 13.00)))

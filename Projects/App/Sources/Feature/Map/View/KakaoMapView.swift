@@ -16,7 +16,7 @@ struct KakaoMapView: UIViewRepresentable {
     @Binding var draw: Bool
     @Binding var isShowingSheet: Bool
     @Binding var isLoading: Bool
-    @ObservedObject var shopStore: ShopStore
+    @ObservedObject var mapViewModel: MapViewModel
     
     func makeUIView(context: Self.Context) -> KMViewContainer {
         let view: KMViewContainer = KMViewContainer()
@@ -42,7 +42,7 @@ struct KakaoMapView: UIViewRepresentable {
                                    isShowingSheet: $isShowingSheet,
                                    tappedShop: $selectedShop,
                                    isLoading: $isLoading,
-                                   shopStore: _shopStore)
+                                   mapViewModel: _mapViewModel)
     }
     
     static func dismantleUIView(_ uiView: KMViewContainer, coordinator: KakaoMapCoordinator) {
@@ -54,7 +54,7 @@ struct KakaoMapView: UIViewRepresentable {
         @Binding var selectedShop: Shop
         @Binding var isShowingSheet: Bool
         @Binding var isLoading: Bool
-        @ObservedObject var shopStore: ShopStore
+        @ObservedObject var mapViewModel: MapViewModel
         
         let locationManager = CLLocationManager()
         var controller: KMController?
@@ -67,13 +67,13 @@ struct KakaoMapView: UIViewRepresentable {
         var firstTap: Bool = true
         
         init (userLocate: Binding<GeoPoint>, isShowingSheet: Binding<Bool>,
-              tappedShop: Binding<Shop>, isLoading: Binding<Bool>, shopStore: ObservedObject<ShopStore>) {
+              tappedShop: Binding<Shop>, isLoading: Binding<Bool>, mapViewModel: ObservedObject<MapViewModel>) {
             first = true
             self._userLocate = userLocate
             self._isShowingSheet = isShowingSheet
             self._selectedShop = tappedShop
             self._isLoading = isLoading
-            self._shopStore = shopStore
+            self._mapViewModel = mapViewModel
             super.init()
         }
         
@@ -100,7 +100,6 @@ struct KakaoMapView: UIViewRepresentable {
                 mapView.setLogoPosition(
                     origin: GuiAlignment(vAlign: .bottom, hAlign: .right),
                     position: CGPoint(x: 10.0, y: -UIScreen.main.bounds.height * 0.2 + 20))
-                fetchMapPoi()
                 getUserLocation()
                 createLabelLayer()
                 createPoiStyle()
@@ -111,12 +110,10 @@ struct KakaoMapView: UIViewRepresentable {
                     .addCameraWillMovedEventHandler(target: self, handler: KakaoMapCoordinator.cameraWillMove)
                 cameraStoppedHandler = mapView
                     .addCameraStoppedEventHandler(target: self, handler: KakaoMapCoordinator.onCameraStopped)
-                createPoisOnMap()
             }
         }
         
         func cameraWillMove(_ param: CameraActionEventParam) {
-            print("이건 됩니까..?")
             if param.by == .notUserAction {
                 print("[Action: Camera will move]")
                 cameraStartHandler?.dispose()
@@ -124,40 +121,22 @@ struct KakaoMapView: UIViewRepresentable {
         }
         
         func onCameraStopped(_ param: CameraActionEventParam) {
-            print("되냐. ")
-            fetchMapPoi()
+            fetchAreaInShopList()
         }
         
-        func fetchMapPoi() {
+        func fetchAreaInShopList() {
             Task {
                 if let mapView = controller?.getView("mapview") as? KakaoMap {
                     let m = mapView.getPosition(CGPoint(x: mapView.viewRect.width * 0.5, y: mapView.viewRect.height * 0.5))
-                    let mapCountry = await shopStore.getCountry(mapPoint: GeoPoint(latitude: m.wgsCoord.latitude, longitude: m.wgsCoord.longitude))
-                    print("주소 가져옴 : \(mapCountry)")
-                    if !shopStore.markPlace.contains(mapCountry) {
-                        print("이 주소는 찍힙니다!")
-                        print("\(mapCountry)")
-                        await shopStore.fetchMapArea(countryString: mapCountry)
-                        createPoisOnMap()
-                        shopStore.markPlace.append(mapCountry)
-                    }
+                    let mapCountry = await mapViewModel.getCountry(mapPoint: GeoPoint(latitude: m.wgsCoord.latitude, longitude: m.wgsCoord.longitude))
                     print("포인트: \(GeoPoint(latitude: m.wgsCoord.latitude, longitude: m.wgsCoord.longitude))")
                     print("현재 주소: \(mapCountry)")
-                }
-            }
-        }
-        
-        func fetchAll() {
-            Task {
-                if let mapView = controller?.getView("mapview") as? KakaoMap {
-                    let m = mapView.getPosition(CGPoint(x: mapView.viewRect.width * 0.5, y: mapView.viewRect.height * 0.5))
-                    await shopStore.fetchAllMap()
+                    await mapViewModel.fetchCountryData(country: mapCountry)
                     createPoisOnMap()
-                    print("포인트: \(GeoPoint(latitude: m.wgsCoord.latitude, longitude: m.wgsCoord.longitude))")
                 }
             }
         }
-        
+    
         func containerDidResized(_ size: CGSize) {
             if let mapView = controller?.getView("mapview") as? KakaoMap {
                 mapView.viewRect = CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: size)
