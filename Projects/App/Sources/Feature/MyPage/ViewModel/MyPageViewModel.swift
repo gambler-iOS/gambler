@@ -66,7 +66,8 @@ final class MyPageViewModel: ObservableObject {
                 shopDetailImage: ["detailImage"],
                 createdDate: Date(),
                 reviewCount: 3,
-                reviewRatingAverage: 3.5))
+                reviewRatingAverage: 3.5,
+                ShopCountry: "서울특별시"))
             
             likeGames.append(Game(
                 id: UUID().uuidString,

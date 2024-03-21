@@ -91,28 +91,6 @@ final class AuthService: ObservableObject {
         }
     }
     
-//    func deleteAuth() async -> Bool {
-//        await withCheckedContinuation { continuation in
-//            guard let user = Auth.auth().currentUser else {
-//                continuation.resume(returning: false)
-//                return
-//            }
-//            
-//            user.delete() { error in
-//                Task {
-//                    if let error = error {
-//                        print("2번 문제")
-//                        print(error.localizedDescription)
-//                        continuation.resume(returning: false)
-//                    } else {
-//                        print("삭제 성공")
-//                        continuation.resume(returning: true)
-//                    }
-//                }
-//            }
-//        }
-//    }
-    
     func uploadUserToFirestore(user: User) {
         do {
             try FirebaseManager.shared.createData(collectionName: "Users", data: user)
