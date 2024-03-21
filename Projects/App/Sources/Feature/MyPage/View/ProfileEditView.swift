@@ -139,9 +139,8 @@ struct ProfileEditView: View {
                     }
                 }
             Button {
-                // 탈퇴
                 Task {
-                    await loginViewModel.deleteAccount()
+                    await loginViewModel.deleteAccountWithFireStore()
                 }
             } label: {
                 ProfileButtonView(text: "회원 탈퇴하기", size: 109, isDefaultButton: true)

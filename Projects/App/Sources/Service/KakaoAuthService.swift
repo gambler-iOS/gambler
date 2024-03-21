@@ -25,7 +25,7 @@ final class KakaoAuthService {
     private init() { }
     
     // 사용자에게 카카오 로그인을 요청 / 사용자는 카카오 로그인 완료
-    func handleKakaoLogin() async {
+    func signInWithKakao() async {
         // 카카오 토큰이 존재한다면
         if AuthApi.hasToken() {
             kakao.accessTokenInfo { _, error in
@@ -98,11 +98,25 @@ final class KakaoAuthService {
                 
                 // 파이어베이스 유저 생성 (이메일로 회원가입)
                 Task {
-                    await AuthService.shared.loginKakaoTalk(email: email,
+                    await self.loginKakaoTalk(email: email,
                                                             password: password,
                                                             name: name,
                                                             profileImageURL: profileImageURL)
                 }
+            }
+        }
+    }
+    
+    @MainActor
+    private func loginKakaoTalk(email: String, password: String, name: String, profileImageURL: String) async {
+        Task {
+            if await AuthService.shared.loginWithEmail(email: email, password: password, name: name, profileImageURL: profileImageURL) {
+                // 로그인 성공
+                print(#fileID, #function, #line, "- email 로그인 성공 ~~~ ")
+            } else {
+                // 로그인 실패 - 회원가입 해야함
+                print("createUser 실행")
+                await AuthService.shared.createUser(email: email, password: password, name: name, profileImageURL: profileImageURL)
             }
         }
     }
@@ -128,19 +142,10 @@ final class KakaoAuthService {
     }
     
     func deleteKakaoAccount() async {
-        if let user = Auth.auth().currentUser {
-            user.delete { error in
-                Task {  // 카카오톡일 때 로그아웃 후 삭제 -> 토큰 문제
-                    if let error = error {
-                        print("Firebase Error : ",error)
-                    } else {
-                        try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
-                        await KakaoAuthService.shared.unlinkKakao()
-                    }
-                }
-            }
+        if await AuthService.shared.deleteAuth() {
+            await KakaoAuthService.shared.unlinkKakao()
+            print("카카오 계정 지우기 성공!")
         } else {
-            print("로그인 정보가 존재하지 않습니다")
         }
     }
     

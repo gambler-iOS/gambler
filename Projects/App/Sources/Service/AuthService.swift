@@ -27,15 +27,15 @@ final class AuthService: ObservableObject {
     
     func setTempUser(id: String, nickname: String, profileImage: String, apnsToken: String?, loginPlatform: LoginPlatform) async {
         tempUser = User(id: id,
-                         nickname: nickname,
-                         profileImageURL: profileImage,
-                         apnsToken: apnsToken,
-                         createdDate: Date(),
-                         likeGameId: [],
-                         likeShopId: [],
-                         myReviewsCount: 0,
-                         myLikesCount: 0,
-                         loginPlatform: loginPlatform)
+                        nickname: nickname,
+                        profileImageURL: profileImage,
+                        apnsToken: apnsToken,
+                        createdDate: Date(),
+                        likeGameId: [],
+                        likeShopId: [],
+                        myReviewsCount: 0,
+                        myLikesCount: 0,
+                        loginPlatform: loginPlatform)
     }
     
     /// 이메일 로그인
@@ -63,20 +63,6 @@ final class AuthService: ObservableObject {
         }
     }
     
-    @MainActor
-    func loginKakaoTalk(email: String, password: String, name: String, profileImageURL: String) async {
-        Task {
-            if await loginWithEmail(email: email, password: password, name: name, profileImageURL: profileImageURL) {
-                // 로그인 성공
-                print(#fileID, #function, #line, "- email 로그인 성공 ~~~ ")
-            } else {
-                // 로그인 실패 - 회원가입 해야함
-                print("createUser 실행")
-                await createUser(email: email, password: password, name: name, profileImageURL: profileImageURL)
-            }
-        }
-    }
-    
     func createUser(email: String, password: String, name: String, profileImageURL: String) async {
         
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
@@ -92,6 +78,33 @@ final class AuthService: ObservableObject {
                                            profileImage: profileImageURL,
                                            apnsToken: "카카오",
                                            loginPlatform: .kakakotalk)
+                }
+            }
+        }
+    }
+    
+    func signOut() async {
+        do {
+            try Auth.auth().signOut()
+        } catch let signOutError as NSError {
+            print("Error signing out: %@", signOutError)
+        }
+    }
+    
+    func deleteAuth() async -> Bool {
+        await withCheckedContinuation { continuation in
+            guard let user = Auth.auth().currentUser else {
+                continuation.resume(returning: false)
+                return
+            }
+            
+            user.delete() { error in
+                Task {
+                    if let error = error {
+                        continuation.resume(returning: false)
+                    } else {
+                        continuation.resume(returning: true)
+                    }
                 }
             }
         }

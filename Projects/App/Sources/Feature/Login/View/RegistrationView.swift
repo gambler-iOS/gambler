@@ -65,13 +65,9 @@ struct RegistrationView: View {
     private var backButton: some View {
         Button {
             Task {
-                do {
                     dismiss()
-                    await loginViewModel.deleteAuth()
-                    try await loginViewModel.signOut()
-                } catch {
-                    print("로그아웃 실패 Error: \(error)")
-                }
+                    await loginViewModel.deleteAuthWithSocial()
+//                    await loginViewModel.logoutFromFirebaseAndSocial()
             }
         } label: {
             Image("arrowLeft")

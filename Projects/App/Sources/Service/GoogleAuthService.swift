@@ -18,9 +18,38 @@ final class GoogleAuthSerVice {
     
     private init() { }
     
+    /// 구글 로그인
+    func signInWithGoogle() async {
+        await GoogleAuthSerVice.shared.signInWithGoogle { user, error in
+            if let error {
+                print("GoogleSignInError: failed to sign in with Google, \(error))")
+            }
+            
+            guard let gidUser = user else { return }
+            Task {
+                do {
+                    let result = try await GoogleAuthSerVice.shared.authenticateGoogle(gidUser)
+                    if let result {
+                        print("GoogleSignInSuccess: \(result.user.uid)")
+                        let user = result.user  // firebase Auth의 User
+                        
+                        // 회원가입때 쓸 수 있으니 dummy에 저장함
+                        await AuthService.shared.setTempUser(id: user.uid,
+                                                             nickname: user.displayName ?? "닉네임",
+                                                             profileImage: user.photoURL?.absoluteString ?? "",
+                                                             apnsToken: nil,
+                                                             loginPlatform: .google)
+                    }
+                } catch {
+                    print("GoogleSignInError: failed to authenticate with Google, \(error))")
+                }
+            }
+        }
+    }
+    
     /// Sign in with `Google`.
     /// - Parameter completion: restore/sign-in 흐름이 완료되면 호출되는 블록
-    func signInWithGoogle(_ completion: @escaping GoogleAuthResult) async {
+    private func signInWithGoogle(_ completion: @escaping GoogleAuthResult) async {
         // 1. 이전 로그인 확인
         if GIDSignIn.sharedInstance.hasPreviousSignIn() { // 이 전에 로그인 - 사용자의 로그인 복원
             GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
@@ -42,26 +71,43 @@ final class GoogleAuthSerVice {
     /// Sign out from `Google`.
     func signOutFromGoogle() async {
         Task {
-            try Auth.auth().signOut()
             GIDSignIn.sharedInstance.signOut()
         }
     }
     
     func deleteGoogleAccount() async {
-        if let user = Auth.auth().currentUser {
-            user.delete { error in
-                Task {  // 카카오톡일 때 로그아웃 후 삭제 -> 토큰 문제
-                    if let error = error {
-                        print("Firebase Error : ",error)
-                    } else {
-                        try await FirebaseManager.shared.deleteData(collectionName: "Users", byId: user.uid)
-                        print("구글 유저 데이트 삭제 성공")
-                    }
-                }
-            }
+        if await AuthService.shared.deleteAuth() {
+            print("구글 삭제 성공")
         } else {
-            print("로그인 정보가 존재하지 않습니다")
+            print("Firebase Error : 삭제 실패")
         }
     }
     
+    /// Google `idToken` 과 `GIDGoogleUser`의 `accessToken`을 사용하여 Firebase 인증
+    /// - Parameter user: 로그인한 Google 사용자
+    /// - Returns: Auth data.
+    func authenticateGoogle(_ user: GIDGoogleUser) async throws -> AuthDataResult? {
+        guard let idToken = user.idToken?.tokenString else { return nil }
+        
+        let credentials = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: user.accessToken.tokenString)
+
+        do {
+            return try await googleAuthSignIn(credentials: credentials)
+        } catch {
+            print("FirebaseAuthError: googleAuth(user:) failed. \(error)")
+            throw error
+        }
+    }
+    
+    // MARK: - Sign-in
+    private func googleAuthSignIn(credentials: AuthCredential) async throws -> AuthDataResult? {
+        do {
+            let result = try await Auth.auth().signIn(with: credentials)
+            //            updateState(user: result.user)
+            return result
+        } catch {
+            print("FirebaseAuthError: signIn(with:) failed. \(error)")
+            throw error
+        }
+    }
 }

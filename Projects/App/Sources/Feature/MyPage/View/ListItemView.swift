@@ -19,7 +19,7 @@ struct ListItemView: View {
                     .font(.subHead2B)
                 
                 Group {
-                    listBodyView(title: "프로필 수정", 
+                    listBodyView(title: "프로필 수정",
                                  destination: ProfileEditView().environmentObject(loginViewModel))
                     
                     listBodyView(title: "알림 설정", destination: NotificationSettingView())
@@ -46,11 +46,7 @@ struct ListItemView: View {
                     
                     Button {
                         Task {
-                            do {
-                                try await loginViewModel.signOut()
-                            } catch {
-                                print("로그아웃 실패 Error: \(error)")
-                            }
+                            await loginViewModel.logoutFromFirebaseAndSocial()
                         }
                     } label: {
                         Text("로그아웃")

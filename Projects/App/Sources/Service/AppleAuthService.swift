@@ -20,10 +20,6 @@ final class AppleAuthService {
     
     /// Un-hashed nonce.
     fileprivate static var currentNonce: String?
-    private let keyID = Bundle.main.infoDictionary?["Key_ID"] ?? ""
-    private let teamID = Bundle.main.infoDictionary?["Team_ID"] ?? ""
-    private let bundleID = Bundle.main.bundleIdentifier ?? ""
-    
     /// Current un-hashed nonce
     static var nonce: String? {
         currentNonce ?? nil
@@ -31,274 +27,36 @@ final class AppleAuthService {
     
     private init() { }
     
-    func requestAppleAuthorization(_ request: ASAuthorizationAppleIDRequest) {
-        Self.currentNonce = randomNonceString()
-        request.requestedScopes = [.fullName, .email]
-        request.nonce = sha256(Self.currentNonce ?? "")
-    }
-    
-    func signOutFromApple() async {
-        // TODO: Revoke Apple ID
-        let firebaseAuth = Auth.auth()
-        do {
-            try firebaseAuth.signOut()
-        } catch let signOutError as NSError {
-            print("Error signing out: %@", signOutError)
+    func verifySignInWithAppleID() {
+        let appleIDProvider = ASAuthorizationAppleIDProvider()
+        let providerData = Auth.auth().currentUser?.providerData
+        
+        if let appleProviderData = providerData?.first(where: { $0.providerID == "apple.com" }) {
+            Task {
+                do {
+                    let credentialState = try await appleIDProvider.credentialState(forUserID: appleProviderData.uid)
+                    switch credentialState {
+                    case .authorized:
+                        break // The Apple ID credential is valid.
+                    case .revoked, .notFound:
+                        // The Apple ID credential is either revoked or was not found, so show the sign-in UI.
+                        await AuthService.shared.signOut()
+                        //                        AppleAuthService.shared.signOutFromApple()
+                    default:
+                        break
+                    }
+                }
+                catch {
+                    print("FirebaseAuthError: signOut() failed. \(error)")
+                }
+            }
         }
     }
-}
-
-extension AppleAuthService {
+    
     /// 암호화적으로 안전한 "nonce"인 임의의 문자열을 생성하여 앱의 인증 요청에 대한 응답으로 ID 토큰이 특별히 부여되었는지 확인하는 데 사용
-    /// - parameter length: integer
-    /// - returns: 암호학적으로 안전한 "nonce"가 포함된 문자열
+    /// - Parameter length: 32글자를 기본으로 함
+    /// - Returns: 암호학적으로 안전한 "nonce"가 포함된 문자열
     func randomNonceString(length: Int = 32) -> String {
-        precondition(length > 0)
-        var randomBytes = [UInt8](repeating: 0, count: length)
-        let errorCode = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
-        if errorCode != errSecSuccess {
-            fatalError(
-                "Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)"
-            )
-        }
-        
-        let charset: [Character] =
-        Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
-        
-        let nonce = randomBytes.map { byte in
-            // Pick a random character from the set, wrapping around if needed.
-            charset[Int(byte) % charset.count]
-        }
-        
-        return String(nonce)
-    }
-    
-    /// original nonce를 256비트 다이제스트로 안전하게 해싱하면 이 논스의 SHA256 해시값이 Apple 로그인 요청으로 전송됩니다.
-    /// - parameter input: nonce가 포함된 문자열
-    /// - returns: nonce의 해시값이 포함된 문자열
-    private func sha256(_ input: String) -> String {
-        let inputData = Data(input.utf8)
-        let hashedData = SHA256.hash(data: inputData)
-        let hashString = hashedData.compactMap {
-            return String(format: "%02x", $0)
-        }.joined()
-        
-        return hashString
-    }
-    
-    // TODO: Cloud Functions 통해서 토큰 revoke
-    func deRegister() async {
-        // Firebase에서 user.delete만 해주면 되는게 아님.
-        // revokeToken + firebase 회원탈퇴 두개 다 진행해줘야 한다.
-        // JWT를 생성하고 Apple ID를 사용하는 앱 항목에서 내 앱을 삭제하기 위해서는 이 api를 처리할 서버로직이 필요하다
-        // Firebase의 Cloud Functions를 사용하면 백엔드 로직을 간단하게 구현
-        
-        // https://weekoding.tistory.com/29 참고
-        // swift jwt를 발급 받고, store에 저장하고 있다가, 탈퇴할 떄 jwt랑 토큰 활용
-        
-        let jwtString = self.makeJWT()
-        
-        guard let taCode = UserDefaults.standard.string(forKey: "theAuthorizationCode") else { return }
-        
-        self.getAppleRefreshToken(code: taCode, completionHandler: { output in
-            let clientSecret = jwtString
-            
-            if let refreshToken = output{
-                print("Client_Secret - \(clientSecret)")
-                print("refresh_token - \(refreshToken)")
-                
-                // api 통신
-                self.revokeAppleToken(clientSecret: clientSecret, token: refreshToken) {
-                    print("Apple revoke token Success")
-                }
-            } else{
-                print(#fileID, #function, #line, "- 회원탈퇴 실패 ")
-            }
-        })
-        
-        
-    }
-}
-
-// MARK: - Generate and validate token & revoke JWT
-extension AppleAuthService {
-    
-    /// client_secret 생성
-    func makeJWT() -> String {
-        let myHeader = Header(kid: "\(keyID)")  // Apple_Key_ID
-        
-        let nowDate = Date()
-        var dateComponent = DateComponents()
-        dateComponent.month = 6
-        let sixDate = Calendar.current.date(byAdding: dateComponent, to: nowDate) ?? Date()
-        let iat = Int(Date().timeIntervalSince1970)
-        let exp = iat + 2600
-        let bundleID = Bundle.main.bundleIdentifier ?? ""
-        let myClaims = MyClaims(iss: "\(teamID)",
-                                iat: iat,
-                                exp: exp,
-                                aud: "https://appleid.apple.com",
-                                sub: bundleID)
-        
-        var myJWT = JWT(header: myHeader, claims: myClaims)
-        
-        // JWT 발급을 요청값의 암호화 과정에서 다운받아두었던 Key File이 필요(.p8 파일)
-        guard let url = Bundle.main.url(forResource: "AuthKey_5V6V6SJZB5", withExtension: "p8") else {
-            return ""
-        }
-        
-        guard let privateKey: Data = try? Data(contentsOf: url, options: .alwaysMapped) else {
-            print(#fileID, #function, #line, "- privateKey 없음 ")
-            return ""
-        }
-        
-        let jwtSinger = JWTSigner.es256(privateKey: privateKey)
-        
-        guard let signedJWT = try? myJWT.sign(using: jwtSinger) else {
-            print(#fileID, #function, #line, "- JWT X ")
-            return ""
-        }
-        
-        print("🗝 singedJWT - \(signedJWT)")
-        return signedJWT
-    }
-    
-    //client_refreshToken
-    func getAppleRefreshToken(code: String, completionHandler: @escaping (String?) -> Void) {
-        guard let secret = UserDefaults.standard.string(forKey: "AppleClientSecret") else { return }
-        
-        let url = "https://appleid.apple.com/auth/token?client_id=\(self.bundleID)&client_secret=\(secret)&code=\(code)&grant_type=authorization_code"
-        let header: HTTPHeaders = ["Content-Type": "application/x-www-form-urlencoded"]
-        
-        print("🗝 clientSecret - \(String(describing: UserDefaults.standard.string(forKey: "AppleClientSecret")))")
-        print("🗝 authCode - \(code)")
-        
-        // Alamofire
-        let a = AF.request(url, method: .post, encoding: JSONEncoding.default, headers: header)
-            .validate(statusCode: 200..<500)
-            .responseData { response in
-                print("🗝 response - \(response.description)")
-                
-                switch response.result {
-                case .success(let output):
-                    print("🗝 ouput - \(output)")
-                    let decoder = JSONDecoder()
-                    if let decodedData = try? decoder.decode(AppleTokenResponse.self, from: output){
-                        print("🗝 output2 - \(String(describing: decodedData.refresh_token))")
-                        
-                        if decodedData.refresh_token == nil{
-                            print(#fileID, #function, #line, "- 토큰 생성 실패 ")
-                        }else{
-                            completionHandler(decodedData.refresh_token)
-                        }
-                    }
-                case .failure(_):
-                    //로그아웃 후 재로그인하여
-                    print("애플 토큰 발급 실패 - \(response.error.debugDescription)")
-                }
-            }
-    }
-    
-    
-    
-    // MARK: - 애플 토큰 삭제 (탈퇴) HTTP 통신
-    // Alamofire 라이브러리 사용
-    func revokeAppleToken(clientSecret: String, token: String, completionHandler: @escaping () -> Void) {
-        let url = "https://appleid.apple.com/auth/revoke?client_id=\(self.bundleID)&client_secret=\(clientSecret)&token=\(token)&token_type_hint=refresh_token"
-        
-        let header: HTTPHeaders = ["Content-Type": "application/x-www-form-urlencoded"]
-        
-        AF.request(url,
-                   method: .post,
-                   headers: header)
-        .validate(statusCode: 200..<600)
-        .responseData { response in
-            guard let statusCode = response.response?.statusCode else { return }
-            if statusCode == 200 {
-                print("애플 토큰 삭제 성공!")
-                completionHandler()
-            }
-        }
-    }
-    
-}
-
-// MARK: - client_secret(JWT) 발급 응답 모델
-fileprivate struct MyClaims: Claims {
-    let iss: String
-    let iat: Int
-    let exp: Int
-    let aud: String
-    let sub: String
-}
-
-// MARK: - 애플 엑세스 토큰 발급 응답 모델
-fileprivate struct AppleTokenResponse: Codable {
-    var access_token: String?
-    var token_type: String?
-    var expires_in: Int?
-    var refresh_token: String?
-    var id_token: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case refresh_token = "refresh_token"
-    }
-}
-
-
-// 유튭 보고 따라하는 revoke jwt
-extension AppleAuthService {
-    func handleSignInWithAppleRequest(_ request: ASAuthorizationAppleIDRequest) {
-        request.requestedScopes = [.fullName, .email]
-        let nonce = randomNonceString2()
-        Self.currentNonce = nonce
-        request.nonce = sha256(nonce)
-    }
-    
-    func handleSignInWithAppleCompletion(_ result: Result<ASAuthorization, Error>) {
-        if case .failure(let failure) = result {
-            print(#fileID, #function, #line, "- \(failure.localizedDescription)")
-        }
-        else if case .success(let authorization) = result {
-            if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
-                guard let nonce = Self.currentNonce else {
-                    fatalError("Invalid state: a login callback was received, but no login request was sent.")
-                }
-                guard let appleIDToken = appleIDCredential.identityToken else {
-                    print("Unable to fetdch identify token.")
-                    return
-                }
-                guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
-                    print("Unable to serialise token string from data: \(appleIDToken.debugDescription)")
-                    return
-                }
-                
-                let credential = OAuthProvider.appleCredential(withIDToken: idTokenString,
-                                                               rawNonce: nonce,
-                                                               fullName: appleIDCredential.fullName)
-                
-                Task {
-                    do {
-                        let result = try await Auth.auth().signIn(with: credential)
-                        await AuthService.shared.setTempUser(id: result.user.uid,
-                                                             nickname: result.user.displayName ?? "known",
-                                                             profileImage: result.user.photoURL?.absoluteString ?? "",
-                                                             apnsToken: "애플",
-                                                             loginPlatform: .apple)
-                        
-                        print(#fileID, #function, #line, "- tempUSer ")
-                        dump(AuthService.shared.tempUser)
-                        
-                    }
-                    catch {
-                        print("Error authenticating: \(error.localizedDescription)")
-                    }
-                }
-            }
-        }
-    }
-    
-    func randomNonceString2(length: Int = 32) -> String {
         precondition(length > 0)
         let charset: [Character] =
         Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
@@ -332,18 +90,135 @@ extension AppleAuthService {
         return result
     }
     
+    /// original nonce를 256비트 다이제스트로 안전하게 해싱하면 이 논스의 SHA256 해시값이 Apple 로그인 요청으로 전송됩니다.
+    /// - parameter input: nonce가 포함된 문자열
+    /// - returns: nonce의 해시값이 포함된 문자열
+    private func sha256(_ input: String) -> String {
+        let inputData = Data(input.utf8)
+        let hashedData = SHA256.hash(data: inputData)
+        let hashString = hashedData.compactMap {
+            return String(format: "%02x", $0)
+        }.joined()
+        
+        return hashString
+    }
 }
 
+extension AppleAuthService {
+    func handleSignInWithAppleRequest(_ request: ASAuthorizationAppleIDRequest) {
+        request.requestedScopes = [.fullName, .email]
+        let nonce = randomNonceString()
+        Self.currentNonce = nonce
+        request.nonce = sha256(nonce)
+    }
+    
+    func handleSignInWithAppleCompletion(_ result: Result<ASAuthorization, Error>) {
+        if case .failure(let failure) = result {
+            print(#fileID, #function, #line, "- \(failure.localizedDescription)")
+        }
+        else if case .success(let authorization) = result {
+            if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+                guard let nonce = Self.currentNonce else {
+                    fatalError("Invalid state: a login callback was received, but no login request was sent.")
+                }
+                guard let appleIDToken = appleIDCredential.identityToken else {
+                    print("Unable to fetdch identify token.")
+                    return
+                }
+                guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+                    print("Unable to serialise token string from data: \(appleIDToken.debugDescription)")
+                    return
+                }
+                
+                let credential = OAuthProvider.appleCredential(withIDToken: idTokenString,
+                                                               rawNonce: nonce,
+                                                               fullName: appleIDCredential.fullName)
+                
+                Task {
+                    do {
+                        let result = try await Auth.auth().signIn(with: credential)
+                        
+                        let userName: String = appleIDCredential.displayName()
+                        await AuthService.shared.setTempUser(id: result.user.uid,
+                                                             nickname: userName,
+                                                             profileImage: result.user.photoURL?.absoluteString ?? "",
+                                                             apnsToken: "애플",
+                                                             loginPlatform: .apple)
+                        
+                        print(#fileID, #function, #line, "- tempUSer ")
+                        dump(AuthService.shared.tempUser)
+                        
+                    }
+                    catch {
+                        print("Error authenticating: \(error.localizedDescription)")
+                    }
+                }
+            }
+        }
+    }
+    
+    func deleteAppleAccount() async {
+        guard let user = Auth.auth().currentUser else {
+            print("현재 로그인 유저 없음")
+            return
+        }
+        guard let lastSignInDate = user.metadata.lastSignInDate else { return }
+        let needsReauth = !lastSignInDate.isWithinPast(minutes: 5)  // 지난 5분동안 로그인했는지 확인
+        let needsTokenRevocation = user.providerData.contains { $0.providerID == "apple.com" }
+        
+        do {
+            // 재인증 흐름을 위해 사용자에게 재로그인하도록 요청하는 코드
+            if needsReauth || needsTokenRevocation {
+                let signInWithApple = SignInWithApple()
+                let appleIDCredential = try await signInWithApple()
+                
+                guard let appleIDToken = appleIDCredential.identityToken else {
+                    print("Unable to fetdch identify token.")
+                    return
+                }
+                guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+                    print("Unable to serialise token string from data: \(appleIDToken.debugDescription)")
+                    return
+                }
+                
+                // 사용자가 로그인하면 공급자로부터 반환된 정보를 사용하여 새로운 credential을 만듦
+                let nonce = AppleAuthService.shared.randomNonceString()
+                let credential = OAuthProvider.credential(withProviderID: "apple.com",
+                                                          idToken: idTokenString,
+                                                          rawNonce: nonce)
+                
+                if needsReauth {  // 사용자가 제공한 자격 증명으로, 서버에서 유효성을 검사
+                    try await user.reauthenticate(with: credential)
+                }
+                if needsTokenRevocation {
+                    guard let authorizationCode = appleIDCredential.authorizationCode else { return }
+                    guard let authCodeString = String(data: authorizationCode, encoding: .utf8) else { return }
+                    
+                    // 사용자가 다시 로그인하면, 인증 코드를 사용하여 auth.revokeToken을 호출할 수 있음
+                    // Firebase는 사용자와 연결된 acess Token을 검색한 다음 Apple의 revokeToken endpoint를 호출하여 토큰을 취소
+                    try await Auth.auth().revokeToken(withAuthorizationCode: authCodeString)
+                    print("revokeToken 성공")
+                }
+            }
+            
+            try await user.delete()  // user.delete를 비동기식으로 호출
+        } catch {  // 오류 처리 코드
+            print(#fileID, #function, #line, "- \(error.localizedDescription)")
+        }
+    }
+
+}
+
+// MARK: - User 이름을 반환하기 위해
 extension ASAuthorizationAppleIDCredential {
     func displayName() -> String {
         return [self.fullName?.givenName, self.fullName?.familyName]
-            .compactMap( {$0})
-            .joined(separator: " ")
+            .compactMap({$0})
+            .joined()
     }
 }
 
 final class SignInWithApple: NSObject, ASAuthorizationControllerDelegate {
-    
     private var continuation : CheckedContinuation<ASAuthorizationAppleIDCredential, Error>?
     
     func callAsFunction() async throws -> ASAuthorizationAppleIDCredential {
@@ -362,40 +237,6 @@ final class SignInWithApple: NSObject, ASAuthorizationControllerDelegate {
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         if case let appleIDCredential as ASAuthorizationAppleIDCredential = authorization.credential {
             continuation?.resume(returning: appleIDCredential)
-        }
-    }
-    
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        continuation?.resume(throwing: error)
-    }
-}
-
-final class TokenRevocationHelper: NSObject, ASAuthorizationControllerDelegate {
-    
-    private var continuation : CheckedContinuation<Void, Error>?
-    
-    func revokeToken() async throws {
-        try await withCheckedThrowingContinuation { continuation in
-            self.continuation = continuation
-            let appleIDProvider = ASAuthorizationAppleIDProvider()
-            let request = appleIDProvider.createRequest()
-            request.requestedScopes = [.fullName, .email]
-            
-            let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-            authorizationController.delegate = self
-            authorizationController.performRequests()
-        }
-    }
-    
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-        if case let appleIDCredential as ASAuthorizationAppleIDCredential = authorization.credential {
-            guard let authorizationCode = appleIDCredential.authorizationCode else { return }
-            guard let authCodeString = String(data: authorizationCode, encoding: .utf8) else { return }
-            
-            Task {
-                try await Auth.auth().revokeToken(withAuthorizationCode: authCodeString)
-                continuation?.resume()
-            }
         }
     }
     
