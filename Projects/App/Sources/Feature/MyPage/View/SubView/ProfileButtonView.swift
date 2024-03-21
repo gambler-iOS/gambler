@@ -10,15 +10,17 @@ import SwiftUI
 
 struct ProfileButtonView: View {
     let text: String
-    let size: CGFloat
+    let width: CGFloat
+    let height: CGFloat
     let isDefaultButton: Bool
+    let isDisabled: Bool?
     
     var body: some View {
         if isDefaultButton {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(Color.gray200)
                 .foregroundStyle(Color.white)
-                .frame(width: size, height: 30)
+                .frame(width: width, height: height)
                 .overlay {
                     Text(text)
                         .font(.body2M)
@@ -26,8 +28,8 @@ struct ProfileButtonView: View {
                 }
         } else {
             RoundedRectangle(cornerRadius: 8)
-                .foregroundStyle(Color.primaryDefault)
-                .frame(width: size, height: 30)
+                .foregroundStyle(isDisabled ?? false ? Color.primaryDisabled : Color.primaryDefault)
+                .frame(width: width, height: height)
                 .overlay {
                     Text(text)
                         .font(.body2M)
@@ -38,5 +40,5 @@ struct ProfileButtonView: View {
 }
 
 #Preview {
-    ProfileButtonView(text: "연결 해제", size: 84, isDefaultButton: true)
+    ProfileButtonView(text: "연결 해제", width: 84, height: 30, isDefaultButton: true, isDisabled: true)
 }

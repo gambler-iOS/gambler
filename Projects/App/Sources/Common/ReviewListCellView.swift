@@ -14,7 +14,6 @@ struct ReviewListCellView: View {
    
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
-            
             if let firstImageURL = review.reviewImage?.first, let image = URL(string: firstImageURL) {
                 KFImage(image)
                     .resizable()
@@ -34,7 +33,7 @@ struct ReviewListCellView: View {
             .padding(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 0))
             
         }
-        .frame(height: 90)
+        .frame(width: 252, height: 90)
         .padding(.horizontal, 8)
         .background(Color.gray50)
         .cornerRadius(8)
@@ -44,5 +43,5 @@ struct ReviewListCellView: View {
 }
 
 #Preview {
-    ReviewListCellView(review: Review.dummyGameReview)
+    ReviewListCellView(review: Review.dummyShopReview)
 }

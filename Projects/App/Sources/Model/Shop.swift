@@ -42,20 +42,24 @@ struct Shop: AvailableFirebase, AvailableAggregateReview, Hashable {
     static let dummyShop = Shop(
         id: UUID().uuidString,
         shopName: "레드버튼 강남점",
-        shopAddress: "address",
+        shopAddress: "서울특별시 강남구 역삼동 814-5 1층",
         shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
         location: GeoPoint(latitude: 120.1, longitude: 140), 
         shopCountry: "서욽특별시 삼성동",
         shopPhoneNumber: "010-5555",
         cost: nil,
-        menu: ["커피": 1000],
-        openingHour: ["10시"],
+        menu: ["커피": 1000, "이용금액(1시간)": 3000],
+        openingHour: ["월요일: 휴무일","화요일: 오후 1:00~11:00","수요일: 오후 1:00~11:00","목요일: 오후 1:00~11:00","금요일: 오후 1:00 ~ 오전 12:00","토요일: 오후 1:00 ~ 오전 12:00","일요일: 오후 1:00~11:00"],
         amenity: ["주차"],
-        shopDetailImage: ["detailImage"],
+        shopDetailImage: [
+            "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
+            "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
+            "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg"
+        ],
         createdDate: Date(),
         reviewCount: 3,
         reviewRatingAverage: 3.5)
-  
+    
 }
 
 struct GeoPoint: Codable, Hashable {
@@ -65,6 +69,7 @@ struct GeoPoint: Codable, Hashable {
     static let defaultPoint = GeoPoint(latitude: 37.402001, longitude: 127.108678)
 }
 
+/// Picture Model
 struct ImageItem: Identifiable, Codable {
     var id: UUID = .init()
     var image: String
@@ -77,10 +82,14 @@ extension Shop {
              shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
              location: GeoPoint(latitude: 37.395815438352216, longitude: 127.1122214051127), 
              shopCountry: "경기도 성남시",
-             shopPhoneNumber: "010-1111", menu: ["커피": 1000],
+             shopPhoneNumber: "010-1111",
+             menu: ["커피": 1000],
              openingHour: ["10시"],
              amenity: ["주차"],
-             shopDetailImage: ["detailImage"],
+             shopDetailImage: [
+                "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
+                "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
+                "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg"],
              createdDate: Date(),
              reviewCount: 3,
              reviewRatingAverage: 3.5),
@@ -88,8 +97,8 @@ extension Shop {
              shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
              location: GeoPoint(latitude: 37.39568857499883, longitude: 127.11297786474694), 
              shopCountry: "경기도 성남시",
-             shopPhoneNumber: "010-2222", menu: ["커피": 1000],
-             openingHour: ["10시"],
+             shopPhoneNumber: "010-2222", 
+             menu: ["커피": 1000],
              amenity: ["주차"],
              shopDetailImage: ["detailImage"],
              createdDate: Date(),

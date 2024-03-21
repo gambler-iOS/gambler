@@ -156,5 +156,26 @@ final class StorageManager {
         }
     }
     
-    
+    /// 여러 Data Type이미지를 Storage에 올린 후 url 반환
+    /// - Parameter images: [UIImage]
+    /// - Returns: 이미지 올리기에 성공하면 url 반환, 실패 시 nil 반환
+    static func uploadImages(_ images: [Data], folder: StoragePath) async throws -> [String]? {
+        var imageUrls: [String] = []
+        
+        for imageData in images {
+            let fileName = UUID().uuidString
+            let storageRef = Storage.storage().reference(withPath: "/\(folder)/\(fileName)")
+            
+            do {
+                _ = try await storageRef.putDataAsync(imageData)
+                let url = try await storageRef.downloadURL()
+                let imageUrl = url.absoluteString
+                imageUrls.append(imageUrl)
+            } catch {
+                print("failed to upload image with error \(error)")
+                return nil
+            }
+        }
+        return imageUrls
+    }
 }

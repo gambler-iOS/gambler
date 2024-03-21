@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct HomeShopListView: View {
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
     let title: String
     var shops: [Shop]
     
@@ -16,6 +17,9 @@ struct HomeShopListView: View {
         ScrollView {
             VStack(spacing: 24) {
                 SectionHeaderView(title: title)
+                    .onTapGesture {
+                        appNavigationPath.homeViewPath.append(title)
+                    }
                 
                 ForEach(shops) { shop in
                     NavigationLink(value: shop) {

@@ -9,6 +9,10 @@
 import SwiftUI
 
 final class ReviewViewModel: ObservableObject {
+    private let firebaseManager = FirebaseManager.shared
+    private let collectionName: String = AppConstants.CollectionName.reviews
+    
+    @Published var reviews: [Review] = []
     
     @Published var dummyReviews: [Review] = []
     @Published var dummyShops: [Shop] = []
@@ -17,6 +21,27 @@ final class ReviewViewModel: ObservableObject {
         generateDummyData()
     }
     
+    @MainActor
+    func addData(review: Review) async {
+        do {
+            try firebaseManager.createData(collectionName: collectionName, data: review)
+        } catch {
+            print("Error add \(collectionName) : \(error.localizedDescription)")
+        }
+    }
+    
+    @MainActor
+    func fetchData() async {
+        var tempReviews: [Review] = []
+        reviews.removeAll()
+        do {
+            tempReviews = try await firebaseManager.fetchAllData(collectionName: collectionName)
+        } catch {
+            print("Error fetching \(collectionName) : \(error.localizedDescription)")
+        }
+        self.reviews = tempReviews
+    }
+
     private func generateDummyData() {
         for _ in 1...7 {
             dummyReviews.append(Review(id: UUID().uuidString,
