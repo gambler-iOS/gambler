@@ -52,6 +52,7 @@ struct MapView: View {
         )
         .edgesIgnoringSafeArea(.top)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        
     }
     
     private var showMapButton: some View {

@@ -15,15 +15,20 @@ struct FloatingView: View {
     @Binding var userLocate: GeoPoint
     
     var body: some View {
-        VStack(spacing: 0) {
-            FloatingCellView(shop: selectedShop, likeShopIdArray: ["1"])
-                .padding(16)
-            showListButtonView
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
-        }
-        .background(Color.white)
-        .cornerRadius(16)
+       
+            VStack(spacing: 0) {
+                NavigationLink(destination: ShopDetailInfoView(shop: selectedShop)) {
+                    FloatingCellView(shop: selectedShop, likeShopIdArray: ["1"])
+                        .padding(16)
+                }
+                
+                showListButtonView
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 16)
+            }
+            .background(Color.white)
+            .cornerRadius(16)
+        
     }
     
     private var showListButtonView: some View {

@@ -91,42 +91,6 @@ final class FirebaseManager {
         return result
     }
     
-    /// 맵
-    
-    func fetchWhereDataInArea<T: AvailableFirebase>(collectionName: String, field: String, position: GeoPoint) async throws -> [T] {
-        let boundary = 10
-        let collectionRef = db.collection(collectionName)
-        let querySnapshot = try await collectionRef.getDocuments()
-        var filteredDocuments: [QueryDocumentSnapshot] = []
-        
-        for document in querySnapshot.documents {
-            let documentData = document.data()
-            let locationData = documentData["location"] as? [String: Any]
-            let tempLatitude = locationData?["latitude"] as? Any
-            let tempLongitude = locationData?["longitude"] as? Any
-            
-            if let latitude = tempLatitude, let longitude = tempLongitude {
-                let distance = calculateDistanceBetweenPoints(point1: position,
-                                                              point2: GeoPoint(latitude: latitude as? Double ?? 0.0,
-                                                                               longitude: longitude as? Double ?? 0.0))
-                if boundary >= Int(distance) {
-                    filteredDocuments.append(document)
-                    print("여긴 들어간 주소들 : \(documentData["shopAddress"] ?? "샵주소 모름")")
-                }
-            }
-        }
-        let result = filteredDocuments.compactMap { try? $0.data(as: T.self) }
-        return result
-    }
-    
-    
-    // print("위치 \(tempLatitude), \(tempLongitude))")
-    // print(documentData["shopName"] ?? "샵이름 못불러옴")
-    // print("진입이 되긴 됐어?")
-    // print("진입이 되긴 됐어?")
-    // print(documentData)
-    
-    
     /// 지정한 collection 에서 지정한 field 와 입력한 배열 데이터 중 한 개 이상 일치하는 데이터들을 fetch
     /// - Parameters:
     ///   - collectionName: FirebaseStore 에서 지정된 Collection 이름
@@ -190,14 +154,5 @@ final class FirebaseManager {
     /// ```
     func deleteData(collectionName: String, byId: String) async throws {
             try await db.collection(collectionName).document(byId).delete()
-    }
-}
-
-extension FirebaseManager {
-    func calculateDistanceBetweenPoints(point1: GeoPoint, point2: GeoPoint) -> CLLocationDistance {
-        let location1 = CLLocation(latitude: point1.latitude, longitude: point1.longitude)
-        let location2 = CLLocation(latitude: point2.latitude, longitude: point2.longitude)
-        
-        return location1.distance(from: location2)/1000
     }
 }
