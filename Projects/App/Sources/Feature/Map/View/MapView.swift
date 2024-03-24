@@ -25,15 +25,18 @@ struct MapView: View {
     
     var body: some View {
         NavigationStack(path: $appNavigationPath.mapViewPath) {
-            KakaoMapView(userLocate: $userLocate, selectedShop: $selectedShop,
+            KakaoMapView(mapViewModel: mapViewModel,
+                         userLocate: $userLocate,
+                         selectedShop: $selectedShop,
                          draw: $draw,
                          isShowingSheet: $isShowingSheet,
-                         isLoading: $isLoading,
-                         mapViewModel: mapViewModel)
+                         isLoading: $isLoading)
             .overlay {
                 if !isShowingSheet && !isLoading {
-                    FloatingView(mapViewModel: mapViewModel, selectedShop: $selectedShop,
-                                 isShowingSheet: $isShowingSheet, userLocate: $userLocate)
+                    FloatingView(mapViewModel: mapViewModel, 
+                                 selectedShop: $selectedShop,
+                                 isShowingSheet: $isShowingSheet, 
+                                 userLocate: $userLocate)
                     .frame(width: 327, height: 182)
                     .offset(y: 250)
                 }
@@ -92,7 +95,11 @@ struct MapView: View {
 
 #Preview {
     NavigationStack {
-        KakaoMapView(userLocate: .constant(GeoPoint.defaultPoint), selectedShop: .constant(Shop.dummyShop),
-                     draw: .constant(true), isShowingSheet: .constant(false), isLoading: .constant(false), mapViewModel: MapViewModel())
+        KakaoMapView(mapViewModel: MapViewModel(),
+                     userLocate: .constant(GeoPoint.defaultPoint),
+                     selectedShop: .constant(Shop.dummyShop),
+                     draw: .constant(true), 
+                     isShowingSheet: .constant(false),
+                     isLoading: .constant(false))
     }
 }

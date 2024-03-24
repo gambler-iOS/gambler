@@ -11,12 +11,13 @@ import KakaoMapsSDK
 import CoreLocation
 
 struct KakaoMapView: UIViewRepresentable {
+    @ObservedObject var mapViewModel: MapViewModel
+    
     @Binding var userLocate: GeoPoint
     @Binding var selectedShop: Shop
     @Binding var draw: Bool
     @Binding var isShowingSheet: Bool
     @Binding var isLoading: Bool
-    @ObservedObject var mapViewModel: MapViewModel
     
     func makeUIView(context: Self.Context) -> KMViewContainer {
         let view: KMViewContainer = KMViewContainer()
@@ -127,8 +128,11 @@ struct KakaoMapView: UIViewRepresentable {
         func fetchAreaInShopList() {
             Task {
                 if let mapView = controller?.getView("mapview") as? KakaoMap {
-                    let m = mapView.getPosition(CGPoint(x: mapView.viewRect.width * 0.5, y: mapView.viewRect.height * 0.5))
-                    let mapCountry = await mapViewModel.getCountry(mapPoint: GeoPoint(latitude: m.wgsCoord.latitude, longitude: m.wgsCoord.longitude))
+                    let m = mapView.getPosition(CGPoint(x: mapView.viewRect.width * 0.5, 
+                                                        y: mapView.viewRect.height * 0.5))
+                    let mapCountry = await mapViewModel
+                        .getCountry(mapPoint: GeoPoint(latitude: m.wgsCoord.latitude, 
+                                                       longitude: m.wgsCoord.longitude))
                     print("포인트: \(GeoPoint(latitude: m.wgsCoord.latitude, longitude: m.wgsCoord.longitude))")
                     print("현재 주소: \(mapCountry)")
                     await mapViewModel.fetchCountryData(country: mapCountry)
