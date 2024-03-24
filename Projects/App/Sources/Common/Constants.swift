@@ -67,6 +67,7 @@ enum AppConstants {
         static let shops: String = "Shops"
         static let reviews: String = "Reviews"
         static let users: String = "Users"
+        static let complains: String = "Complains"
     }
     
     enum PostType {
@@ -74,6 +75,9 @@ enum AppConstants {
         case game
     }
 }
+
+
+
 
 extension AppConstants.MyPageFilter: Sequence {
     func makeIterator() -> IndexingIterator<[AppConstants.MyPageFilter]> {

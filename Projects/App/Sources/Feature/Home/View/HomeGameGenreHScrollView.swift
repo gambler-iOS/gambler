@@ -8,11 +8,11 @@
 
 import SwiftUI
 
-struct HomeGameCategoryHScrollView: View {
+struct HomeGameGenreHScrollView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     let title: String
-    let categoryNames: [GameTheme]
-    
+    let genres: [GameGenre]
+
     var body: some View {
         VStack(spacing: 24) {
             SectionHeaderView(title: title)
@@ -23,9 +23,9 @@ struct HomeGameCategoryHScrollView: View {
             
             ScrollView(.horizontal) {
                 HStack(spacing: 16) {
-                    ForEach(categoryNames, id: \.self) { categotyName in
-                        NavigationLink(value: categotyName) {
-                            GameCategoryCellView(imageUrl: categotyName.imageUrl, name: categotyName.koreanName)
+                    ForEach(genres, id: \.self) { genre in
+                        NavigationLink(value: genre) {
+                            GameGenreCellView(genre: genre)
                         }
                     }
                 }
@@ -38,6 +38,6 @@ struct HomeGameCategoryHScrollView: View {
 }
 
 #Preview {
-    HomeGameCategoryHScrollView(title: "종류별 Best", categoryNames: [.fantasy, .bluffing])
+    HomeGameGenreHScrollView(title: "종류별 Best", genres: [.fantasy, .bluffing])
         .environmentObject(AppNavigationPath())
 }

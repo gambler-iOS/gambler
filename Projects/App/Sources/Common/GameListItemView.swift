@@ -58,7 +58,7 @@ struct GameListItemView: View {
                             ChipView(label: label, size: .small)
                         }
                     }
-//                    Spacer()
+                    Spacer()
                 }
                 .foregroundStyle(.black)
             }

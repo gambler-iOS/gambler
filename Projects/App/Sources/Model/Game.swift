@@ -60,14 +60,14 @@ struct GameIntroduction: Codable, Hashable {
     let minPlayerCount: Int
     let maxPlayerCount: Int
     let playTime: Int
-    let genre: [GameTheme]
+    let genre: [GameGenre]
 }
 
 /// 예제: 열거형 사용
 /// let theme: GameTheme = .fantasy
 /// print(theme.rawValue)      // 출력: "Fantasy"
 /// print(theme.koreanName)    // 출력: "판타지"
-enum GameTheme: String, Codable, CaseIterable {
+enum GameGenre: String, Codable, CaseIterable {
     case ageOfReason = "Age of Reason"
     case renaissance = "Renaissance"
     case fantasy = "Fantasy"
@@ -203,77 +203,6 @@ enum GameTheme: String, Codable, CaseIterable {
         case .comicBookStrip: return "만화 책 / 만화"
         case .zombies: return "좀비"
         case .realTime: return "실시간"
-        }
-    }
-    
-    var imageUrl: String {
-        switch self {
-        case .ageOfReason: return ""
-        case .renaissance: return ""
-        case .fantasy: return ""
-        case .abstractStrategy: return ""
-        case .mythology: return ""
-        case .moviesTVRadioTheme: return ""
-        case .worldWarII: return ""
-        case .math: return ""
-        case .novelBased: return ""
-        case .civilization: return ""
-        case .medieval: return ""
-        case .miniatures: return ""
-        case .modernWarfare: return ""
-        case .maze: return ""
-        case .bluffing: return ""
-        case .horror: return ""
-        case .dice: return ""
-        case .wordGame: return ""
-        case .animals: return ""
-        case .territoryBuilding: return ""
-        case .deduction: return ""
-        case .civilWar: return ""
-        case .cardGame: return ""
-        case .memory: return ""
-        case .farming: return ""
-        case .fighting: return ""
-        case .puzzle: return ""
-        case .scienceFiction: return ""
-        case .nautical: return ""
-        case .environmental: return ""
-        case .medical: return ""
-        case .arabian: return ""
-        case .matureAdult: return ""
-        case .childrensGame: return ""
-        case .spaceExploration: return ""
-        case .collectibleComponents: return ""
-        case .educational: return ""
-        case .postNapoleonic: return ""
-        case .wargame: return ""
-        case .political: return ""
-        case .travel: return ""
-        case .negotiation: return ""
-        case .humor: return ""
-        case .ancient: return ""
-        case .racing: return ""
-        case .religious: return ""
-        case .economic: return ""
-        case .transportation: return ""
-        case .trains: return ""
-        case .prehistoric: return ""
-        case .murderMystery: return ""
-        case .aviationFlight: return ""
-        case .cityBuilding: return ""
-        case .partyGame: return ""
-        case .pirates: return ""
-        case .printPlay: return ""
-        case .spiesSecretAgents: return ""
-        case .exploration: return ""
-        case .number: return ""
-        case .adventure: return ""
-        case .americanWest: return ""
-        case .expansionForBaseGame: return ""
-        case .industryManufacturing: return ""
-        case .comicBookStrip: return ""
-        case .zombies: return ""
-        case .realTime: return ""
         }
     }
 }

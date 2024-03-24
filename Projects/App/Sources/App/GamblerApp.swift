@@ -22,6 +22,8 @@ struct GamblerApp: App {
         let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_APP_KEY"] ?? ""
         SDKInitializer.InitSDK(appKey: "\(kakaoAppKey)")
         KakaoSDK.initSDK(appKey: kakaoAppKey as? String ?? "")
+        
+      UITabBar.appearance().scrollEdgeAppearance = .init()
     }
     
     var sharedModelContainer: ModelContainer = {

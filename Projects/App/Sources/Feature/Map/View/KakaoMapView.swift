@@ -58,6 +58,8 @@ struct KakaoMapView: UIViewRepresentable {
         var cameraStartHandler: DisposableEventHandler?
         var locationPoiID: String = ""
         var recentPoiId: String?
+        var tapPoiId: String = ""
+        var firstTap: Bool = true
         
         init (userLocate: Binding<GeoPoint>, isShowingSheet: Binding<Bool>,
               tappedShop: Binding<Shop>, isLoading: Binding<Bool>) {
@@ -79,10 +81,6 @@ struct KakaoMapView: UIViewRepresentable {
             let mapviewInfo: MapviewInfo =
             MapviewInfo(viewName: "mapview", viewInfoName: "map", defaultPosition: defaultPosition)
             controller?.addView(mapviewInfo)
-            /*if controller?.addView(mapviewInfo) == Result.OK {
-                settingMap()
-                isLoading  = false
-            }*/
         }
         
         func addViewSucceeded(_ viewName: String, viewInfoName: String) {
@@ -92,6 +90,10 @@ struct KakaoMapView: UIViewRepresentable {
         
         func settingMap() {
             if let mapView = controller?.getView("mapview") as? KakaoMap {
+                mapView.setMargins(UIEdgeInsets(top: 0, left: 0, bottom: UIScreen.main.bounds.height * 0.2 , right: 0))
+                mapView.setLogoPosition(
+                    origin: GuiAlignment(vAlign: .bottom, hAlign: .right),
+                    position: CGPoint(x: 10.0, y: -UIScreen.main.bounds.height * 0.2 + 20))
                 cameraStartHandler = mapView
                     .addCameraWillMovedEventHandler(target: self, handler: KakaoMapCoordinator.cameraWillMove)
                 cameraStoppedHandler = mapView
@@ -102,8 +104,7 @@ struct KakaoMapView: UIViewRepresentable {
                 createUserLocationPoi()
                 createPoisOnMap()
                 createSpriteGUI()
-                moveCameraToFocus(MapPoint(longitude: userLocate.longitude,
-                                           latitude: userLocate.latitude))
+                moveCameraToFocus(MapPoint(longitude: userLocate.longitude,  latitude: userLocate.latitude))
             }
         }
         

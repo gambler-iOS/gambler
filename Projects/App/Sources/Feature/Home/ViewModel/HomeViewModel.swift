@@ -13,7 +13,7 @@ final class HomeViewModel: ObservableObject {
     @Published var popularShops: [Shop] = []
     @Published var newGames: [Game] = []
     @Published var newShops: [Shop] = []
-    @Published var popularGenre: [GameTheme] = []
+    @Published var popularGenre: [GameGenre] = []
  
     private let firebaseManager = FirebaseManager.shared
     
@@ -50,7 +50,7 @@ final class HomeViewModel: ObservableObject {
         }
     }
     
-    func getPopularGenre() -> [GameTheme] {
+    func getPopularGenre() -> [GameGenre] {
         return Array(Set(popularGames.flatMap { game in
             game.gameIntroduction.genre
         }))
