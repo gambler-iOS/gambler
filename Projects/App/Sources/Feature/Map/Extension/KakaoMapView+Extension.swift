@@ -104,7 +104,6 @@ extension KakaoMapView.KakaoMapCoordinator {
         if let mapView = controller?.getView("mapview") as? KakaoMap {
             let manager = mapView.getLabelManager()
             let layer = manager.getLabelLayer(layerID: "PoiLayer")
-            var markerDataNumber: Int = 0
             for markerData in mapViewModel.fetchNewShopList {
                 let poiOption = PoiOptions(styleID: "shopPoiIconStyle")
                 poiOption.rank = 0
@@ -117,11 +116,8 @@ extension KakaoMapView.KakaoMapCoordinator {
                 marker?.userObject = markerData as AnyObject
                 _ = marker?.addPoiTappedEventHandler(target: self,
                                                          handler: KakaoMapView.KakaoMapCoordinator.poiDidTapped)
-                //print("[Action: create Poi] markerData = \(markerData)")
                 marker?.show()
-                markerDataNumber += 1
             }
-            print("마커 찍힌 갯수 \(markerDataNumber)")
         }
     }
     

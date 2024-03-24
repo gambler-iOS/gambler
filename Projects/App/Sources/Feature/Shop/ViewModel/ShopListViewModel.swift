@@ -50,5 +50,4 @@ enum ListTypeEnum: String {
     case normal = ""
     case popular = "인기 매장"
     case newly = "신규 매장"
-   
 }

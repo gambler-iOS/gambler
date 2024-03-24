@@ -14,13 +14,14 @@ import CoreLocation
 struct MapView: View {
 
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
-    
     @StateObject private var mapViewModel = MapViewModel()
-    @Binding var draw: Bool
-    @State private var isLoading: Bool = true
-    @State private var isShowingSheet: Bool = false
+    
     @State private var selectedShop: Shop = Shop.dummyShop
     @State private var userLocate: GeoPoint = GeoPoint.defaultPoint
+    @State private var isLoading: Bool = true
+    @State private var isShowingSheet: Bool = false
+    
+    @Binding var draw: Bool
     
     var body: some View {
         NavigationStack(path: $appNavigationPath.mapViewPath) {
@@ -54,12 +55,10 @@ struct MapView: View {
                         }
                 }
             }
-            .overlay(
-                safetyAreaTopScreen, alignment: .top
-            )
+            .overlay(safetyAreaTopScreen, alignment: .top)
             .task {
                 if selectedShop == Shop.dummyShop {
-                    if let newShop = await mapViewModel.fetchRandomShop() {
+                    if let newShop = await mapViewModel.fetchOneShop() {
                         selectedShop = newShop
                     }
                 }
