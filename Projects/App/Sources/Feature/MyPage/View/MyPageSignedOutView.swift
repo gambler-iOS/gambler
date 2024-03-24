@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct MyPageSignedOutView: View {
-    @EnvironmentObject var loginViewModel: LoginViewModel
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var navPathFinder: NavigationPathFinder
     //    @EnvironmentObject var appNavigationPath: AppNavigationPath
     

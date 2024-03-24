@@ -13,7 +13,7 @@ import KakaoSDKCommon
 
 struct MyPageView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
-    @EnvironmentObject var loginViewModel: LoginViewModel
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     
     @State private var isShowingToast: Bool = false
 #warning("로그인 플랫폼 로직 구현 필요")
