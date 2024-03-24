@@ -38,14 +38,16 @@ final class MapViewModel: ObservableObject {
         }
     }
     
-    func fetchOneShop() async -> Shop? {
-        var randomShop: Shop?
+    func fetchOneShop() async -> Shop {
+        var tempShop: Shop = Shop.dummyShop
         do {
-            randomShop = try await firebaseManager.fetchOneData(collectionName: collectionName, byId: "1007580995")
+            if let data: Shop = try await firebaseManager.fetchOneAnyData(collectionName: collectionName) {
+                tempShop = data
+            }
         } catch {
-            print("Error fetchRandomShop : \(error.localizedDescription)")
+            print("Error fetching GameInfo GameDetailViewModel : \(error.localizedDescription)")
         }
-        return randomShop
+        return tempShop
     }
     
     @MainActor

@@ -61,9 +61,7 @@ struct MapView: View {
             .overlay(safetyAreaTopScreen, alignment: .top)
             .task {
                 if selectedShop == Shop.dummyShop {
-                    if let newShop = await mapViewModel.fetchOneShop() {
-                        selectedShop = newShop
-                    }
+                    selectedShop = await mapViewModel.fetchOneShop()
                 }
             }
             .edgesIgnoringSafeArea(.top)
