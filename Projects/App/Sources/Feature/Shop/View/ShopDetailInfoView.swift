@@ -44,7 +44,7 @@ struct ShopDetailInfoView: View {
                     .padding(.horizontal, 24)
                     .padding(.top, 16)
                 
-                ItemButtonSetView(type: .shop)
+                ItemButtonSetView(type: .shop, shop: shop)
                     .padding(.horizontal, 24)
                     .padding(.top, 32)
                 

@@ -55,7 +55,7 @@ struct ItemButtonSetView: View {
     }
     
     private func tappedCall() {
-        if let phoneURL = URL(string: "tel://\(String(describing: shop?.shopPhoneNumber))"),
+        if let phoneURL = URL(string: "tel://\(shop?.shopPhoneNumber ?? "번호 정보 없음"))"),
            UIApplication.shared.canOpenURL(phoneURL) {
             UIApplication.shared.open(phoneURL, options: [:], completionHandler: nil)
         }
