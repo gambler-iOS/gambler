@@ -98,7 +98,11 @@ extension KakaoMapView.KakaoMapCoordinator {
               marker?.show()
           }
       }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 2ee6278b09acc60f03d43228569faa49daa229e3
     func createPoisOnMap() {
         if let mapView = controller?.getView("mapview") as? KakaoMap {
             let manager = mapView.getLabelManager()
