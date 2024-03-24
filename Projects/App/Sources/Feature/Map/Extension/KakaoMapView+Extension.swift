@@ -105,7 +105,7 @@ extension KakaoMapView.KakaoMapCoordinator {
             let manager = mapView.getLabelManager()
             let layer = manager.getLabelLayer(layerID: "PoiLayer")
             var markerDataNumber: Int = 0
-            for markerData in mapViewModel.fetchShopList {
+            for markerData in mapViewModel.fetchNewShopList {
                 let poiOption = PoiOptions(styleID: "shopPoiIconStyle")
                 poiOption.rank = 0
                 poiOption.transformType = .decal

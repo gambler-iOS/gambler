@@ -12,17 +12,20 @@ import KakaoMapsSDK
 import CoreLocation
 
 struct MapView: View {
-    // 임시
+
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    
+    @StateObject private var mapViewModel = MapViewModel()
     @Binding var draw: Bool
     @State private var isLoading: Bool = true
     @State private var isShowingSheet: Bool = false
     @State private var selectedShop: Shop = Shop.dummyShop
     @State private var userLocate: GeoPoint = GeoPoint.defaultPoint
-    @StateObject private var mapViewModel = MapViewModel()
     
     var body: some View {
+        NavigationStack(path: $appNavigationPath.mapViewPath) {
             KakaoMapView(userLocate: $userLocate, selectedShop: $selectedShop,
-                         draw: $draw, 
+                         draw: $draw,
                          isShowingSheet: $isShowingSheet,
                          isLoading: $isLoading,
                          mapViewModel: mapViewModel)
@@ -56,6 +59,7 @@ struct MapView: View {
             )
             .edgesIgnoringSafeArea(.top)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
     }
     
     private var showMapButton: some View {

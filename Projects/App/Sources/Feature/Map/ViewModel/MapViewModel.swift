@@ -13,34 +13,40 @@ final class MapViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
     private let collectionName: String = AppConstants.CollectionName.shops
     
-    @Published var fetchShopList: [Shop] = []
+    @Published var fetchNewShopList: [Shop] = []
     @Published var fetchedShopList: [Shop] = []
-    @Published var areaInShopList: [Shop] = []
     @Published var fetchedCountry: [String] = []
+    @Published var areaInShopList: [Shop] = []
     
   
     @MainActor
     func fetchCountryData(country: String) async {
-        fetchShopList.removeAll()
+        fetchNewShopList.removeAll()
+        
         guard !fetchedCountry.contains(country) else { return }
         do {
             print("fetchMapArea, 검색할 주소 : \(country)")
-            fetchShopList = try await firebaseManager.fetchWhereIsEqualToData(collectionName: collectionName, 
+            fetchNewShopList = try await firebaseManager.fetchWhereIsEqualToData(collectionName: collectionName, 
                                                                               field: "shopCountry",
                                                                               isEqualTo: country)
             fetchedCountry.append(country)
-            fetchedShopList += fetchShopList
-            print("가져온 갯수: \(fetchShopList.count)")
-            print("markPlace: \(fetchedCountry)")
+            fetchedShopList += fetchNewShopList
+            print("가져온 갯수: \(fetchNewShopList.count)")
+            print("업데이트 된 지역 이름: \(fetchedCountry)")
         } catch {
-            print("Error add MapViewModel : \(error.localizedDescription)")
+            print("Error fetchCountryData : \(error.localizedDescription)")
         }
+    }
+    
+    @MainActor
+    func filterShopsByCountry(country: String) async {
+        areaInShopList = fetchedShopList.filter { $0.shopCountry == country }
     }
     
     @MainActor
     func fetchUserAreaShopList(userPoint: GeoPoint) async {
         let boundary: Double = 10
-        areaInShopList = []
+        areaInShopList.removeAll()
         
         for shop in fetchedShopList
         where boundary >= calculateDistanceBetweenPoints(point1: userPoint,
@@ -52,6 +58,7 @@ final class MapViewModel: ObservableObject {
 }
 
 extension MapViewModel {
+    
     func getCountry(mapPoint: GeoPoint) async -> String {
         let Geocoder = CLGeocoder()
         let location = CLLocation(

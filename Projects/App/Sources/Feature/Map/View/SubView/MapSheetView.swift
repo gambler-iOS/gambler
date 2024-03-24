@@ -17,26 +17,29 @@ struct MapSheetView: View {
             Text("내 주변")
                 .bold()
                 .padding(20)
-            if mapViewModel.areaInShopList.isEmpty {
-                Text("주변에 매장이 존재하지 않아요!")
-            } else {
-                ScrollView {
-                    VStack {
+            ScrollView {
+                if mapViewModel.areaInShopList.isEmpty {
+                    Text("주변에 매장이 없어요.")
+                } else {
+                    VStack(spacing: 24) {
                         ForEach(mapViewModel.areaInShopList) { shop in
                             NavigationLink(value: shop) {
                                 ShopListCellView(shop: shop, likeShopIdArray: [])
-                                    .padding(.horizontal, 24)
                             }
-                            Divider()
-                                .padding(.vertical, 24)
+                            if shop != mapViewModel.areaInShopList.last {
+                                Divider()
+                            }
                         }
-                       
-                    }.padding(.vertical, 24)
+                    }.padding(.top, 24)
+                        .padding(.horizontal, 24)
                 }
             }
         }
         .task {
             await mapViewModel.fetchUserAreaShopList(userPoint: userLocate)
+        }
+        .navigationDestination(for: Shop.self) { shop in
+            ShopDetailInfoView(shop: shop)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.white)

@@ -34,7 +34,8 @@ struct FloatingView: View {
     private var showListButtonView: some View {
         Button(action: {
             Task {
-                await mapViewModel.fetchUserAreaShopList(userPoint: userLocate)
+                let userCountry = await mapViewModel.getCountry(mapPoint: userLocate)
+                await mapViewModel.filterShopsByCountry(country: userCountry)
                 withAnimation {
                     isShowingSheet = true
                 }
