@@ -122,10 +122,10 @@ struct KakaoMapView: UIViewRepresentable {
         }
         
         func onCameraStopped(_ param: CameraActionEventParam) {
-            fetchAreaInShopList()
+            fetchShopListInArea()
         }
         
-        func fetchAreaInShopList() {
+        func fetchShopListInArea() {
             Task {
                 if let mapView = controller?.getView("mapview") as? KakaoMap {
                     let m = mapView.getPosition(CGPoint(x: mapView.viewRect.width * 0.5, 
