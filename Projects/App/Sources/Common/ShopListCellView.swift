@@ -48,17 +48,13 @@ struct ShopListCellView: View {
                     }
 
                     ReviewRatingCellView(rating: shop.reviewRatingAverage)
-//                    
-//                    TagLayout {
-//                        ChipView(label: "👥 3 - 10명", size: .small)
-//                        ChipView(label: "🕛 10분 내외", size: .small)
-//                        ChipView(label: "📖 마피아", size: .small)
-//                        ChipView(label: "🟡 난이도 하", size: .small)
-//                    }
-//                    
-                    HStack {
-                        
-                    }
+                    
+                    Text("\(shop.shopAddress)")
+                        .font(.body2M)
+                        .foregroundStyle(Color.gray400)
+                        .frame(height: 42)
+                        .multilineTextAlignment(.leading)
+
                 }
                 .foregroundStyle(.black)
             }
