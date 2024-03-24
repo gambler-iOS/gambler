@@ -11,12 +11,8 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject private var homeViewModel: HomeViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
-    @ObservedObject private var eventBannerViewModel = EventBannerViewModel()
+    @StateObject private var eventBannerViewModel = EventBannerViewModel()
     @State private var path = NavigationPath()
-    @State private var size: CGSize = .zero
-    @State private var safeArea: EdgeInsets = EdgeInsets()
-    @State private var isBannerDisappear: Bool = false
-    @State private var headerColor: Color = .white
     
     var body: some View {
         NavigationStack(path: $appNavigationPath.homeViewPath) {
@@ -28,22 +24,22 @@ struct HomeView: View {
                     HomeShopListView(title: "인기 매장", shops: homeViewModel.popularShops)
                     BorderView()
                     HomeGameCardHScrollView(title: "흥미진진 신규게임", games: homeViewModel.newGames)
-                    HomeGameCategoryHScrollView(title: "종류별 Best", categoryNames: ["마피아","블러핑","가족게임","전략"])
+                    HomeGameGenreHScrollView(title: "종류별 Best 게임", genres: homeViewModel.popularGenre)
                     HomeShopListView(title: "신규 매장", shops: homeViewModel.newShops)
                         .padding(.bottom, 50)
                     
                 }
                 .overlay(alignment: .top, content: {
                     HeaderView()
-                        .onChange(of: isBannerDisappear) {
-                            self.headerColor = isBannerDisappear == true ? .black : .white
-                        }
                 })
                 .navigationDestination(for: Shop.self) { shop in
                     ShopDetailInfoView(shop: shop)
                 }
                 .navigationDestination(for: Game.self) { game in
                     GameDetailView(game: game)
+                }
+                .navigationDestination(for: GameGenre.self) { genre in
+                    GameListView(title: genre.koreanName)
                 }
                 .navigationDestination(for: String.self) { title in
                     if title.contains("게임") {
@@ -53,30 +49,19 @@ struct HomeView: View {
                         ShopListView(title: title)
                     }
                 }
+                .buttonStyle(CustomButtonStyle())
             }
             .coordinateSpace(name: "HOMESCROLL")
             .ignoresSafeArea(.all, edges: .top)
-            .onAppear {
-                getSizeAndSafeArea()
-            }
         }
-    }
-    
-    private func getSizeAndSafeArea() {
-        DispatchQueue.main.async {
-            size = UIScreen.main.bounds.size
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               let mainWindow = windowScene.windows.first {
-                safeArea = EdgeInsets(top: mainWindow.safeAreaInsets.top,
-                                       leading: mainWindow.safeAreaInsets.left,
-                                       bottom: mainWindow.safeAreaInsets.bottom,
-                                       trailing: mainWindow.safeAreaInsets.right)
-            }
+        .task {
+            await homeViewModel.fetchData()
+            await eventBannerViewModel.fetchData()
         }
     }
     
     @ViewBuilder
-    func HeaderView() -> some View {
+    private func HeaderView() -> some View {
         GeometryReader { proxy in
             let minY = proxy.frame(in: .named("HOMESCROLL")).minY
             let progress = minY / 300
@@ -88,7 +73,7 @@ struct HomeView: View {
                 Spacer()
 
                 NavigationLink {
-                    Text("공지사항")
+                    AnnouncementsView()
                 } label: {
                     GamblerAsset.bell.swiftUIImage
                         .resizable()
@@ -97,8 +82,8 @@ struct HomeView: View {
                 }
             }
             .frame(height: 56)
-            .foregroundStyle(headerColor)
-            .padding(.top, safeArea.top)
+            .foregroundStyle(minY > -290 ? .white : .black)
+            .padding(.top, 40)
             .padding(.horizontal, 24)
             .padding(.bottom, 16)
             .background(content: {
@@ -106,15 +91,15 @@ struct HomeView: View {
                     .opacity(progress > -0.8 ? 0 : (-progress * 10) - 9)
             })
             .offset(y: -minY)
-            .onChange(of: minY) {
-                if minY <= -295 {
-                    isBannerDisappear = true
-                } else {
-                    isBannerDisappear = false
-                }
-            }
         }
         .frame(height: 56)
+    }
+}
+
+struct CustomButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(configuration.isPressed ? Color.gray.opacity(0.3) : Color.clear)
     }
 }
 

@@ -20,6 +20,13 @@ final class GameListViewModel: ObservableObject {
         games.first?.gameIntroduction.genre.map { $0.rawValue } ?? []
     }
     
+    private func convertStringToGenre(koreanName: String) -> [String] {
+        if let theme = GameGenre.allCases.first(where: { $0.koreanName == koreanName }) {
+            return [theme.rawValue]
+        }
+        return []
+    }
+    
     init() {
 //        generateDummyData()
     }
@@ -33,7 +40,7 @@ final class GameListViewModel: ObservableObject {
         var tempGames: [Game] = []
         games.removeAll()
         do {
-            if title.contains("인기") {
+            if title.contains("인기") || title.contains("Best") {
                 tempGames = try await firebaseManager.fetchOrderData(collectionName: collectionName,
                                                                  orderBy: "reviewCount", limit: 5)
             } else if title.contains("신규") {
@@ -41,7 +48,7 @@ final class GameListViewModel: ObservableObject {
                                                                  orderBy: "createdDate", limit: 5)
             } else if title.contains("비슷한 장르") {
                 tempGames = try await firebaseManager
-                    .fetchWhereArrayContainsData(collectionName: collectionName, field: "genre",
+                    .fetchWhereArrayContainsData(collectionName: collectionName, field: "gameIntroduction.genre",
                                                  arrayContainsAny: convertGenreToString, limit: 5)
             } else if title.contains("비슷한 인원수") {
                 tempGames = try await firebaseManager
@@ -49,6 +56,13 @@ final class GameListViewModel: ObservableObject {
                                              field: "gameIntroduction.maxPlayerCount",
                                              isEqualTo: games.first?.gameIntroduction.maxPlayerCount ?? 0,
                                              limit: 5)
+            } else {
+                /// 종류별 Best 에서 장르 하나 선택 시 진입
+                tempGames = try await firebaseManager
+                    .fetchWhereArrayContainsData(collectionName: collectionName, field: "gameIntroduction.genre",
+                                                 arrayContainsAny: convertStringToGenre(koreanName: title),
+                                                 limit: 5)
+                print(tempGames, title)
             }
         } catch {
             print("Error fetching \(collectionName) : \(error.localizedDescription)")

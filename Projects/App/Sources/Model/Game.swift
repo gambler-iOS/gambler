@@ -30,14 +30,14 @@ struct GameIntroduction: Codable, Hashable {
     let minPlayerCount: Int
     let maxPlayerCount: Int
     let playTime: Int
-    let genre: [GameTheme]
+    let genre: [GameGenre]
 }
 
 /// 예제: 열거형 사용
 /// let theme: GameTheme = .fantasy
 /// print(theme.rawValue)      // 출력: "Fantasy"
 /// print(theme.koreanName)    // 출력: "판타지"
-enum GameTheme: String, Codable {
+enum GameGenre: String, Codable, CaseIterable {
     case ageOfReason = "Age of Reason"
     case renaissance = "Renaissance"
     case fantasy = "Fantasy"

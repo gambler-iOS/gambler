@@ -14,7 +14,7 @@ struct GameListItemView: View {
     let game: Game
     let likeGameIdArray: [String]
     
-    var isLike: Bool {
+    private var isLike: Bool {
         likeGameIdArray.contains { id in
             id == game.id
         }
@@ -43,6 +43,8 @@ struct GameListItemView: View {
                         Text("\(game.gameName)")
                             .font(.body1M)
                             .foregroundStyle(Color.gray700)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
                         
                         Spacer()
                         
