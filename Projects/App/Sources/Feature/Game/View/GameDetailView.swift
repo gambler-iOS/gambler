@@ -11,6 +11,7 @@ import Kingfisher
 
 struct GameDetailView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var gameDetailViewModel: GameDetailViewModel
     @State private var offsetY: CGFloat = CGFloat.zero
     @State private var isWriteReviewButton: Bool = false
@@ -88,6 +89,11 @@ struct GameDetailView: View {
     private func setGameInViewModel() {
         DispatchQueue.main.async {
             gameDetailViewModel.game = game
+            if let curUser = loginViewModel.currentUser, let likeGameArray = curUser.likeGameId {
+                if likeGameArray.contains(game.id) {
+                    isHeartButton = true
+                }
+            }
         }
     }
     
@@ -121,11 +127,7 @@ struct GameDetailView: View {
                 buttonName: "찜하기") {
                     
                     isHeartButton.toggle()
-                    if isHeartButton {
-                        /// 유저 데이터에 찜 등록
-                    } else {
-                        /// 유저 데이터에서 찜 삭제
-                    }
+                    updateLikeGameList()
                 }
             
             Spacer()
@@ -138,9 +140,36 @@ struct GameDetailView: View {
             }
         }
     }
+    
+    private func updateLikeGameList() {
+        guard var curUser = loginViewModel.currentUser else {
+            appNavigationPath.homeViewPath.append("로그인")
+            return
+        }
+        
+        var userLikeDictionary: [AnyHashable: Any] = [:]
+        var updatedLikeArray: [String] = []
+        
+        if let likeGameIdArray = curUser.likeGameId {
+            updatedLikeArray = likeGameIdArray
+        }
+        
+        if isHeartButton {
+            updatedLikeArray.append(game.id)
+        } else {
+            updatedLikeArray.removeAll { $0 == game.id }
+        }
+        
+        curUser.likeGameId = updatedLikeArray
+        
+        userLikeDictionary["likeGameId"] = updatedLikeArray
+        
+        Task {
+            await loginViewModel.updateLikeList(likePostIds: userLikeDictionary)
+        }
+    }
 }
 
-/// 팀원이 공통뷰에 RoundedCorner 제작 중인데 PR 이 아직 올라오지 않아 임시로 추가함.
 private struct TempRoundedCorner: Shape {
     var radius: CGFloat = .infinity
     var corners: UIRectCorner = .allCorners
@@ -159,5 +188,6 @@ private struct TempRoundedCorner: Shape {
         GameDetailView(game: Game.dummyGame)
             .environmentObject(AppNavigationPath())
             .environmentObject(GameDetailViewModel())
+            .environmentObject(LoginViewModel())
     }
 }

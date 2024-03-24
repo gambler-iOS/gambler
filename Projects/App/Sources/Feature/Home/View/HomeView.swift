@@ -46,6 +46,8 @@ struct HomeView: View {
                 .navigationDestination(for: String.self) { title in
                     if title.contains("게임") {
                         GameListView(title: title)
+                    } else if title == "로그인" {
+                        LoginView()
                     }
                 }
                 .buttonStyle(HiddenClickAnimationButtonStyle())
