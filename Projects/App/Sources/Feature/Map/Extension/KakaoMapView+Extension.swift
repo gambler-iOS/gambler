@@ -99,7 +99,6 @@ extension KakaoMapView.KakaoMapCoordinator {
           }
       }
     
-    @MainActor
     func createPoisOnMap() {
         if let mapView = controller?.getView("mapview") as? KakaoMap {
             let manager = mapView.getLabelManager()

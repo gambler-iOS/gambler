@@ -36,7 +36,8 @@ struct MapSheetView: View {
             }
         }
         .task {
-            await mapViewModel.fetchUserAreaShopList(userPoint: userLocate)
+            let country = await mapViewModel.getCountry(mapPoint: userLocate)
+            await mapViewModel.filterShopsByCountry(country: country)
         }
         .navigationDestination(for: Shop.self) { shop in
             ShopDetailInfoView(shop: shop)
