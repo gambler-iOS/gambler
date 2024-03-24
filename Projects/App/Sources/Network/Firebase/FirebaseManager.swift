@@ -130,6 +130,21 @@ final class FirebaseManager {
         let result = querySnapshot.documents.compactMap { try? $0.data(as: T.self) }
         return result.first ?? nil
     }
+    
+    /// 지정한 collection 에서 1개의 데이터만 리턴
+    /// - Parameters:
+    ///   - collectionName: FirebaseStore 에서 지정된 Collection 이름
+    /// - Returns: T?
+    /// - Example:
+    /// ```swift
+    /// fetchOneRandomData(collectionName: AppConstants.CollectionName.shops)
+    /// ```
+    func fetchOneRandomData<T: AvailableFirebase>(collectionName: String) async throws -> T? {
+        let collectionRef = db.collection(collectionName).limit(to: 1)
+        let querySnapshot = try await collectionRef.getDocuments()
+        let result = querySnapshot.documents.compactMap { try? $0.data(as: T.self) }
+        return result.first ?? nil
+    }
 
     /// 지정한 collection 에서 byId 와 일치하는 문서의 feild 데이터를 data 입력값으로 변경
     /// - Parameters:

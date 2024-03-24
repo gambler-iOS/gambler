@@ -15,20 +15,18 @@ struct FloatingView: View {
     @Binding var userLocate: GeoPoint
     
     var body: some View {
-       
-            VStack(spacing: 0) {
-                NavigationLink(destination: ShopDetailInfoView(shop: selectedShop)) {
-                    FloatingCellView(shop: selectedShop, likeShopIdArray: ["1"])
-                        .padding(16)
-                }
-                
-                showListButtonView
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 16)
+        VStack(spacing: 0) {
+            NavigationLink(destination: ShopDetailInfoView(shop: selectedShop)) {
+                FloatingCellView(shop: selectedShop, likeShopIdArray: ["1"])
+                    .padding(16)
             }
-            .background(Color.white)
-            .cornerRadius(16)
-        
+            
+            showListButtonView
+                .padding(.horizontal, 16)
+                .padding(.bottom, 16)
+        }
+        .background(Color.white)
+        .cornerRadius(16)
     }
     
     private var showListButtonView: some View {
@@ -45,7 +43,7 @@ struct FloatingView: View {
                 .stroke(Color.gray200)
                 .frame(width: 295, height: 34)
                 .overlay {
-                    Text("목록으로 보기")
+                    Text("내 주변 목록")
                         .font(.caption1M)
                         .foregroundStyle(Color.gray400)
                 }

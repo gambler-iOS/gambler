@@ -17,8 +17,7 @@ final class MapViewModel: ObservableObject {
     @Published var fetchedShopList: [Shop] = []
     @Published var fetchedCountry: [String] = []
     @Published var areaInShopList: [Shop] = []
-    
-  
+   
     @MainActor
     func fetchCountryData(country: String) async {
         fetchNewShopList.removeAll()
@@ -36,6 +35,16 @@ final class MapViewModel: ObservableObject {
         } catch {
             print("Error fetchCountryData : \(error.localizedDescription)")
         }
+    }
+    
+    func fetchRandomShop() async -> Shop? {
+        var randomShop: Shop?
+        do {
+            randomShop = try await firebaseManager.fetchOneRandomData(collectionName: collectionName)
+        } catch {
+            print("Error fetchRandomShop : \(error.localizedDescription)")
+        }
+        return randomShop
     }
     
     @MainActor
