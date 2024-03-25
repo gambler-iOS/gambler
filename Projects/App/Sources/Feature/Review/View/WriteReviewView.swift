@@ -12,6 +12,7 @@ import PhotosUI
 
 struct WriteReviewView: View {
     @EnvironmentObject private var reviewViewModel: ReviewViewModel
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     @Environment(\.dismiss) private var dismiss
     
     @State private var reviewContent: String = ""
@@ -42,7 +43,7 @@ struct WriteReviewView: View {
                 AddImageView(selectedPhotosData: $selectedPhotosData, topPadding: .constant(16))
                 Spacer()
                 CTAButton(disabled: $disabledButton, title: "완료") {
-                    submitReview()
+                    submitReview(uid: loginViewModel.currentUser?.id ?? "")
                 }
                 .padding(.bottom, 24)
                 
@@ -78,20 +79,27 @@ struct WriteReviewView: View {
     }
     
 #warning("postId, userId 임시")
-    private func submitReview() {
+    private func submitReview(uid: String) {
+        var categorty: ReviewCategory = .game
+        
+        if let game = reviewableItem as? Game {
+            categorty = .game
+        } else if let shop = reviewableItem as? Shop {
+            categorty = .shop
+        }
+        
         Task {
             isUploading = true
             await reviewViewModel.addData(review:
                                             Review(id: UUID().uuidString,
-                                                   postId: UUID().uuidString,
-                                                   userId: UUID().uuidString,
+                                                   postId: reviewableItem.id,
+                                                   userId: uid,
                                                    reviewContent: reviewContent,
                                                    reviewRating: rating,
-                                                   reviewImage: 
-                                                    try await StorageManager
-                                                .uploadImages(selectedPhotosData,
-                                                              folder: .review),
-                                                   createdDate: Date()) )
+                                                   reviewImage: try await StorageManager.uploadImages(selectedPhotosData, folder: .review),
+                                                   createdDate: Date(),
+                                                   category: categorty
+                                                  ))
             await reviewViewModel.fetchData()
             isUploading = false
         }
@@ -129,4 +137,5 @@ struct WriteReviewView: View {
 #Preview {
     WriteReviewView(isShowingToast: .constant(false), reviewableItem: Shop.dummyShop)
         .environmentObject(ReviewViewModel())
+        .environmentObject(LoginViewModel())
 }

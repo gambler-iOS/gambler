@@ -12,7 +12,7 @@ import Firebase
 import FirebaseFirestore
 
 final class MyPageViewModel: ObservableObject {
- 
+    
     enum LikeCategory: String, CaseIterable {
         case shop = "매장"
         case game = "게임"
@@ -31,7 +31,7 @@ final class MyPageViewModel: ObservableObject {
     init() {
         self.numnberOfReviews = getNumberOfReviews()
         self.numberOfLikes = getNumberOfLikes()
-//        generateDummyData()
+        //        generateDummyData()
     }
     
     private func generateDummyData() {
@@ -42,8 +42,9 @@ final class MyPageViewModel: ObservableObject {
                                       reviewContent: "강남역에서 엄청 가깝고 시설도 좋더라구요~ 게임도 많아서 오랫동안 있었네요! 알바생도 친절해서 좋았어요, 다음에도 선릉점으로 가려구요",
                                       reviewRating: 4.5,
                                       reviewImage: ["https://beziergames.com/cdn/shop/products/UltimateAccessoryPack_800x.png?v=1587055236"],
-                                      createdDate: Date()
-                           ))
+                                      createdDate: Date(),
+                                      category: .shop
+                                     ))
             
             gameReviews.append(Review(id: UUID().uuidString,
                                       postId: UUID().uuidString,
@@ -51,8 +52,9 @@ final class MyPageViewModel: ObservableObject {
                                       reviewContent: "친구 3명이랑 했는데 일반 마피아보다 색달라서 재밌었어요. 쉬운 게임이여서 진입장벽 없이 바로 할 수 있음요 ~!",
                                       reviewRating: 4.0,
                                       reviewImage: ["https://weefun.co.kr/shopimages/weefun/007009000461.jpg?1596805186"],
-                                      createdDate: Date()
-))
+                                      createdDate: Date(),
+                                      category: .game
+                                     ))
             
             likeShops.append(Shop(
                 id: UUID().uuidString,
@@ -85,7 +87,7 @@ final class MyPageViewModel: ObservableObject {
                     maxPlayerCount: 4,
                     playTime: 2,
                     genre: [.fantasy])
-                ))
+            ))
         }
     }
     
