@@ -35,18 +35,27 @@ struct MyPageView: View {
                         
                         HStack {
                             Spacer()
-                            navigationView(title: "나의 리뷰", destination: MyReviewsView(), count: "\(currentUser?.myReviewsCount ?? 0)")
+                            navigationView(title: "나의 리뷰",
+                                           count: "\(currentUser?.myReviewsCount ?? 0)",
+                                           destination: MyReviewsView())
                             Spacer()
                             Divider()
                                 .frame(width: 1, height: 44)
                                 .foregroundStyle(Color.gray200)
                             Spacer()
-                            navigationView(title: "좋아요", destination: MyLikesView(), count: "\(currentUser?.myLikesCount ?? 0)")
+                            navigationView(title: "좋아요", 
+                                           count: "\(currentUser?.myLikesCount ?? 0)",
+                                           destination: MyLikesView())
                             Spacer()
                         }
                         .frame(height: 140)
                         .background(Color.gray50)
                         .clipShape(.rect(cornerRadius: 8))
+                        .onAppear {
+                            Task {
+                                await myPageViewModel.fetchReviewData()
+                            }
+                        }
                         
                         ListItemView(isShowingToast: $isShowingToast)
                     } .overlay {
@@ -88,7 +97,7 @@ struct MyPageView: View {
     }
     
     @ViewBuilder
-    private func navigationView(title: String, destination: some View, count: String) -> some View {
+    private func navigationView(title: String, count: String, destination: some View) -> some View {
         NavigationLink {
             destination
         } label: {

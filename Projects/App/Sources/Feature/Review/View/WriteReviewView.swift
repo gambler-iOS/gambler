@@ -43,7 +43,9 @@ struct WriteReviewView: View {
                 AddImageView(selectedPhotosData: $selectedPhotosData, topPadding: .constant(16))
                 Spacer()
                 CTAButton(disabled: $disabledButton, title: "완료") {
-                    submitReview(uid: loginViewModel.currentUser?.id ?? "")
+                    Task {
+                        await reply()
+                    }
                 }
                 .padding(.bottom, 24)
                 
@@ -78,34 +80,21 @@ struct WriteReviewView: View {
         }
     }
     
-#warning("postId, userId 임시")
-    private func submitReview(uid: String) {
-        var categorty: ReviewCategory = .game
-        
-        if let game = reviewableItem as? Game {
-            categorty = .game
-        } else if let shop = reviewableItem as? Shop {
-            categorty = .shop
-        }
-        
+    private func reply() async {
         Task {
             isUploading = true
-            await reviewViewModel.addData(review:
-                                            Review(id: UUID().uuidString,
-                                                   postId: reviewableItem.id,
-                                                   userId: uid,
-                                                   reviewContent: reviewContent,
-                                                   reviewRating: rating,
-                                                   reviewImage: try await StorageManager.uploadImages(selectedPhotosData, folder: .review),
-                                                   createdDate: Date(),
-                                                   category: categorty
-                                                  ))
-            await reviewViewModel.fetchData()
+            await reviewViewModel.submitReview(user: loginViewModel.currentUser,
+                                               reviewableItem: reviewableItem,
+                                               reviewContent: reviewContent,
+                                               reviewRating: rating,
+                                               images: selectedPhotosData)
+            
+            loginViewModel.currentUser?.myReviewsCount += 1
             isUploading = false
-        }
-        dismiss()
-        withAnimation(.easeIn(duration: 0.4)) {
-            isShowingToast = true
+            dismiss()
+            withAnimation(.easeIn(duration: 0.4)) {
+                isShowingToast = true
+            }
         }
     }
     

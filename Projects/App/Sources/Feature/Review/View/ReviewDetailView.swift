@@ -12,6 +12,7 @@ struct ReviewDetailView: View {
     @EnvironmentObject private var reviewViewModel: ReviewViewModel
     @State private var isShowingToast: Bool = false
     let reviewableItem: AvailableAggregateReview
+    let reviewTarget: String  // 앱/게임 이름
     
     var reviewRatingCount: String {
         "\(String(format: "%.1f", reviewableItem.reviewRatingAverage))(\(reviewableItem.reviewCount))"
@@ -36,7 +37,7 @@ struct ReviewDetailView: View {
                 ScrollView {
                     VStack(spacing: 16) {
                         ForEach(reviewViewModel.dummyReviews, id: \.self) { review in
-                            ReviewDetailCellView(reviewData: review)
+                            ReviewDetailCellView(name: reviewTarget, reviewData: review)
                             
                             if review != reviewViewModel.dummyReviews.last {
                                 Divider()
@@ -97,7 +98,7 @@ struct ReviewDetailView: View {
 
 #Preview {
     NavigationStack {
-        ReviewDetailView(reviewableItem: Shop.dummyShop)
+        ReviewDetailView(reviewableItem: Shop.dummyShop, reviewTarget: "하나비")
             .environmentObject(ReviewViewModel())
     }
 }
