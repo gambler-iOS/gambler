@@ -77,7 +77,8 @@ struct GameDetailView: View {
             setGameInViewModel()
         }
         .task {
-            await gameDetailViewModel.fetchData()
+            await gameDetailViewModel.fetchReviewData()
+            await gameDetailViewModel.fetchSimilarGameData()
         }
         .ignoresSafeArea(.all, edges: .top)
         .navigationTitle(offsetY < -5 ? "\(game.gameName)" : "")

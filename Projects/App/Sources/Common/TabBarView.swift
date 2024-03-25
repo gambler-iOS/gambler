@@ -18,6 +18,7 @@ struct TabBarView: View {
     @StateObject private var gameListViewModel = GameListViewModel()
     @StateObject private var gameDetailViewModel = GameDetailViewModel()
     @StateObject private var shopListViewModel = ShopListViewModel()
+    @StateObject private var reviewViewModel = ReviewViewModel()
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -71,6 +72,7 @@ struct TabBarView: View {
         }
         .tint(Color.primaryDefault)
         .environmentObject(loginViewModel)
+        .environmentObject(reviewViewModel)
         .onAppear {
             self.draw = true
         }
