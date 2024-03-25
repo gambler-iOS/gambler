@@ -16,6 +16,7 @@ struct GameDetailView: View {
     @State private var offsetY: CGFloat = CGFloat.zero
     @State private var isWriteReviewButton: Bool = false
     @State private var isHeartButton: Bool = false
+    @State private var isShowingToast: Bool = false
     private let headerImageHeight: CGFloat = 290
     let game: Game
     
@@ -84,6 +85,23 @@ struct GameDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .modifier(BackButton())
         .buttonStyle(HiddenClickAnimationButtonStyle())
+        .overlay {
+            if isShowingToast {
+                toastMessageView
+            }
+        }
+    }
+    
+    private var toastMessageView: some View {
+        CustomToastView(content: "리뷰 작성이 완료되었습니다!")
+            .offset(y: UIScreen.main.bounds.height * 0.3)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    withAnimation {
+                        isShowingToast = false
+                    }
+                }
+            }
     }
     
     private func setGameInViewModel() {
@@ -136,7 +154,7 @@ struct GameDetailView: View {
                 isWriteReviewButton = true
             }
             .navigationDestination(isPresented: $isWriteReviewButton) {
-                WriteReviewView(reviewableItem: game)
+                WriteReviewView(isShowingToast: $isShowingToast, reviewableItem: game)
             }
         }
     }

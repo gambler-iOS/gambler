@@ -14,7 +14,7 @@ struct GameGenreCellView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Image(genre.rawValue)
+            Image(genre.imageName)
                 .resizable()
                 .frame(width: 80, height: 80)
                 .scaledToFit()
