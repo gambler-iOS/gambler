@@ -54,10 +54,10 @@ struct HomeView: View {
             }
             .coordinateSpace(name: "HOMESCROLL")
             .ignoresSafeArea(.all, edges: .top)
-        }
-        .task {
-            await homeViewModel.fetchData()
-            await eventBannerViewModel.fetchData()
+            .task {
+                await homeViewModel.fetchData()
+                await eventBannerViewModel.fetchData()
+            }
         }
     }
     

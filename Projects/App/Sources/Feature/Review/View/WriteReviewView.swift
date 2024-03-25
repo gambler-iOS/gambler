@@ -95,7 +95,11 @@ struct WriteReviewView: View {
                                                     .uploadImages(selectedPhotosData,
                                                                   folder: .review),
                                                        createdDate: Date()) )
-                await gameDetailViewModel.updateGameAggregateReview(appendReviewRating: rating)
+                if let game = reviewableItem as? Game {
+                    await gameDetailViewModel.updateGameAggregateReview(appendReviewRating: rating)
+                } else if let shop = reviewableItem as? Shop {
+                    
+                }
                 await reviewViewModel.fetchData()
                 isUploading = false
             }
