@@ -27,17 +27,11 @@ final class GameDetailViewModel: ObservableObject {
     }
     
     @MainActor
-    func fetchData() async {
+    func fetchSimilarGameData() async {
         similarGenreGames.removeAll()
         similarPlayerGames.removeAll()
         
         do {
-            reviews = try await firebaseManager
-                .fetchWhereIsEqualToData(collectionName: AppConstants.CollectionName.reviews,
-                                         field: "postId",
-                                         isEqualTo: game.id,
-                                         limit: 3)
-            
             similarGenreGames = try await firebaseManager
                 .fetchWhereArrayContainsData(collectionName: AppConstants.CollectionName.games,
                                              field: "gameIntroduction.genre",
@@ -50,7 +44,41 @@ final class GameDetailViewModel: ObservableObject {
                                          isEqualTo: game.gameIntroduction.maxPlayerCount,
                                          limit: 6)
         } catch {
-            print("Error fetching GameDetailViewModel : \(error.localizedDescription)")
+            print("Error fetchSimilarGameData() GameDetailViewModel : \(error.localizedDescription)")
+        }
+    }
+    
+    @MainActor
+    func fetchReviewData() async {
+        do {
+            reviews = try await firebaseManager
+                .fetchWhereIsEqualToData(collectionName: AppConstants.CollectionName.reviews,
+                                         field: "postId",
+                                         isEqualTo: game.id,
+                                         orderBy: "createdDate",
+                                         limit: 3)
+        } catch {
+            print("Error fetchReviewData() GameDetailViewModel : \(error.localizedDescription)")
+        }
+    }
+
+    /// review 작성 시 game.reviewCount, game.reviewRatingAverage 정보 수정
+    @MainActor
+    func updateGameAggregateReview(appendReviewRating: Double) async {
+        var calcRatingAvg = (Double(game.reviewCount) * game.reviewRatingAverage) + appendReviewRating
+        calcRatingAvg /= Double(game.reviewCount + 1)
+        
+        let data: [AnyHashable: Any] = [
+            "reviewCount": (game.reviewCount + 1),
+            "reviewRatingAverage": (calcRatingAvg)
+        ]
+
+        do {
+            try await firebaseManager.updateData(collectionName: "Games", byId: game.id, data: data)
+            game.reviewCount += 1
+            game.reviewRatingAverage = calcRatingAvg
+        } catch {
+            print("Error updateGameAggregateReview() GameDetailViewModel : \(error.localizedDescription)")
         }
     }
     
@@ -64,7 +92,7 @@ final class GameDetailViewModel: ObservableObject {
                 game = data
             }
         } catch {
-            print("Error fetching GameInfo GameDetailViewModel : \(error.localizedDescription)")
+            print("Error fetchGameInfo() GameDetailViewModel : \(error.localizedDescription)")
         }
     }
 }

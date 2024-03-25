@@ -12,6 +12,8 @@ import PhotosUI
 
 struct WriteReviewView: View {
     @EnvironmentObject private var reviewViewModel: ReviewViewModel
+    @EnvironmentObject private var gameDetailViewModel: GameDetailViewModel
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     @Environment(\.dismiss) private var dismiss
     
     @State private var reviewContent: String = ""
@@ -78,25 +80,25 @@ struct WriteReviewView: View {
     }
     
 #warning("텍스트 에디터의 reviewContent가 바뀔 때마다 메서드를 호출하는 것은 안좋아 보임. 디바운싱이나 스로틀링을 적용하면 좋을 듯 (onReceive)")
-    
-    
-#warning("postId, userId 임시")
     private func submitReview() {
         Task {
-            isUploading = true
-            await reviewViewModel.addData(review:
-                                            Review(id: UUID().uuidString,
-                                                   postId: UUID().uuidString,
-                                                   userId: UUID().uuidString,
-                                                   reviewContent: reviewContent,
-                                                   reviewRating: rating,
-                                                   reviewImage: 
-                                                    try await StorageManager
-                                                .uploadImages(selectedPhotosData,
-                                                              folder: .review),
-                                                   createdDate: Date()) )
-            await reviewViewModel.fetchData()
-            isUploading = false
+            if let userId = loginViewModel.currentUser?.id {
+                isUploading = true
+                await reviewViewModel.addData(review:
+                                                Review(id: UUID().uuidString,
+                                                       postId: reviewableItem.id,
+                                                       userId: userId,
+                                                       reviewContent: reviewContent,
+                                                       reviewRating: rating,
+                                                       reviewImage:
+                                                        try await StorageManager
+                                                    .uploadImages(selectedPhotosData,
+                                                                  folder: .review),
+                                                       createdDate: Date()) )
+                await gameDetailViewModel.updateGameAggregateReview(appendReviewRating: rating)
+                await reviewViewModel.fetchData()
+                isUploading = false
+            }
         }
         dismiss()
         withAnimation(.easeIn(duration: 0.4)) {
