@@ -11,12 +11,12 @@ import SwiftUI
 struct RegistrationView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var loginViewModel: LoginViewModel
-    @EnvironmentObject private var navPathFinder: NavigationPathFinder
     
     @State private var isDisabled: Bool = true
     @State private var nicknameText: String = ""
     @State private var isDuplicated: Bool = false
     @State private var isShowingToast = false
+    @State private var isShowingRegisterTermsOfUseView: Bool = false
     private let textField: String = "닉네임을 입력해주세요."
     private var toastMessage: String {
         isDuplicated ? "아이디가 중복됩니다. 다시 입력해주세요!": "아이디 중복확인이 완료되었습니다!"
@@ -39,7 +39,7 @@ struct RegistrationView: View {
             
             CTAButton(disabled: $isDisabled, title: "다음") {
                 AuthService.shared.tempUser?.nickname = nicknameText
-                navPathFinder.addPath(option: .temsOfAgreeView)
+                isShowingRegisterTermsOfUseView = true
             }
             .padding(.bottom, 24)
         }
@@ -51,6 +51,9 @@ struct RegistrationView: View {
             }
         }
         .navigationTitle("회원가입")
+        .navigationDestination(isPresented: $isShowingRegisterTermsOfUseView) {
+            RegisterTermsOfUseView()
+        }
         .onAppear {
             Task {
                 guard let user = AuthService.shared.tempUser else {
@@ -106,5 +109,4 @@ struct RegistrationView: View {
 #Preview {
     RegistrationView()
         .environmentObject(LoginViewModel())
-        .environmentObject(NavigationPathFinder.shared)
 }

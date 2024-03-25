@@ -14,6 +14,7 @@ import KakaoSDKCommon
 struct MyPageView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject private var loginViewModel: LoginViewModel
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
     
     @State private var isShowingToast: Bool = false
     
@@ -24,7 +25,6 @@ struct MyPageView: View {
     var body: some View {
         if loginViewModel.authState != .signedIn {
                 MyPageSignedOutView()
-                    .environmentObject(NavigationPathFinder.shared)
         } else { // SignedIn
             NavigationStack {
                 ScrollView {

@@ -10,7 +10,7 @@ import SwiftUI
 
 struct RegisterTermsOfUseView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
-    @EnvironmentObject private var navPathFinder: NavigationPathFinder
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
 
     @State private var isDisabled: Bool = true
     @State private var agreedAll: Bool = false
@@ -76,7 +76,8 @@ struct RegisterTermsOfUseView: View {
                     AuthService.shared.uploadUserToFirestore(user: user)
                     await loginViewModel.fetchUserData()
                     loginViewModel.authState = .signedIn
-                    navPathFinder.popToRoot()
+                    appNavigationPath.loginViewPath = .init()
+                    
                 }
             }
             .padding(.bottom, 24)
@@ -102,5 +103,5 @@ struct RegisterTermsOfUseView: View {
 #Preview {
     RegisterTermsOfUseView()
         .environmentObject(LoginViewModel())
-        .environmentObject(NavigationPathFinder.shared)
+        .environmentObject(AppNavigationPath())
 }

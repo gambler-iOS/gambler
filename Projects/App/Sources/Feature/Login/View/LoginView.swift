@@ -11,8 +11,8 @@ import AuthenticationServices
 
 struct LoginView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
-    @EnvironmentObject private var navPathFinder: NavigationPathFinder
-    @State private var showRegisterationView: Bool = false
+
+    @State private var isShowingRegistrationView: Bool = false
     
     var body: some View {
         VStack(spacing: .zero) {
@@ -78,15 +78,17 @@ struct LoginView: View {
         .padding(.horizontal, 24)
         .onReceive(loginViewModel.$authState) { authState in
             if authState == .creatingAccount && loginViewModel.userSession != nil {
-                self.navPathFinder.addPath(option: .regstrationView)
+                isShowingRegistrationView = true
             }
         }
         .modifier(BackButton())
         .toolbar(.hidden, for: .tabBar)
+        .navigationDestination(isPresented: $isShowingRegistrationView) {
+            RegistrationView()
+        }
     }
 }
 #Preview {
     LoginView()
         .environmentObject(LoginViewModel())
-        .environmentObject(NavigationPathFinder.shared)
 }

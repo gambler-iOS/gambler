@@ -11,6 +11,7 @@ import SwiftUI
 struct ListItemView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject private var loginViewModel: LoginViewModel
+
     @Binding var isShowingToast: Bool
     
     var body: some View {
@@ -45,7 +46,6 @@ struct ListItemView: View {
                     Button {
                         Task {
                             await loginViewModel.logoutFromFirebaseAndSocial()
-                            NavigationPathFinder.shared.popToRoot()
                         }
                     } label: {
                         Text("로그아웃")
