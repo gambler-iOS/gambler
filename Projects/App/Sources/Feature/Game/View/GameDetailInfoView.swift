@@ -52,7 +52,6 @@ struct GameDetailInfoView: View {
     }
 }
 
-
 #Preview {
     GameDetailInfoView(game: Game.dummyGame)
 }

@@ -76,9 +76,6 @@ enum AppConstants {
     }
 }
 
-
-
-
 extension AppConstants.MyPageFilter: Sequence {
     func makeIterator() -> IndexingIterator<[AppConstants.MyPageFilter]> {
         return IndexingIterator(_elements: AppConstants.MyPageFilter.allCases)
