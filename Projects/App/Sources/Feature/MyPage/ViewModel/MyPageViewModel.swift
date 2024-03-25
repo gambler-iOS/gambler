@@ -23,14 +23,19 @@ final class MyPageViewModel: ObservableObject {
     @Published var gameReviews: [Review] = []
     @Published var likeShops: [Shop] = []
     @Published var likeGames: [Game] = []
-    var appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String 
+    @Published var userImage: Image?
+    @Published var profileImageChanged: Bool = false
+    
+    var appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
     
     var numnberOfReviews: String = ""
     var numberOfLikes: String = ""
     
+    private let storageManager = StorageManager.shared
+    
     init() {
-        self.numnberOfReviews = getNumberOfReviews()
-        self.numberOfLikes = getNumberOfLikes()
+        //        self.numnberOfReviews = getNumberOfReviews()
+        //        self.numberOfLikes = getNumberOfLikes()
         //        generateDummyData()
     }
     

@@ -18,7 +18,8 @@ struct TabBarView: View {
     @StateObject private var gameListViewModel = GameListViewModel()
     @StateObject private var gameDetailViewModel = GameDetailViewModel()
     @StateObject private var shopListViewModel = ShopListViewModel()
-    
+    @StateObject private var profileEditViewModel = ProfileEditViewModel()
+
     var body: some View {
         TabView(selection: $selectedTab) {
             
@@ -61,6 +62,7 @@ struct TabBarView: View {
             MyPageView()
                 .environmentObject(myPageViewModel)
                 .environmentObject(loginViewModel)
+                .environmentObject(profileEditViewModel)
                 .environmentObject(appNavigationPath)
                 .tabItem {
                     HStack {

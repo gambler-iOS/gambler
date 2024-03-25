@@ -10,12 +10,14 @@ import SwiftUI
 import Kingfisher
 import KakaoSDKAuth
 import KakaoSDKCommon
+import PhotosUI
 
 struct MyPageView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
-    
+    @EnvironmentObject private var profileEditViewModel: ProfileEditViewModel
+
     @State private var isShowingToast: Bool = false
     
     var currentUser: User? {
@@ -63,7 +65,17 @@ struct MyPageView: View {
     @ViewBuilder
     private func myPageHeaderView(user: User?) -> some View {
         HStack(spacing: 8) {
-            CircleImageView(imageURL: user?.profileImageURL ?? "", size: 64)
+            if myPageViewModel.profileImageChanged {
+                if let data = profileEditViewModel.imageData, let uiImage = UIImage(data: data) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 64, height: 64)
+                        .clipShape(.circle)
+                }
+            } else {
+                CircleImageView(imageURL: user?.profileImageURL ?? "" , size: 64)
+            }
             
             VStack(alignment: .leading, spacing: 8) {
                 Text(user?.nickname ?? "")
@@ -108,5 +120,6 @@ struct MyPageView: View {
     MyPageView()
         .environmentObject(MyPageViewModel())
         .environmentObject(LoginViewModel())
-//        .environmentObject(AppNavigationPath())
+        .environmentObject(ProfileEditViewModel())
+        .environmentObject(AppNavigationPath())
 }

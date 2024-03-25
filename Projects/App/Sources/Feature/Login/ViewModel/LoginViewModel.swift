@@ -63,7 +63,20 @@ final class LoginViewModel: ObservableObject {
         self.userSession = nil
         AuthService.shared.tempUser = nil
     }
-     
+    
+    // MARK: - 현재 유저 데이터 가져오기 - Firebasestore
+    @MainActor
+    func getUserDate() async {
+        Task {
+            do {
+                guard let user: User = try await FirebaseManager.shared.fetchOneData(collectionName: "Users", byId: currentUser?.id ?? "") else { return }
+                self.currentUser = user
+            } catch {
+                print(#fileID, #function, #line, "- 유저 정보 가져오기 실패!")
+            }
+        } 
+    }
+    
     /// 유저 정보 가져오기 및 authState 변경
     func fetchUserData() async {
         self.userSession = Auth.auth().currentUser

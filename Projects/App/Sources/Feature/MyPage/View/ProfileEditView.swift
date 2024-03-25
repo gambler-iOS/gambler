@@ -11,16 +11,15 @@ import PhotosUI
 import Kingfisher
 
 struct ProfileEditView: View {
-    @State private var nickName: String = ""
-    @State private var email: String = ""
-    @State private var selectedPhoto: PhotosPickerItem?
-    @State private var imageData: Data?
-    @State private var isShowingResignModal: Bool = false
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject private var loginViewModel: LoginViewModel
+    @EnvironmentObject private var myPageViewModel: MyPageViewModel
+    @EnvironmentObject private var profileEditViewModel: ProfileEditViewModel
     
-#warning("임시")
-    @State private var user: User = User.dummyUser
+    @State private var nickName: String = ""
+    @State private var email: String = ""
+    @State private var isShowingResignModal: Bool = false
+    @State private var disabledCompleteButton: Bool = true
     
     var currentUser: User? {
         return loginViewModel.currentUser
@@ -43,6 +42,9 @@ struct ProfileEditView: View {
             }
             .onAppear {
                 self.nickName = currentUser?.nickname ?? ""
+                profileEditViewModel.imageData = nil
+                profileEditViewModel.selectedPhoto = nil
+                myPageViewModel.profileImageChanged = false
             }
             .navigationTitle("프로필 수정")
             .modifier(BackButton())
@@ -53,8 +55,9 @@ struct ProfileEditView: View {
                     } label: {
                         Text("완료")
                             .font(.body2M)
-                            .foregroundStyle(Color.gray900)
+                            .foregroundStyle(disabledCompleteButton ? Color.gray200: Color.gray900)
                     }
+                    .disabled(disabledCompleteButton)
                 }
             }
         } .fullScreenCover(isPresented: $isShowingResignModal) {
@@ -73,14 +76,20 @@ struct ProfileEditView: View {
     }
     
     private func reply() {
-        // 완료 동작
-        presentationMode.wrappedValue.dismiss()
+        Task {
+            myPageViewModel.profileImageChanged = true
+            presentationMode.wrappedValue.dismiss()
+            
+            if await profileEditViewModel.uploadProfileImage(user: currentUser, selectedPhoto: profileEditViewModel.selectedPhoto) {
+                await loginViewModel.getUserDate()
+            }
+        }
     }
     
 #warning("현재 Data타입을 url로 바꾸는 방법은 storage를 거치는 방법 뿐인것같아 일단은 UIImage로 처리함")
     private var profileView: some View {
         VStack {
-            if let data = imageData, let uiImage = UIImage(data: data) {
+            if let data = profileEditViewModel.imageData, let uiImage = UIImage(data: data) {
                 Image(uiImage: uiImage)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
@@ -92,20 +101,23 @@ struct ProfileEditView: View {
             pickerView
                 .padding(.top, 16)
         }
+        .onChange(of: profileEditViewModel.selectedPhoto) { _, _ in
+            disabledCompleteButton = false
+        }
     }
     
     private var pickerView: some View {
         PhotosPicker(
-            selection: $selectedPhoto,
+            selection: $profileEditViewModel.selectedPhoto,
             matching: .images
         ) {
             ChipView(label: "프로필 사진 수정", size: .medium)
                 .foregroundStyle(Color.gray400)
         }
-        .onChange(of: selectedPhoto) {
+        .onChange(of: profileEditViewModel.selectedPhoto) {
             Task {
-                if let data = try? await selectedPhoto?.loadTransferable(type: Data.self) {
-                    imageData = data
+                if let data = try? await profileEditViewModel.selectedPhoto?.loadTransferable(type: Data.self) {
+                    profileEditViewModel.imageData = data
                 }
             }
         }
@@ -118,14 +130,14 @@ struct ProfileEditView: View {
                 .padding(.bottom, 24)
                 .font(.subHead1B)
                 .foregroundStyle(Color.gray700)
-            profileTextField(title: "닉네임", content: $nickName)
+            profileTextField(title: "닉네임", name: self.nickName)
         }
     }
 
-    private func profileTextField(title: String, content: Binding<String>) -> some View {
+    private func profileTextField(title: String, name: String) -> some View {
         TitleAndBoxView(title: title)
-            .overlay {
-                TextField("", text: content)
+            .overlay(alignment: .leading) {
+                Text(name)
                     .font(.body1M)
                     .foregroundColor(.gray700)
                     .padding(.top, 28)
@@ -170,4 +182,6 @@ struct ProfileEditView: View {
 #Preview {
     ProfileEditView()
         .environmentObject(LoginViewModel())
+        .environmentObject(MyPageViewModel())
+        .environmentObject(ProfileEditViewModel())
 }
