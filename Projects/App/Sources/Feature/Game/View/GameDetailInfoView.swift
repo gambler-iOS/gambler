@@ -24,7 +24,7 @@ struct GameDetailInfoView: View {
                     Text("게임 방법")
                         .font(.body1B)
                     // 색상 8A8A8A
-                    Text(game.descriptionContent)
+                    Text(splitTextByPeriod(text: game.descriptionContent))
                         .font(.body2M)
                         .foregroundStyle(Color.gray500)
                 }
@@ -44,7 +44,14 @@ struct GameDetailInfoView: View {
         }
         .padding(.horizontal, 24)
     }
+    
+    private func splitTextByPeriod(text: String) -> String {
+            var newText = text
+            newText = newText.replacingOccurrences(of: ". ", with: ".\n")
+            return newText
+    }
 }
+
 
 #Preview {
     GameDetailInfoView(game: Game.dummyGame)
