@@ -10,7 +10,7 @@ import SwiftUI
 import AuthenticationServices
 
 struct LoginView: View {
-    @EnvironmentObject var loginViewModel: LoginViewModel
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var navPathFinder: NavigationPathFinder
     @State private var showRegisterationView: Bool = false
     

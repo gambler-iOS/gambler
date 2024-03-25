@@ -16,8 +16,6 @@ struct MyPageView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
     
     @State private var isShowingToast: Bool = false
-#warning("로그인 플랫폼 로직 구현 필요")
-    let loginPlatform: String = "카카오톡"
     
     var currentUser: User? {
         return loginViewModel.currentUser
@@ -26,7 +24,6 @@ struct MyPageView: View {
     var body: some View {
         if loginViewModel.authState != .signedIn {
                 MyPageSignedOutView()
-                    .environmentObject(loginViewModel)
                     .environmentObject(NavigationPathFinder.shared)
         } else { // SignedIn
             NavigationStack {
@@ -50,7 +47,6 @@ struct MyPageView: View {
                         .clipShape(.rect(cornerRadius: 8))
                         
                         ListItemView(isShowingToast: $isShowingToast)
-                            .environmentObject(loginViewModel)
                     } .overlay {
                         if isShowingToast {
                             toastMessageView

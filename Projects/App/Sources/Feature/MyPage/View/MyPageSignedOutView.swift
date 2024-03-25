@@ -30,7 +30,6 @@ struct MyPageSignedOutView: View {
             }
             .navigationDestination(for: LoginViewOptions.self) { option in
                 option.view()
-                    .environmentObject(loginViewModel)
             }
         }
     }
