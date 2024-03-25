@@ -51,8 +51,7 @@ struct GameDetailView: View {
                     .padding(.horizontal, 24)
                 
                 gameItemButtonsView
-                    .frame(height: 72)
-                    .padding(EdgeInsets(top: -10, leading: 71, bottom: -32, trailing: 71))
+                    .padding([.horizontal, .bottom], 24)
                 
                 BorderView()
                 
@@ -138,25 +137,28 @@ struct GameDetailView: View {
     }
     
     private var gameItemButtonsView: some View {
-        HStack(alignment: .center, spacing: .zero) {
-            ItemButtonView(
-                image: isHeartButton == false ?
-                GamblerAsset.heartGray.swiftUIImage : GamblerAsset.heartRed.swiftUIImage,
-                buttonName: "찜하기") {
-                    
-                    isHeartButton.toggle()
-                    updateLikeGameList()
+        GeometryReader { geometry in
+            HStack(alignment: .center, spacing: .zero) {
+                ItemButtonView(
+                    image: isHeartButton == false ?
+                    GamblerAsset.heartGray.swiftUIImage : GamblerAsset.heartRed.swiftUIImage,
+                    buttonName: "찜하기") {
+                        
+                        isHeartButton.toggle()
+                        updateLikeGameList()
+                    }
+                    .frame(width: geometry.size.width / 2)
+                
+                ItemButtonView(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
+                    isWriteReviewButton = true
                 }
-            
-            Spacer()
-            
-            ItemButtonView(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
-                isWriteReviewButton = true
-            }
-            .navigationDestination(isPresented: $isWriteReviewButton) {
-                WriteReviewView(isShowingToast: $isShowingToast, reviewableItem: game)
+                .navigationDestination(isPresented: $isWriteReviewButton) {
+                    WriteReviewView(isShowingToast: $isShowingToast, reviewableItem: game)
+                }
+                .frame(width: geometry.size.width / 2)
             }
         }
+        .frame(maxWidth: .infinity)
     }
     
     private func updateLikeGameList() {
