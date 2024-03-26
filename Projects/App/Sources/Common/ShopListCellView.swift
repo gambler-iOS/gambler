@@ -44,7 +44,7 @@ struct ShopListCellView: View {
                         }
                         Spacer()
                         
-                        HeartCellView(isLike: isLike)
+                        HeartCellView(isLike: isLike, postId: shop.id, postType: AppConstants.PostType.shop)
                     }
 
                     ReviewRatingCellView(rating: shop.reviewRatingAverage)

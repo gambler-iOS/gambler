@@ -34,8 +34,8 @@ struct GameGridItemView: View {
                     .scaledToFit()
                     .padding(.bottom, 8)
                     .overlay(alignment: .topTrailing) {
-                        HeartCellView(isLike: isLike)
-                        .padding(8)
+                        HeartCellView(isLike: isLike, postId: game.id, postType: AppConstants.PostType.game)
+                            .padding(8)
                     }
             } else {
                 RoundedRectangle(cornerRadius: 8.0)

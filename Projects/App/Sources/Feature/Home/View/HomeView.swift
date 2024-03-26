@@ -44,19 +44,20 @@ struct HomeView: View {
                 .navigationDestination(for: String.self) { title in
                     if title.contains("게임") {
                         GameListView(title: title)
-                    }
-                    if title.contains("매장") {
+                    } else if title.contains("매장") {
                         ShopListView(title: title)
+                    } else if title == "로그인" {
+                        LoginView()
                     }
                 }
-                .buttonStyle(CustomButtonStyle())
+                .buttonStyle(HiddenClickAnimationButtonStyle())
             }
             .coordinateSpace(name: "HOMESCROLL")
             .ignoresSafeArea(.all, edges: .top)
-        }
-        .task {
-            await homeViewModel.fetchData()
-            await eventBannerViewModel.fetchData()
+            .task {
+                await homeViewModel.fetchData()
+                await eventBannerViewModel.fetchData()
+            }
         }
     }
     
@@ -96,10 +97,10 @@ struct HomeView: View {
     }
 }
 
-struct CustomButtonStyle: ButtonStyle {
+struct HiddenClickAnimationButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .background(configuration.isPressed ? Color.gray.opacity(0.3) : Color.clear)
+            .background(Color.clear)
     }
 }
 

@@ -42,10 +42,10 @@ final class GameListViewModel: ObservableObject {
         do {
             if title.contains("인기") || title.contains("Best") {
                 tempGames = try await firebaseManager.fetchOrderData(collectionName: collectionName,
-                                                                 orderBy: "reviewCount", limit: 5)
+                                                                 orderBy: "reviewCount", limit: 10)
             } else if title.contains("신규") {
                 tempGames = try await firebaseManager.fetchOrderData(collectionName: collectionName,
-                                                                 orderBy: "createdDate", limit: 5)
+                                                                 orderBy: "createdDate", limit: 10)
             } else if title.contains("비슷한 장르") {
                 tempGames = try await firebaseManager
                     .fetchWhereArrayContainsData(collectionName: collectionName, field: "gameIntroduction.genre",
@@ -62,7 +62,6 @@ final class GameListViewModel: ObservableObject {
                     .fetchWhereArrayContainsData(collectionName: collectionName, field: "gameIntroduction.genre",
                                                  arrayContainsAny: convertStringToGenre(koreanName: title),
                                                  limit: 5)
-                print(tempGames, title)
             }
         } catch {
             print("Error fetching \(collectionName) : \(error.localizedDescription)")

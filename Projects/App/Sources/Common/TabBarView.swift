@@ -18,6 +18,7 @@ struct TabBarView: View {
     @StateObject private var gameListViewModel = GameListViewModel()
     @StateObject private var gameDetailViewModel = GameDetailViewModel()
     @StateObject private var shopListViewModel = ShopListViewModel()
+    @StateObject private var reviewViewModel = ReviewViewModel()
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -60,7 +61,6 @@ struct TabBarView: View {
             
             MyPageView()
                 .environmentObject(myPageViewModel)
-                .environmentObject(loginViewModel)
                 .tabItem {
                     HStack {
                         (selectedTab == 3 ?
@@ -71,13 +71,14 @@ struct TabBarView: View {
                 .tag(3)
         }
         .tint(Color.primaryDefault)
+        .environmentObject(loginViewModel)
+        .environmentObject(reviewViewModel)
         .onAppear {
             self.draw = true
         }
         .onDisappear {
             self.draw = false
         }
-    
     }
 }
 
