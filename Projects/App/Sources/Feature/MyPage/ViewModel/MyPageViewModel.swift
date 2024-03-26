@@ -22,6 +22,8 @@ final class MyPageViewModel: ObservableObject {
     @Published var userImage: Image?
     @Published var profileImageChanged: Bool = false
     
+    @Published var isShowingToast: Bool = false
+    @Published var toastCategory: ToastCategory = .complain
 //    @Published var numnberOfReviews: String = ""
 //    @Published var numberOfLikes: String = ""
     

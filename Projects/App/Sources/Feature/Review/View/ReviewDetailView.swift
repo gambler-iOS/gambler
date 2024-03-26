@@ -19,7 +19,6 @@ struct ReviewDetailView: View {
     }
     
     var body: some View {
-        //        ScrollView {
         VStack(spacing: 24) {
             HStack(spacing: 8) {
                 Text("리뷰")

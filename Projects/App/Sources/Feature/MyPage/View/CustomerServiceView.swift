@@ -11,14 +11,14 @@ import SwiftUI
 struct CustomerServiceView: View {
     let complainViewModel: ComplainViewModel = ComplainViewModel()
     @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject private var myPageViewModel: MyPageViewModel
     
     @State private var choiceCategory: ComplainCategory = .spam
     @State private var isShowingDropMenu = false
     @State private var serviceContent: String = ""
     @State private var disabledButton: Bool = true
     @State private var selectedPhotosData: [Data] = []
-    @Binding var isShowingToast: Bool
-   
+    
     let complainPlaceholder: String = "내용을 적어주세요"
     
     var body: some View {
@@ -76,11 +76,12 @@ struct CustomerServiceView: View {
                                                     .uploadImages(selectedPhotosData,
                                                                   folder: .complain),
                                                          createdDate: Date()))
-            isShowingToast = true
+            myPageViewModel.toastCategory = .complain
+            myPageViewModel.isShowingToast = true
         }
         presentationMode.wrappedValue.dismiss()
         withAnimation(.easeIn(duration: 0.4)) {
-            isShowingToast = true
+            myPageViewModel.isShowingToast = true
         }
     }
     
@@ -120,5 +121,6 @@ struct CustomerServiceView: View {
 }
 
 #Preview {
-    CustomerServiceView(isShowingToast: .constant(true))
+    CustomerServiceView()
+        .environmentObject(MyPageViewModel())
 }

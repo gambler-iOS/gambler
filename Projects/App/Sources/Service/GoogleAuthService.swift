@@ -84,6 +84,21 @@ final class GoogleAuthSerVice {
                         return
                     }
                     
+                    // 마지막으로 로그인 한 날짜
+                    guard let lastSignInDate = user.metadata.lastSignInDate else {
+                        continuation.resume(returning: false)
+                        return
+                    }
+                    
+                    // 마지막에 로그인한 시간이 5분이 지났으면 true / 아니면 false
+                    let needsReauth = !lastSignInDate.isWithinPast(minutes: 5)
+                    
+                    if needsReauth {
+                        Task {
+                            await self.signInWithGoogle()
+                        }
+                    }
+                    
                     try Auth.auth().signOut()
                     await self.signOutFromGoogle()
                     

@@ -17,8 +17,18 @@ struct MyPageView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @EnvironmentObject private var profileEditViewModel: ProfileEditViewModel
-
-    @State private var isShowingToast: Bool = false
+    
+    var toastMessage: String {
+        
+        switch myPageViewModel.toastCategory {
+        case .complain:
+            return "신고가 완료되었어요!"
+        case .signUp:
+            return "회원가입이 완료되었습니다!"
+        case .deleteAccount:
+            return "회원탈퇴에 성공했습니다. 아쉽지만 다음에 또 만나요!"
+        }
+    }
     
     var currentUser: User? {
         return loginViewModel.currentUser
@@ -26,7 +36,13 @@ struct MyPageView: View {
     
     var body: some View {
         if loginViewModel.authState != .signedIn {
-                MyPageSignedOutView()
+            MyPageSignedOutView()
+                .overlay {
+                    if myPageViewModel.isShowingToast {
+                        toastMessageView
+                            .padding(.horizontal, 24)
+                    }
+                }
         } else { // SignedIn
             NavigationStack {
                 ScrollView {
@@ -57,9 +73,9 @@ struct MyPageView: View {
                             }
                         }
                         
-                        ListItemView(isShowingToast: $isShowingToast)
+                        ListItemView()
                     } .overlay {
-                        if isShowingToast {
+                        if myPageViewModel.isShowingToast {
                             toastMessageView
                         }
                     }
@@ -113,12 +129,12 @@ struct MyPageView: View {
     }
     
     private var toastMessageView: some View {
-        CustomToastView(content: "신고가 완료되었어요!")
+        CustomToastView(content: toastMessage)
             .offset(y: UIScreen.main.bounds.height * 0.3)
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                     withAnimation {
-                        isShowingToast = false
+                        myPageViewModel.isShowingToast = false
                     }
                 }
             }

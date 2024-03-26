@@ -66,6 +66,11 @@ struct ProfileEditView: View {
                             content: "탈퇴 후에는 작성하신 리뷰를 수정 혹은 삭제할 수 없어요. 탈퇴 신청 전에 꼭 확인해주세요.") {
                 Task {
                     if await loginViewModel.deleteAndResetAuth() {
+                        // 회원탈퇴 토스트 메시지
+                        myPageViewModel.toastCategory = .deleteAccount
+                        myPageViewModel.isShowingToast = true
+                        // 재로그인시 로딩 활성화 방지
+                        AuthService.shared.isLoading = false
                         isShowingResignModal = false
                     }
                 }

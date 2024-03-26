@@ -11,7 +11,6 @@ import AuthenticationServices
 
 struct LoginView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
-
     @State private var isShowingRegistrationView: Bool = false
     
     var body: some View {

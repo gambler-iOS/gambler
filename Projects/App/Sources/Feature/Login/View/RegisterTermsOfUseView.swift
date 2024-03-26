@@ -11,6 +11,7 @@ import SwiftUI
 struct RegisterTermsOfUseView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @EnvironmentObject private var myPageViewModel: MyPageViewModel
 
     @State private var isDisabled: Bool = true
     @State private var agreedAll: Bool = false
@@ -72,12 +73,16 @@ struct RegisterTermsOfUseView: View {
                 }
                 
                 Task {
-                    print("dummyUser - \(user)")
+                    myPageViewModel.toastCategory = .signUp
+                    myPageViewModel.isShowingToast = true
+                    
                     AuthService.shared.uploadUserToFirestore(user: user)
                     await loginViewModel.fetchUserData()
                     loginViewModel.authState = .signedIn
                     appNavigationPath.loginViewPath = .init()
-                    
+                    withAnimation(.easeIn(duration: 0.4)) {
+                        myPageViewModel.isShowingToast = true
+                    }
                 }
             }
             .padding(.bottom, 24)
@@ -104,4 +109,5 @@ struct RegisterTermsOfUseView: View {
     RegisterTermsOfUseView()
         .environmentObject(LoginViewModel())
         .environmentObject(AppNavigationPath())
+        .environmentObject(MyPageViewModel())
 }
