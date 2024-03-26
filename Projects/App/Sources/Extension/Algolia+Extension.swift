@@ -10,7 +10,7 @@ import AlgoliaSearchClient
 import Foundation
 
 extension SearchClient {
-  static let instantSearch = Self(appID: "T9PDR9Q3NM", apiKey: "0055a81493d2ad46aedfb117245685af")
+  static let multiSearch = Self(appID: "T9PDR9Q3NM", apiKey: "0055a81493d2ad46aedfb117245685af")
 }
 
 extension IndexName {

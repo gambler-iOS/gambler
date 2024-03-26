@@ -9,8 +9,25 @@
 import SwiftUI
 
 struct SearchBarView: View {
+    @Environment(\.modelContext) private var modelContext
+    
     @Binding var searchText: String
-    @State private var isEditing = false
+    @Binding private var isEditing: Bool
+    @Binding private var isSearch: Bool
+    private let placeholder: String
+    private var onSubmit: () -> Void
+    
+    init(searchText: Binding<String>,
+         isEditing: Binding<Bool>,
+         isSearch: Binding<Bool>,
+         placeholder: String = "게임, 지역, 장르 등 검색",
+         onSubmit: @escaping () -> Void) {
+        _searchText = searchText
+        _isEditing = isEditing
+        _isSearch = isSearch
+        self.placeholder = placeholder
+        self.onSubmit = onSubmit
+    }
     
     var body: some View {
         HStack {
@@ -21,25 +38,36 @@ struct SearchBarView: View {
                     .frame(width: 24, height: 24)
                     .foregroundColor(.gray300)
                 
-                TextField("게임, 지역, 장르 등 검색", text: $searchText, onEditingChanged: { _ in
-                    withAnimation(.interpolatingSpring, {
-                        self.isEditing.toggle()
-                    })
+                TextField(placeholder, text: $searchText,
+                          onCommit: {
+                    onSubmit()
+                    addItem()
+                    isEditing = true
+                    isSearch = true
                 })
-                .foregroundColor(.gray400)
+                .foregroundColor(.gray600)
                 .keyboardType(.webSearch)
-                
-                if !searchText.isEmpty {
-                    Button {
-                        searchText = ""
-                    } label: {
-                        Image(systemName: "multiply.circle.fill")
-                            .foregroundColor(.gray400)
-                            .frame(width: 24, height: 24)
+                .overlay(
+                    HStack {
+                        Spacer()
+                        if isEditing && !searchText.isEmpty {
+                            Button {
+                                searchText = ""
+                                isEditing = false
+                                isSearch = false
+                            } label: {
+                                Image(systemName: "multiply.circle.fill")
+                                    .foregroundColor(.gray400)
+                                    .frame(width: 24, height: 24)
+                            }
+                            .padding(.trailing, 8)
+                        }
                     }
-                }
+                )
             }
-            .ignoresSafeArea()
+            .onTapGesture {
+                isEditing = true
+            }
             .padding(.horizontal, 16)
             .padding(.vertical, 16)
             .background(Color.gray50)
@@ -47,8 +75,16 @@ struct SearchBarView: View {
             .cornerRadius(8)
         }
     }
+    
+    private func addItem() {
+        withAnimation {
+            let newItem = SearchKeyword(timestamp: Date(), keyword: "")
+            newItem.keyword = searchText
+            modelContext.insert(newItem)
+        }
+    }
 }
 
-#Preview {
-    SearchBarView(searchText: .constant(""))
-}
+//#Preview {
+//    SearchBarView(searchText: .constant(""))
+//}

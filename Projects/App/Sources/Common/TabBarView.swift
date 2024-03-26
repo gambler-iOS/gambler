@@ -48,7 +48,12 @@ struct TabBarView: View {
                 }
                 .tag(1)
             
-            SearchMainView()
+            SearchMainView(searchBoxController:
+                            MultiController.controller.searchBoxController,
+                           shopHitsController: MultiController.controller.shopHitsController,
+                           gameHitsController: MultiController.controller.gameHitsController,
+                           shopStatsController: MultiController.controller.shopStatsController, gameStatsController: MultiController.controller.gameStatsController
+            )
                 .tabItem {
                     HStack {
                         (selectedTab == 2 ?

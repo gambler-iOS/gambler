@@ -16,6 +16,7 @@ struct Shop: AvailableFirebase, AvailableAggregateReview, Hashable {
     var id: String
     let shopName: String
     let shopAddress: String
+    var shopCountry: String = ""
     let shopImage: String
     let location: GeoPoint
     let shopPhoneNumber: String
