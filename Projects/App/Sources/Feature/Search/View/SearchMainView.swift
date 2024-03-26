@@ -43,15 +43,21 @@ struct SearchMainView: View {
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 24)
-            }
-        }
-        .navigationDestination(for: String.self) { str in
-            if str == "Shops" {
-                SearchShopListView(shopViewModel:
-                                    MultiController.controller.searchController.shopSearcher.paginatedData(of: Hit<Shop>.self))
-            } else if str == "Games" {
-                SearchGameListView(gameViewModel:
-                                    MultiController.controller.searchController.gameSearcher.paginatedData(of: Hit<Game>.self))
+                .navigationDestination(for: String.self) { str in
+                    if str == "Shops" {
+                        SearchShopListView(shopViewModel:
+                                            MultiController.controller.searchController.shopSearcher.paginatedData(of: Hit<Shop>.self))
+                    } else if str == "Games" {
+                        SearchGameListView(gameViewModel:
+                                            MultiController.controller.searchController.gameSearcher.paginatedData(of: Hit<Game>.self))
+                    }
+                }
+                .navigationDestination(for: Shop.self) { shop in
+                    ShopDetailInfoView(shop: shop)
+                }
+                .navigationDestination(for: Game.self) { game in
+                    GameDetailView(game: game)
+                }
             }
         }
     }

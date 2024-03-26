@@ -11,13 +11,22 @@ import InstantSearchCore
 import InstantSearchSwiftUI
 
 struct SearchShopListView: View {
-    @ObservedObject var shopViewModel:  PaginatedDataViewModel<AlgoliaHitsPage<Hit<Shop>>>
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @ObservedObject var shopViewModel: PaginatedDataViewModel<AlgoliaHitsPage<Hit<Shop>>>
     
     var body: some View {
-        InfiniteList(shopViewModel) { shop in
-            ShopListCellView(shop: shop.object, likeShopIdArray: [])
-        } noResults: {
-            Text("No Results")
+        VStack {
+            InfiniteList(shopViewModel) { shop in
+                ShopListCellView(shop: shop.object, likeShopIdArray: [])
+                    .onTapGesture {
+                        appNavigationPath.searchViewPath.append(shop.object)
+                    }
+            } noResults: {
+                Text("No Results")
+            }
+            .padding(EdgeInsets(top: 24, leading: 24, bottom: 24, trailing: 24))
         }
+        .navigationTitle("매장 검색 결과")
+        .modifier(BackButton())
     }
 }

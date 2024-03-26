@@ -7,10 +7,11 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct SearchBarView: View {
     @Environment(\.modelContext) private var modelContext
-    
+    @Query private var items: [SearchKeyword]
     @Binding var searchText: String
     @Binding private var isEditing: Bool
     @Binding private var isSearch: Bool
@@ -77,10 +78,20 @@ struct SearchBarView: View {
     }
     
     private func addItem() {
-        withAnimation {
-            let newItem = SearchKeyword(timestamp: Date(), keyword: "")
-            newItem.keyword = searchText
+        let newItem = SearchKeyword(timestamp: Date(), keyword: "")
+        newItem.keyword = searchText
+        if !items.contains(where: {
+            $0.keyword == searchText
+        }) {
             modelContext.insert(newItem)
+        }
+        do {
+            if items.count > 9 {
+                modelContext.delete(items[0])
+            }
+            try modelContext.save()
+        } catch let error {
+            print(error.localizedDescription)
         }
     }
 }

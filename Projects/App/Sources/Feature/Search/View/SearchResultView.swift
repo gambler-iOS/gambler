@@ -35,12 +35,18 @@ struct SearchResultView: View {
                         ForEach(0..<shopHitsCount, id: \.self) { index in
                             if let shop = shopHitsController.hits[index] {
                                 ShopListCellView(shop: shop.object, likeShopIdArray: [])
+                                    .onTapGesture {
+                                        appNavigationPath.searchViewPath.append(shop.object)
+                                    }
                             }
                         }
                     } else {
                         ForEach(0..<3, id: \.self) { index in
                             if let shop = shopHitsController.hits[index] {
                                 ShopListCellView(shop: shop.object, likeShopIdArray: [])
+                                    .onTapGesture {
+                                        appNavigationPath.searchViewPath.append(shop.object)
+                                    }
                             }
                         }
                     }
@@ -64,12 +70,18 @@ struct SearchResultView: View {
                         ForEach(0..<gameHitsCount, id: \.self) { index in
                             if let game = gameHitsController.hits[index] {
                                 GameListItemView(game: game.object, likeGameIdArray: [])
+                                    .onTapGesture {
+                                        appNavigationPath.searchViewPath.append(game.object)
+                                    }
                             }
                         }
                     } else {
                         ForEach(0..<3, id: \.self) { index in
                             if let game = gameHitsController.hits[index] {
                                 GameListItemView(game: game.object, likeGameIdArray: [])
+                                    .onTapGesture {
+                                        appNavigationPath.searchViewPath.append(game.object)
+                                    }
                             }
                         }
                     }
@@ -78,7 +90,23 @@ struct SearchResultView: View {
             }
             
             if shopHitsCount == 0 && gameHitsCount == 0 {
-                
+                Group {
+                    VStack(alignment: .leading) {
+                        HStack {
+                            Text("검색 결과가 없습니다.")
+                                .font(.subHead2M)
+                                .foregroundColor(Color.black)
+                            Spacer()
+                        }
+                        HStack {
+                            Text("다른 검색어를 입력해주세요~")
+                                .font(.caption1M)
+                                .foregroundColor(.gray500)
+                            Spacer()
+                        }
+                        .padding(.top, 8)
+                    }
+                }
             }
         }
     }
