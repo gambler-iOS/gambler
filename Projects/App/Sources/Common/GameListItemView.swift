@@ -14,7 +14,7 @@ struct GameListItemView: View {
     let game: Game
     let likeGameIdArray: [String]
     
-    var isLike: Bool {
+    private var isLike: Bool {
         likeGameIdArray.contains { id in
             id == game.id
         }
@@ -38,30 +38,30 @@ struct GameListItemView: View {
                             height: AppConstants.ImageFrame.listCell.height)
                         .foregroundColor(Color.gray200)
                 }
+                
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text("\(game.gameName)")
                             .font(.body1M)
                             .foregroundStyle(Color.gray700)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
                         
                         Spacer()
                         
-                        HeartCellView(isLike: isLike)
+                        HeartCellView(isLike: isLike, postId: game.id, postType: AppConstants.PostType.game)
                     }
 
                     ReviewRatingCellView(rating: game.reviewRatingAverage)
                     
                     TagLayout {
-                        ChipView(label: "👥 3 - 10명", size: .small)
-                        ChipView(label: "🕛 10분 내외", size: .small)
-                        ChipView(label: "📖 마피아", size: .small)
-                        ChipView(label: "🟡 난이도 하", size: .small)
+                        ForEach(game.chipViewLabel, id: \.self) { label in
+                            ChipView(label: label, size: .small)
+                        }
                     }
-                    Spacer()
                 }
                 .foregroundStyle(.black)
             }
-            .frame(height: 108)
         }
     }
 }

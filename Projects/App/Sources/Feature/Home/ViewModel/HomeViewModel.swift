@@ -13,6 +13,7 @@ final class HomeViewModel: ObservableObject {
     @Published var popularShops: [Shop] = []
     @Published var newGames: [Game] = []
     @Published var newShops: [Shop] = []
+    @Published var popularGenre: [GameGenre] = []
  
     private let firebaseManager = FirebaseManager.shared
     
@@ -20,10 +21,38 @@ final class HomeViewModel: ObservableObject {
 //        generateDummyData()
     }
 
-    func generateDummyData() {
+    private func generateDummyData() {
         popularGames = Game.dummyGameList
         popularShops = Shop.dummyShopList
         newGames = Game.dummyGameList
         newShops = Shop.dummyShopList
+    }
+    
+    @MainActor
+    func fetchData() async {
+        popularGames.removeAll()
+        popularShops.removeAll()
+        newGames.removeAll()
+        newShops.removeAll()
+
+        do {
+            popularGames = try await firebaseManager
+                .fetchOrderData(collectionName: AppConstants.CollectionName.games, orderBy: "reviewCount", limit: 4)
+            popularShops = try await firebaseManager
+                .fetchOrderData(collectionName: AppConstants.CollectionName.shops, orderBy: "reviewCount", limit: 3)
+            newGames = try await firebaseManager
+                .fetchOrderData(collectionName: AppConstants.CollectionName.games, orderBy: "createdDate", limit: 4)
+            newShops = try await firebaseManager
+                .fetchOrderData(collectionName: AppConstants.CollectionName.shops, orderBy: "createdDate", limit: 3)
+            popularGenre = getPopularGenre()
+        } catch {
+            print("Error fetching HomeviewModel : \(error.localizedDescription)")
+        }
+    }
+    
+    func getPopularGenre() -> [GameGenre] {
+        return Array(Set(popularGames.flatMap { game in
+            game.gameIntroduction.genre
+        }))
     }
 }

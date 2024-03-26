@@ -11,7 +11,7 @@ import Kingfisher
 
 struct CardItemView: View {
     let game: Game
-    var playerString: String {
+    private var playerString: String {
         "인원 \(game.gameIntroduction.minPlayerCount)~\(game.gameIntroduction.maxPlayerCount)명"
     }
     
@@ -20,9 +20,10 @@ struct CardItemView: View {
             if let url = URL(string: game.gameImage) {
                 KFImage(url)
                     .resizable()
-                    // 디자인 Dim 수정 및 확인
                     .overlay {
-                        LinearGradient(gradient: Gradient(colors: [.clear, .black]), startPoint: UnitPoint(x: 0.5, y: 0.33), endPoint: .bottom)
+                        LinearGradient(gradient: Gradient(colors: [.clear, .black]),
+                                       startPoint: UnitPoint(x: 0.5, y: 0.33),
+                                       endPoint: .bottom)
                     }
                     .frame(width: 240, height: 300)
                     .clipShape(RoundedRectangle(cornerRadius: 16.0))
@@ -32,6 +33,9 @@ struct CardItemView: View {
                             Text(game.gameName)
                                 .font(.body1M)
                                 .foregroundStyle(Color.gray50)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                                .frame(width: 208, alignment: .leading)
                             
                             HStack(spacing: 8) {
                                 ReviewRatingCellView(rating: game.reviewRatingAverage, textColor: .gray50)

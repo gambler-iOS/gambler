@@ -10,10 +10,12 @@ import SwiftUI
 import Kingfisher
 
 struct ShopDetailInfoView: View {
-    
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     @State private var offsetY: CGFloat = CGFloat.zero
     @State private var isShowingFullScreen: Bool = false
     @State private var url: URL?
+    @State private var isHeartButton: Bool = false
     let mainImageHeight: CGFloat = 200
     let shop: Shop
     
@@ -170,6 +172,34 @@ struct ShopDetailInfoView: View {
                 .font(.subHead1B)
                 .foregroundStyle(Color.gray700)
             Spacer()
+        }
+    }
+    
+    private func updateLikeShopList() {
+        guard var curUser = loginViewModel.currentUser else {
+            appNavigationPath.homeViewPath.append("로그인")
+            return
+        }
+        
+        var userLikeDictionary: [AnyHashable: Any] = [:]
+        var updatedLikeArray: [String] = []
+        
+        if let likeShopIdArray = curUser.likeShopId {
+            updatedLikeArray = likeShopIdArray
+        }
+        
+        if isHeartButton {
+            updatedLikeArray.append(shop.id)
+        } else {
+            updatedLikeArray.removeAll { $0 == shop.id }
+        }
+        
+        curUser.likeShopId = updatedLikeArray
+        
+        userLikeDictionary["likeShopId"] = updatedLikeArray
+        
+        Task {
+            await loginViewModel.updateLikeList(likePostIds: userLikeDictionary)
         }
     }
 }
