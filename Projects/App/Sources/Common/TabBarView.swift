@@ -30,8 +30,6 @@ struct TabBarView: View {
                 .environmentObject(gameListViewModel)
                 .environmentObject(gameDetailViewModel)
                 .environmentObject(shopListViewModel)
-                .environmentObject(loginViewModel)
-                .environmentObject(reviewViewModel)
                 .tabItem {
                     HStack {
                         (selectedTab == 0 ?
@@ -64,7 +62,6 @@ struct TabBarView: View {
             
             MyPageView()
                 .environmentObject(myPageViewModel)
-                .environmentObject(loginViewModel)
                 .environmentObject(profileEditViewModel)
                 .environmentObject(appNavigationPath)
                 .tabItem {
@@ -77,6 +74,8 @@ struct TabBarView: View {
                 .tag(3)
         }
         .tint(Color.primaryDefault)
+        .environmentObject(loginViewModel)
+        .environmentObject(reviewViewModel)
         .onAppear {
             self.draw = true
         }
