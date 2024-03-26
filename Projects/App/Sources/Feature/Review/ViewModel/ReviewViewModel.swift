@@ -20,19 +20,18 @@ final class ReviewViewModel: ObservableObject {
     @Published var dummyReviews: [Review] = []
     @Published var dummyShops: [Shop] = []
     
-    
     init() {
-        generateDummyData()
+
     }
     
     func submitReview(user: User?, reviewableItem: AvailableAggregateReview, reviewContent: String, reviewRating: Double, images: [Data]?) async {
         
         guard let user else { return }
         
-        if let game = reviewableItem as? Game {
+        if reviewableItem is Game {
             category = .game
             print("catrgory: game")
-        } else if let shop = reviewableItem as? Shop {
+        } else if reviewableItem is Shop {
             category = .shop
             print("catrgory: shop")
         }
@@ -49,7 +48,7 @@ final class ReviewViewModel: ObservableObject {
                                 category: category)
             
             await self.addReview(review: review)
-            await self.fetchReview()
+            await self.fetchReviewData(reviewableItem: reviewableItem)
             await self.updateUserReviewCount(user: user)
         }
     }
@@ -86,6 +85,29 @@ final class ReviewViewModel: ObservableObject {
             print("Error fetching \(collectionName) : \(error.localizedDescription)")
         }
         self.reviews = tempReviews
+    }
+    
+    @MainActor
+    func fetchReviewData(reviewableItem: AvailableAggregateReview) async {
+        Task {
+            reviews.removeAll()
+            
+            var tempReviews: [Review] = []
+            
+            do {
+                tempReviews = try await firebaseManager
+                    .fetchWhereIsEqualToData(collectionName: AppConstants.CollectionName.reviews,
+                                             field: "postId",
+                                             isEqualTo: reviewableItem.id)
+            }
+            
+            // 최신순으로 정렬
+            tempReviews.sort { $0.createdDate > $1.createdDate }
+            
+            for review in tempReviews {
+                reviews.append(review)
+            }
+        }
     }
     
     // Firestore User - myReviewsCount 업데이트
