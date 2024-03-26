@@ -11,23 +11,10 @@ import SwiftUI
 struct TabBarView: View {
     @State private var selectedTab = 0
     @State private var draw = false
-    @StateObject private var myPageViewModel = MyPageViewModel()
-    @StateObject private var loginViewModel = LoginViewModel()
-    @StateObject private var appNavigationPath = AppNavigationPath()
-    @StateObject private var homeViewModel = HomeViewModel()
-    @StateObject private var gameListViewModel = GameListViewModel()
-    @StateObject private var gameDetailViewModel = GameDetailViewModel()
-    @StateObject private var shopListViewModel = ShopListViewModel()
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            
             HomeView()
-                .environmentObject(homeViewModel)
-                .environmentObject(appNavigationPath)
-                .environmentObject(gameListViewModel)
-                .environmentObject(gameDetailViewModel)
-                .environmentObject(shopListViewModel)
                 .tabItem {
                     HStack {
                         (selectedTab == 0 ?
@@ -54,18 +41,16 @@ struct TabBarView: View {
                            gameHitsController: MultiController.controller.gameHitsController,
                            shopStatsController: MultiController.controller.shopStatsController, gameStatsController: MultiController.controller.gameStatsController
             )
-                .tabItem {
-                    HStack {
-                        (selectedTab == 2 ?
-                         GamblerAsset.tabSearchSelected.swiftUIImage : GamblerAsset.tabSearch.swiftUIImage)
-                        Text("검색")
-                    }
+            .tabItem {
+                HStack {
+                    (selectedTab == 2 ?
+                     GamblerAsset.tabSearchSelected.swiftUIImage : GamblerAsset.tabSearch.swiftUIImage)
+                    Text("검색")
                 }
-                .tag(2)
+            }
+            .tag(2)
             
             MyPageView()
-                .environmentObject(myPageViewModel)
-                .environmentObject(loginViewModel)
                 .tabItem {
                     HStack {
                         (selectedTab == 3 ?
@@ -82,7 +67,7 @@ struct TabBarView: View {
         .onDisappear {
             self.draw = false
         }
-    
+        
     }
 }
 

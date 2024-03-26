@@ -10,4 +10,5 @@ import SwiftUI
 
 final class AppNavigationPath: ObservableObject {
     @Published var homeViewPath = NavigationPath()
+    @Published var searchViewPath = NavigationPath()
 }

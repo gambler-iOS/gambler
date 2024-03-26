@@ -12,6 +12,7 @@ import InstantSearchCore
 import InstantSearchSwiftUI
 
 struct SearchMainView: View {
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @Environment(\.modelContext) private var modelContext
     @State private var isEditing = false
     @State private var isSearch = false
@@ -22,25 +23,36 @@ struct SearchMainView: View {
     @ObservedObject var gameStatsController: StatsTextObservableController
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 32) {
-                SearchBarView(searchText: $searchBoxController.query,
-                              isEditing: $isEditing, isSearch: $isSearch,
-                              onSubmit: searchBoxController.submit)
-                if isSearch {
-                    SearchTestView(
-                        searchBoxController: searchBoxController,
-                        shopHitsController: shopHitsController,
-                        gameHitsController: gameHitsController,
-                        shopStatsController : shopStatsController, gameStatsController: gameStatsController
-                    )
-                } else {
-                    RecentKeywordView()
+        NavigationStack(path: $appNavigationPath.searchViewPath) {
+            ScrollView {
+                VStack(spacing: 32) {
+                    SearchBarView(searchText: $searchBoxController.query,
+                                  isEditing: $isEditing, isSearch: $isSearch,
+                                  onSubmit: searchBoxController.submit)
+                    if isSearch {
+                        SearchResultView(
+                            searchBoxController: searchBoxController,
+                            shopHitsController: shopHitsController,
+                            gameHitsController: gameHitsController,
+                            shopStatsController : shopStatsController, gameStatsController: gameStatsController
+                        )
+                    } else {
+                        RecentKeywordView()
+                    }
+                    Spacer()
                 }
-                Spacer()
+                .padding(.horizontal, 24)
+                .padding(.top, 24)
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 24)
+        }
+        .navigationDestination(for: String.self) { str in
+            if str == "Shops" {
+                SearchShopListView(shopViewModel:
+                                    MultiController.controller.searchController.shopSearcher.paginatedData(of: Hit<Shop>.self))
+            } else if str == "Games" {
+                SearchGameListView(gameViewModel:
+                                    MultiController.controller.searchController.gameSearcher.paginatedData(of: Hit<Game>.self))
+            }
         }
     }
     

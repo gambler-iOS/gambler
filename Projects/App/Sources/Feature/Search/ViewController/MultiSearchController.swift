@@ -15,6 +15,9 @@ class MultiSearchController {
     let shopHitsConnector: HitsConnector<Hit<Shop>>
     let gameHitsConnector: HitsConnector<Hit<Game>>
     
+    let shopSearcher: HitsSearcher
+    let gameSearcher: HitsSearcher
+    
     let shopStatsConnector: StatsConnector
     let gameStatsConnector: StatsConnector
     
@@ -22,8 +25,8 @@ class MultiSearchController {
     
     init(searchTriggeringMode: SearchTriggeringMode = .searchOnSubmit) {
         multiSearcher = .init(client: .multiSearch)
-        let shopSearcher = multiSearcher.addHitsSearcher(indexName: .shops)
-        let gameSearcher = multiSearcher.addHitsSearcher(indexName: .games)
+        shopSearcher = multiSearcher.addHitsSearcher(indexName: .shops)
+        gameSearcher = multiSearcher.addHitsSearcher(indexName: .games)
         searchBoxConnector = .init(searcher: multiSearcher,
                                    searchTriggeringMode: searchTriggeringMode)
         
