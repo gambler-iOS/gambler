@@ -30,7 +30,6 @@ struct MyReviewsView: View {
     
     @ViewBuilder
     private func reviewListView(reviewDatas: [ReviewData]) -> some View {
-//    private func reviewListView(reviewData: [Review]) -> some View {
         if reviewDatas.isEmpty {
             VStack {
                 Spacer()
