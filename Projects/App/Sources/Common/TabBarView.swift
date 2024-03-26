@@ -61,6 +61,7 @@ struct TabBarView: View {
             
             MyPageView()
                 .environmentObject(myPageViewModel)
+                .environmentObject(appNavigationPath)
                 .tabItem {
                     HStack {
                         (selectedTab == 3 ?

@@ -65,7 +65,8 @@ final class ReviewViewModel: ObservableObject {
                 shopDetailImage: ["detailImage"],
                 createdDate: Date(),
                 reviewCount: 3,
-                reviewRatingAverage: 3.5))
+                reviewRatingAverage: 3.5,
+                ShopCountry: "서울특별시"))
         }
     }
 }

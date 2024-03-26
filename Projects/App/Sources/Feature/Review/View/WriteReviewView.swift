@@ -78,8 +78,7 @@ struct WriteReviewView: View {
             
         }
     }
-    
-#warning("텍스트 에디터의 reviewContent가 바뀔 때마다 메서드를 호출하는 것은 안좋아 보임. 디바운싱이나 스로틀링을 적용하면 좋을 듯 (onReceive)")
+   
     private func submitReview() {
         Task {
             if let userId = loginViewModel.currentUser?.id {
@@ -126,7 +125,6 @@ struct WriteReviewView: View {
                     .font(.body1M)
                     .foregroundStyle(Color.gray700)
             }
-            
             Spacer()
         }
     }

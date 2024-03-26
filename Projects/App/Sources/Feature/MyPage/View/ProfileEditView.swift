@@ -17,9 +17,14 @@ struct ProfileEditView: View {
     @State private var imageData: Data?
     @State private var isShowingResignModal: Bool = false
     @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     
 #warning("임시")
     @State private var user: User = User.dummyUser
+    
+    var currentUser: User? {
+        return loginViewModel.currentUser
+    }
     
     var body: some View {
         VStack {
@@ -35,6 +40,9 @@ struct ProfileEditView: View {
                         .padding(24)
                 }
                 .padding(.bottom, 60)
+            }
+            .onAppear {
+                self.nickName = currentUser?.nickname ?? ""
             }
             .navigationTitle("프로필 수정")
             .modifier(BackButton())
@@ -53,7 +61,11 @@ struct ProfileEditView: View {
             CustomModalView(isShowingModal: $isShowingResignModal,
                             title: "정말 탈퇴하시겠어요?",
                             content: "탈퇴 후에는 작성하신 리뷰를 수정 혹은 삭제할 수 없어요. 탈퇴 신청 전에 꼭 확인해주세요.") {
-                isShowingResignModal = false
+                Task {
+                    if await loginViewModel.deleteAndResetAuth() {
+                        isShowingResignModal = false
+                    }
+                }
             }
         }.transaction({ transaction in
             transaction.disablesAnimations = true
@@ -75,7 +87,7 @@ struct ProfileEditView: View {
                     .frame(width: 64, height: 64)
                     .clipShape(.circle)
             } else {
-                CircleImageView(imageURL: User.dummyUser.profileImageURL, size: 64)
+                CircleImageView(imageURL: currentUser?.profileImageURL ?? "" , size: 64)
             }
             pickerView
                 .padding(.top, 16)
@@ -134,15 +146,15 @@ struct ProfileEditView: View {
                     VStack {
                         PluginCellView(image: GamblerAsset.kakaotalkLogo.swiftUIImage,
                                        social: LoginPlatform.kakakotalk,
-                                       user: $user)
+                                       user: currentUser)
                             .padding(.horizontal, 16)
                         PluginCellView(image: GamblerAsset.appleLogo.swiftUIImage,
                                        social: LoginPlatform.apple,
-                                       user: $user)
+                                       user: currentUser)
                             .padding(.horizontal, 16)
                         PluginCellView(image: GamblerAsset.googleLogo.swiftUIImage,
                                        social: LoginPlatform.google,
-                                       user: $user)
+                                       user: currentUser)
                             .padding(.horizontal, 16)
                     }
                 }
@@ -157,4 +169,5 @@ struct ProfileEditView: View {
 
 #Preview {
     ProfileEditView()
+        .environmentObject(LoginViewModel())
 }

@@ -13,31 +13,33 @@ import KakaoSDKCommon
 
 struct MyPageView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
-    @EnvironmentObject var loginViewModel: LoginViewModel
+    @EnvironmentObject private var loginViewModel: LoginViewModel
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    
     @State private var isShowingToast: Bool = false
-#warning("로그인 플랫폼 로직 구현 필요")
-    let loginPlatform: String = "카카오톡"
+    
+    var currentUser: User? {
+        return loginViewModel.currentUser
+    }
     
     var body: some View {
-        
-        if loginViewModel.authState == .signedOut {
-            LoginView()
-                .environmentObject(loginViewModel)
-        } else {
+        if loginViewModel.authState != .signedIn {
+                MyPageSignedOutView()
+        } else { // SignedIn
             NavigationStack {
                 ScrollView {
                     VStack(spacing: .zero) {
-                        myPageHeaderView(imageURL: myPageViewModel.user.profileImageURL, nickname: myPageViewModel.user.nickname, loginPlatform: self.loginPlatform)
+                        myPageHeaderView(user: currentUser)
                         
                         HStack {
                             Spacer()
-                            navigationView(title: "나의 리뷰", destination: MyReviewsView(), count: "\(User.dummyUser.myReviewsCount)")
+                            navigationView(title: "나의 리뷰", destination: MyReviewsView(), count: "\(currentUser?.myReviewsCount ?? 0)")
                             Spacer()
                             Divider()
                                 .frame(width: 1, height: 44)
                                 .foregroundStyle(Color.gray200)
                             Spacer()
-                            navigationView(title: "좋아요", destination: MyLikesView(), count: "\(User.dummyUser.myLikesCount)")
+                            navigationView(title: "좋아요", destination: MyLikesView(), count: "\(currentUser?.myLikesCount ?? 0)")
                             Spacer()
                         }
                         .frame(height: 140)
@@ -45,7 +47,6 @@ struct MyPageView: View {
                         .clipShape(.rect(cornerRadius: 8))
                         
                         ListItemView(isShowingToast: $isShowingToast)
-                            .environmentObject(loginViewModel)
                     } .overlay {
                         if isShowingToast {
                             toastMessageView
@@ -60,13 +61,13 @@ struct MyPageView: View {
     }
     
     @ViewBuilder
-    private func myPageHeaderView(imageURL: String, nickname: String, loginPlatform: String) -> some View {
+    private func myPageHeaderView(user: User?) -> some View {
         HStack(spacing: 8) {
-            CircleImageView(imageURL: imageURL, size: 64)
+            CircleImageView(imageURL: user?.profileImageURL ?? "", size: 64)
             
             VStack(alignment: .leading, spacing: 8) {
-                Text(nickname)
-                ChipView(label: "\(loginPlatform) 로그인 완료", size: .medium)
+                Text(user?.nickname ?? "")
+                ChipView(label: "\(user?.loginPlatform.description ?? "") 로그인 완료", size: .medium)
                     .foregroundStyle(Color.gray400)
             }
             Spacer()
@@ -107,4 +108,5 @@ struct MyPageView: View {
     MyPageView()
         .environmentObject(MyPageViewModel())
         .environmentObject(LoginViewModel())
+//        .environmentObject(AppNavigationPath())
 }
