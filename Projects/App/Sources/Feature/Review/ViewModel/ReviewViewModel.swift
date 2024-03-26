@@ -15,8 +15,8 @@ final class ReviewViewModel: ObservableObject {
     private var category: ReviewCategory = .game
     
     let reviewTarget: String = ""
-    @Published var reviews: [Review] = []
     
+    @Published var reviews: [Review] = []
     @Published var dummyReviews: [Review] = []
     @Published var dummyShops: [Shop] = []
     
@@ -30,10 +30,8 @@ final class ReviewViewModel: ObservableObject {
         
         if reviewableItem is Game {
             category = .game
-            print("catrgory: game")
         } else if reviewableItem is Shop {
             category = .shop
-            print("catrgory: shop")
         }
         Task {
             let reviewImages: [String]? = await uploadImages(selectedPhotosData: images)

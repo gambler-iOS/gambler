@@ -90,6 +90,7 @@ final class KakaoAuthService {
                 print("DEBUG: 카카오톡 사용자 정보가져오기 에러 \(error.localizedDescription)")
             } else {
                 print("DEBUG: 카카오톡 사용자 정보가져오기 success.")
+                AuthService.shared.isLoading = true
                 
                 guard let email = user?.kakaoAccount?.email else { return }
                 guard let name = user?.kakaoAccount?.profile?.nickname else { return }

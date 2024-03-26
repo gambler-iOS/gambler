@@ -48,8 +48,6 @@ final class MyPageViewModel: ObservableObject {
                     .fetchWhereIsEqualToData(collectionName: AppConstants.CollectionName.reviews,
                                              field: "userId",
                                              isEqualTo: user.uid)
-                
-                print("tempReviews - \(tempReviews)")
             }
             
             // 최신순으로 정렬

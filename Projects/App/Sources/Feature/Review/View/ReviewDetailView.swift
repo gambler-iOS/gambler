@@ -39,7 +39,7 @@ struct ReviewDetailView: View {
                         ForEach(reviewViewModel.reviews, id: \.self) { review in
                             ReviewDetailCellView(name: targetName, reviewData: review)
                             
-                            if review != reviewViewModel.dummyReviews.last {
+                            if review != reviewViewModel.reviews.last {
                                 Divider()
                             }
                         }

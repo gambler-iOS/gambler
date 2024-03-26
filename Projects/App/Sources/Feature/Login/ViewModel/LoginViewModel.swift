@@ -38,7 +38,7 @@ final class LoginViewModel: ObservableObject {
             print("Auth changed: \(user != nil)")
             print("configureAuthStateChanges - \(self.authState)")
             
-            guard let user = user else {
+            guard user != nil else {
                 // 유효한 사용자가 없기 때문에 로그인되지 않았음을 의미
                 print("User is nil")
                 self.authState = .signedOut
@@ -48,6 +48,7 @@ final class LoginViewModel: ObservableObject {
             
             Task {
                 await self.fetchUserData()
+                AuthService.shared.isLoading = false
             }
         }
     }

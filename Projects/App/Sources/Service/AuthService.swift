@@ -18,7 +18,8 @@ enum AuthState {
 }
 
 final class AuthService: ObservableObject {
-    
+    @Published var isLoading: Bool = false
+
     static let shared = AuthService()
     
     var tempUser: User?  // 회원가입 시 유저 데이터를 담을 임시 변수

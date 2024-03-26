@@ -82,6 +82,7 @@ struct LoginView: View {
             }
         }
         .modifier(BackButton())
+        .modifier(CustomLoadingView(isLoading: AuthService.shared.isLoading))
         .toolbar(.hidden, for: .tabBar)
         .navigationDestination(isPresented: $isShowingRegistrationView) {
             RegistrationView()
