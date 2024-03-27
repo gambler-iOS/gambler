@@ -29,6 +29,9 @@ struct GameMiniGridItemView: View {
             Text(game.gameName)
                 .font(.body2M)
                 .foregroundStyle(Color.gray700)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(width: 100)
         }
     }
 }

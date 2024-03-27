@@ -18,24 +18,29 @@ struct ReviewDetailView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                HStack(spacing: 8) {
-                    Text("리뷰")
-                        .font(.subHead1B)
-                        .foregroundStyle(Color.gray700)
-                    Text(reviewRatingCount)
-                        .font(.body1B)
-                        .foregroundStyle(Color.primaryDefault)
-                    Spacer()
-                }
-                
-                VStack(spacing: 16) {
-                    ForEach(reviewViewModel.dummyReviews, id: \.self) { review in
-                        ReviewDetailCellView(reviewData: review)
-                        
-                        if review != reviewViewModel.dummyReviews.last {
-                            Divider()
+        //        ScrollView {
+        VStack(spacing: 24) {
+            HStack(spacing: 8) {
+                Text("리뷰")
+                    .font(.subHead1B)
+                    .foregroundStyle(Color.gray700)
+                Text(reviewRatingCount)
+                    .font(.body1B)
+                    .foregroundStyle(Color.primaryDefault)
+                Spacer()
+            }
+            
+            if reviewViewModel.dummyReviews.isEmpty {
+                EmptyView()
+            } else {
+                ScrollView {
+                    VStack(spacing: 16) {
+                        ForEach(reviewViewModel.dummyReviews, id: \.self) { review in
+                            ReviewDetailCellView(reviewData: review)
+                            
+                            if review != reviewViewModel.dummyReviews.last {
+                                Divider()
+                            }
                         }
                     }
                 }
@@ -75,6 +80,18 @@ struct ReviewDetailView: View {
                     }
                 }
             }
+    }
+    
+    @ViewBuilder
+    private func EmptyView() -> some View {
+        VStack {
+            Spacer()
+            Text("작성된 리뷰가 없습니다.")
+            Text("첫 리뷰를 남겨주세요!")
+            Spacer()
+        }
+        .font(.body1M)
+        .foregroundStyle(Color.black)
     }
 }
 

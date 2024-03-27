@@ -18,12 +18,12 @@ final class MyPageViewModel: ObservableObject {
         case game = "게임"
     }
     
-    @Published var user: User = User.dummyUser
+    @Published var user: User? = User.dummyUser
     @Published var shopReviews: [Review] = []
     @Published var gameReviews: [Review] = []
     @Published var likeShops: [Shop] = []
     @Published var likeGames: [Game] = []
-    var appVersion: String = "1.0.1"
+    var appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String 
     
     var numnberOfReviews: String = ""
     var numberOfLikes: String = ""
@@ -31,7 +31,7 @@ final class MyPageViewModel: ObservableObject {
     init() {
         self.numnberOfReviews = getNumberOfReviews()
         self.numberOfLikes = getNumberOfLikes()
-        generateDummyData()
+//        generateDummyData()
     }
     
     private func generateDummyData() {
@@ -67,7 +67,8 @@ final class MyPageViewModel: ObservableObject {
                 shopDetailImage: ["detailImage"],
                 createdDate: Date(),
                 reviewCount: 3,
-                reviewRatingAverage: 3.5))
+                reviewRatingAverage: 3.5,
+                ShopCountry: "서울특별시"))
             
             likeGames.append(Game(
                 id: UUID().uuidString,
@@ -95,8 +96,8 @@ final class MyPageViewModel: ObservableObject {
     }
     
     private func getNumberOfLikes() -> String {
-        let likeGames = user.likeGameId ?? []
-        let likeShops = user.likeShopId ?? []
+        let likeGames = user?.likeGameId ?? []
+        let likeShops = user?.likeShopId ?? []
         
         let numberOfReviewInt = likeGames.count + likeShops.count
         return "\(numberOfReviewInt)"

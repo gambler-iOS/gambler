@@ -29,6 +29,7 @@ struct Shop: AvailableFirebase, AvailableAggregateReview, Hashable {
     // 목록 호출 시 지나친 데이터 호출 막고, 보다 쉽게 리스트 출력하기 위해 추가
     var reviewCount: Int = 0
     var reviewRatingAverage: Double = 0.0
+    var ShopCountry: String
     
     var shopImages: [ImageItem]? {
         var resultArr: [ImageItem] = []
@@ -58,7 +59,8 @@ struct Shop: AvailableFirebase, AvailableAggregateReview, Hashable {
         ],
         createdDate: Date(),
         reviewCount: 3,
-        reviewRatingAverage: 3.5)
+        reviewRatingAverage: 3.5, 
+        ShopCountry: "서울특별시")
     
 }
 
@@ -92,7 +94,8 @@ extension Shop {
                 "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg"],
              createdDate: Date(),
              reviewCount: 3,
-             reviewRatingAverage: 3.5),
+             reviewRatingAverage: 3.5,
+             ShopCountry: "서울특별시"),
         Shop(id: UUID().uuidString, shopName: "레드버튼 판교 2점", shopAddress: "2번째 판교",
              shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
              location: GeoPoint(latitude: 37.39568857499883, longitude: 127.11297786474694), 
@@ -103,7 +106,8 @@ extension Shop {
              shopDetailImage: ["detailImage"],
              createdDate: Date(),
              reviewCount: 3,
-             reviewRatingAverage: 3.5),
+             reviewRatingAverage: 3.5,
+             ShopCountry: "서울특별시"),
         Shop(id: UUID().uuidString, shopName: "레드버튼 판교 3점", shopAddress: "3번째 판교",
              shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
              location: GeoPoint(latitude: 37.395889599947324, longitude: 127.11000802973668),
@@ -114,6 +118,7 @@ extension Shop {
              shopDetailImage: ["detailImage"],
              createdDate: Date(),
              reviewCount: 3,
-             reviewRatingAverage: 3.5)
+             reviewRatingAverage: 3.5,
+             ShopCountry: "서울특별시")
     ]
 }

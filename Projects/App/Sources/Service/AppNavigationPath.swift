@@ -11,4 +11,5 @@ import SwiftUI
 final class AppNavigationPath: ObservableObject {
     @Published var homeViewPath = NavigationPath()
     @Published var mapViewPath = NavigationPath()
+    @Published var loginViewPath = NavigationPath()
 }
