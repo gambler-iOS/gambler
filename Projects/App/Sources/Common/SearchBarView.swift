@@ -96,6 +96,3 @@ struct SearchBarView: View {
     }
 }
 
-//#Preview {
-//    SearchBarView(searchText: .constant(""))
-//}
