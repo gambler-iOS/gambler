@@ -40,7 +40,6 @@ final class ReviewViewModel: ObservableObject {
                                 category: category)
             
             await self.addReview(review: review)
-            await self.fetchReviewData(reviewableItem: reviewableItem)
             await self.updateUserReviewCount(user: user)
         }
     }
