@@ -18,6 +18,7 @@ struct Shop: AvailableFirebase, AvailableAggregateReview, Hashable {
     let shopAddress: String
     let shopImage: String
     let location: GeoPoint
+    let shopCountry: String
     let shopPhoneNumber: String
     var cost: [String: Int]?
     var menu: [String: Int]?
@@ -44,7 +45,8 @@ struct Shop: AvailableFirebase, AvailableAggregateReview, Hashable {
         shopName: "레드버튼 강남점",
         shopAddress: "서울특별시 강남구 역삼동 814-5 1층",
         shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
-        location: GeoPoint(latitude: 120.1, longitude: 140),
+        location: GeoPoint(latitude: 120.1, longitude: 140), 
+        shopCountry: "서욽특별시 삼성동",
         shopPhoneNumber: "010-5555",
         cost: nil,
         menu: ["커피": 1000, "이용금액(1시간)": 3000],
@@ -75,13 +77,15 @@ struct ImageItem: Identifiable, Codable {
     var image: String
 }
 
-
 /// map dummy
 extension Shop {
     static let dummyShopList = [
         Shop(id: UUID().uuidString, shopName: "레드버튼 판교점", shopAddress: "판교주소",
              shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
-             location: GeoPoint(latitude: 37.395815438352216, longitude: 127.1122214051127), shopPhoneNumber: "010-1111", menu: ["커피": 1000],
+             location: GeoPoint(latitude: 37.395815438352216, longitude: 127.1122214051127), 
+             shopCountry: "경기도 성남시",
+             shopPhoneNumber: "010-1111",
+             menu: ["커피": 1000],
              openingHour: ["10시"],
              amenity: ["주차"],
              shopDetailImage: [
@@ -94,8 +98,10 @@ extension Shop {
              ShopCountry: "서울특별시"),
         Shop(id: UUID().uuidString, shopName: "레드버튼 판교 2점", shopAddress: "2번째 판교",
              shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
-             location: GeoPoint(latitude: 37.39568857499883, longitude: 127.11297786474694), shopPhoneNumber: "010-2222", menu: ["커피": 1000],
-             openingHour: ["10시"],
+             location: GeoPoint(latitude: 37.39568857499883, longitude: 127.11297786474694), 
+             shopCountry: "경기도 성남시",
+             shopPhoneNumber: "010-2222", 
+             menu: ["커피": 1000],
              amenity: ["주차"],
              shopDetailImage: ["detailImage"],
              createdDate: Date(),
@@ -104,7 +110,9 @@ extension Shop {
              ShopCountry: "서울특별시"),
         Shop(id: UUID().uuidString, shopName: "레드버튼 판교 3점", shopAddress: "3번째 판교",
              shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
-             location: GeoPoint(latitude: 37.395889599947324, longitude: 127.11000802973668), shopPhoneNumber: "010-2222", menu: ["커피": 1000],
+             location: GeoPoint(latitude: 37.395889599947324, longitude: 127.11000802973668),
+             shopCountry: "경기도 성남시",
+             shopPhoneNumber: "010-2222", menu: ["커피": 1000],
              openingHour: ["10시"],
              amenity: ["주차"],
              shopDetailImage: ["detailImage"],

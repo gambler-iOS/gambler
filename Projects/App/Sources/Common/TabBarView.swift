@@ -39,6 +39,7 @@ struct TabBarView: View {
                 .tag(0)
             
             MapView(draw: $draw)
+                .environmentObject(appNavigationPath)
                 .tabItem {
                     HStack {
                         (selectedTab == 1 ?
