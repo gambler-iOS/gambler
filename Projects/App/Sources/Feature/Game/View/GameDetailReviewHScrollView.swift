@@ -30,7 +30,7 @@ struct GameDetailReviewHScrollView: View {
             DetailSectionHeaderView(title: "리뷰",
                                     reviewInfo: "\(formattedReviewRatingAverage)(\(game.reviewCount))") {
                 guard loginViewModel.currentUser != nil else {
-                    appNavigationPath.homeViewPath.append("로그인")
+                    appNavigationPath.isGoTologin = true
                     return
                 }
                 isNavigation = true

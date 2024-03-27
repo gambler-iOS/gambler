@@ -9,17 +9,9 @@
 import SwiftUI
 import Kingfisher
 
-struct GameListItemView: View {
-    
+struct GameListItemView: View {    
     let game: Game
-    let likeGameIdArray: [String]
-    
-    private var isLike: Bool {
-        likeGameIdArray.contains { id in
-            id == game.id
-        }
-    }
-    
+
     var body: some View {
         VStack {
             HStack(alignment: .top, spacing: AppConstants.Padding.horizontal) {
@@ -49,7 +41,7 @@ struct GameListItemView: View {
                         
                         Spacer()
                         
-                        HeartCellView(isLike: isLike, postId: game.id, postType: AppConstants.PostType.game)
+                        HeartCellView(postId: game.id, postType: AppConstants.PostType.game)
                     }
 
                     ReviewRatingCellView(rating: game.reviewRatingAverage)
@@ -67,5 +59,5 @@ struct GameListItemView: View {
 }
 
 #Preview {
-    GameListItemView(game: Game.dummyGame, likeGameIdArray: [])
+    GameListItemView(game: Game.dummyGame)
 }

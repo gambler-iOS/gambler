@@ -32,7 +32,7 @@ struct ShopListView: View {
                 VStack(spacing: 24) {
                     ForEach(shopListViewModel.shops) { shop in
                         NavigationLink(value: shop) {
-                            ShopListCellView(shop: shop, likeShopIdArray: [])
+                            ShopListCellView(shop: shop)
                         }
                         if shop != shopListViewModel.shops.last {
                             Divider()

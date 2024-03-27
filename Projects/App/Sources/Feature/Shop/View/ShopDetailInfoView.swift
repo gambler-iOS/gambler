@@ -177,7 +177,7 @@ struct ShopDetailInfoView: View {
     
     private func updateLikeShopList() {
         guard var curUser = loginViewModel.currentUser else {
-            appNavigationPath.homeViewPath.append("로그인")
+            appNavigationPath.isGoTologin = true
             return
         }
         
@@ -194,7 +194,7 @@ struct ShopDetailInfoView: View {
             updatedLikeArray.removeAll { $0 == shop.id }
         }
         
-        curUser.likeShopId = updatedLikeArray
+        loginViewModel.currentUser?.likeShopId = updatedLikeArray
         
         userLikeDictionary["likeShopId"] = updatedLikeArray
         

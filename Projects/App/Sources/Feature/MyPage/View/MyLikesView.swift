@@ -43,7 +43,7 @@ struct MyLikesView: View {
                         .padding(.bottom, 0)
                     
                     ForEach(shops) { shop in
-                        ShopListCellView(shop: shop, likeShopIdArray: [])
+                        ShopListCellView(shop: shop)
                         
                         if shop != shops.last {
                             Divider()
@@ -73,7 +73,7 @@ struct MyLikesView: View {
                     
                     LazyVGrid(columns: columns, spacing: 24) {
                         ForEach(games) { game in
-                            GameGridItemView(game: game, likeGameIdArray: [])
+                            GameGridItemView(game: game)
                         }
                     }
                 }

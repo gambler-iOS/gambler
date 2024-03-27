@@ -13,4 +13,7 @@ final class AppNavigationPath: ObservableObject {
     @Published var searchViewPath = NavigationPath()
     @Published var mapViewPath = NavigationPath()
     @Published var loginViewPath = NavigationPath()
+    
+    /// 로그인 필요할 때 LoginView 이동 navigationDestination 용 flag
+    @Published var isGoTologin: Bool = false
 }

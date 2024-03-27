@@ -11,16 +11,9 @@ import Kingfisher
 
 struct GameGridItemView: View {
     let game: Game
-    let likeGameIdArray: [String]
     
     private var playerString: String {
         "인원 \(game.gameIntroduction.minPlayerCount) - \(game.gameIntroduction.maxPlayerCount)명"
-    }
-    
-    private var isLike: Bool {
-        likeGameIdArray.contains { id in
-            id == game.id
-        }
     }
     
     var body: some View {
@@ -34,7 +27,7 @@ struct GameGridItemView: View {
                     .scaledToFit()
                     .padding(.bottom, 8)
                     .overlay(alignment: .topTrailing) {
-                        HeartCellView(isLike: isLike, postId: game.id, postType: AppConstants.PostType.game)
+                        HeartCellView(postId: game.id, postType: AppConstants.PostType.game)
                             .padding(8)
                     }
             } else {
@@ -62,5 +55,5 @@ struct GameGridItemView: View {
 }
 
 #Preview {
-    GameGridItemView(game: Game.dummyGame, likeGameIdArray: [])
+    GameGridItemView(game: Game.dummyGame)
 }

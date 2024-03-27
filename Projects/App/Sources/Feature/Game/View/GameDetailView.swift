@@ -152,7 +152,7 @@ struct GameDetailView: View {
                 
                 ItemButtonView(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
                     guard loginViewModel.currentUser != nil else {
-                        appNavigationPath.homeViewPath.append("로그인")
+                        appNavigationPath.isGoTologin = true
                         return
                     }
                     isWriteReviewButton = true
@@ -168,7 +168,7 @@ struct GameDetailView: View {
     
     private func updateLikeGameList() {
         guard var curUser = loginViewModel.currentUser else {
-            appNavigationPath.homeViewPath.append("로그인")
+            appNavigationPath.isGoTologin = true
             return
         }
         
@@ -185,7 +185,7 @@ struct GameDetailView: View {
             updatedLikeArray.removeAll { $0 == game.id }
         }
         
-        curUser.likeGameId = updatedLikeArray
+        loginViewModel.currentUser?.likeGameId = updatedLikeArray
         
         userLikeDictionary["likeGameId"] = updatedLikeArray
         
