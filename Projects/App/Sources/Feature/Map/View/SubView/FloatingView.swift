@@ -9,15 +9,18 @@
 import SwiftUI
 
 struct FloatingView: View {
-    @ObservedObject var shopStore: ShopStore
+    @ObservedObject var mapViewModel: MapViewModel
     @Binding var selectedShop: Shop
     @Binding var isShowingSheet: Bool
     @Binding var userLocate: GeoPoint
     
     var body: some View {
         VStack(spacing: 0) {
-            FloatingCellView(shop: selectedShop, likeShopIdArray: ["1"])
-                .padding(16)
+            NavigationLink(destination: ShopDetailInfoView(shop: selectedShop)) {
+                FloatingCellView(shop: selectedShop, likeShopIdArray: ["1"])
+                    .padding(16)
+            }
+            
             showListButtonView
                 .padding(.horizontal, 16)
                 .padding(.bottom, 16)
@@ -28,16 +31,19 @@ struct FloatingView: View {
     
     private var showListButtonView: some View {
         Button(action: {
-            shopStore.fetchUserAreaShopList(userPoint: userLocate)
-            withAnimation {
-                isShowingSheet = true
+            Task {
+                let userCountry = await mapViewModel.getCountry(mapPoint: userLocate)
+                await mapViewModel.filterShopsByCountry(country: userCountry)
+                withAnimation {
+                    isShowingSheet = true
+                }
             }
         }, label: {
             RoundedRectangle(cornerRadius: 15)
                 .stroke(Color.gray200)
                 .frame(width: 295, height: 34)
                 .overlay {
-                    Text("목록으로 보기")
+                    Text("내 주변 목록")
                         .font(.caption1M)
                         .foregroundStyle(Color.gray400)
                 }
@@ -46,7 +52,7 @@ struct FloatingView: View {
 }
 
 #Preview {
-    FloatingView(shopStore: ShopStore(), 
+    FloatingView(mapViewModel: MapViewModel(),
                  selectedShop: .constant(Shop.dummyShop),
                  isShowingSheet: .constant(true),
                  userLocate: .constant(GeoPoint(latitude: 13.00, longitude: 13.00)))
