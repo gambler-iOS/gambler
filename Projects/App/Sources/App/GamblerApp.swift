@@ -17,9 +17,7 @@ import GoogleSignIn
 @main
 struct GamblerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    
-    
-    
+
     init() {
         let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_APP_KEY"] ?? ""
         SDKInitializer.InitSDK(appKey: "\(kakaoAppKey)")
@@ -49,6 +47,7 @@ struct GamblerApp: App {
     @StateObject private var gameDetailViewModel = GameDetailViewModel()
     @StateObject private var shopListViewModel = ShopListViewModel()
     @StateObject private var reviewViewModel = ReviewViewModel()
+    @StateObject private var tabSelection = TabSelection()
     
     var body: some Scene {
         WindowGroup {
@@ -74,7 +73,7 @@ struct GamblerApp: App {
         .environmentObject(myPageViewModel)
         .environmentObject(loginViewModel)
         .environmentObject(reviewViewModel)
-        
+        .environmentObject(tabSelection)
     }
     
     func startTask() async {

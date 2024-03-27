@@ -38,7 +38,7 @@ final class LoginViewModel: ObservableObject {
             print("Auth changed: \(user != nil)")
             print("configureAuthStateChanges - \(self.authState)")
             
-            guard let user = user else {
+            guard user != nil else {
                 // 유효한 사용자가 없기 때문에 로그인되지 않았음을 의미
                 print("User is nil")
                 self.authState = .signedOut
@@ -48,6 +48,7 @@ final class LoginViewModel: ObservableObject {
             
             Task {
                 await self.fetchUserData()
+                AuthService.shared.isLoading = false
             }
         }
     }
@@ -63,7 +64,20 @@ final class LoginViewModel: ObservableObject {
         self.userSession = nil
         AuthService.shared.tempUser = nil
     }
-     
+    
+    // MARK: - 현재 유저 데이터 가져오기 - Firebasestore
+    @MainActor
+    func getUserDate() async {
+        Task {
+            do {
+                guard let user: User = try await FirebaseManager.shared.fetchOneData(collectionName: "Users", byId: currentUser?.id ?? "") else { return }
+                self.currentUser = user
+            } catch {
+                print(#fileID, #function, #line, "- 유저 정보 가져오기 실패!")
+            }
+        } 
+    }
+    
     /// 유저 정보 가져오기 및 authState 변경
     func fetchUserData() async {
         self.userSession = Auth.auth().currentUser

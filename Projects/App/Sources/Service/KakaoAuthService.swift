@@ -90,6 +90,7 @@ final class KakaoAuthService {
                 print("DEBUG: 카카오톡 사용자 정보가져오기 에러 \(error.localizedDescription)")
             } else {
                 print("DEBUG: 카카오톡 사용자 정보가져오기 success.")
+                AuthService.shared.isLoading = true
                 
                 guard let email = user?.kakaoAccount?.email else { return }
                 guard let name = user?.kakaoAccount?.profile?.nickname else { return }
@@ -141,12 +142,30 @@ final class KakaoAuthService {
         }
     }
     
+    
+    /// 카카오 계정을 탈퇴 (마지막 로그인이 5분 전이면 재인증 요청)
+    /// - Returns: Bool
     func deleteKakaoAccount() async -> Bool {
         await withCheckedContinuation { continuation in
             guard let user = Auth.auth().currentUser else {
                 continuation.resume(returning: false)
                 return
             }
+            
+            // 마지막으로 로그인 한 날짜
+            guard let lastSignInDate = user.metadata.lastSignInDate else {
+                continuation.resume(returning: false)
+                return
+            }
+            
+            // 마지막에 로그인한 시간이 5분이 지났으면 true / 아니면 false
+            let needsReauth = !lastSignInDate.isWithinPast(minutes: 5)
+            
+            if needsReauth {
+                // 그러나 카카오 토큰으로 바로 인증됨
+                self.kakaoLogin()
+            }
+            
             user.delete() { error in
                 Task {
                     if let error = error {

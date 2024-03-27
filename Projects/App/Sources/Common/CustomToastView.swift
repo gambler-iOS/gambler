@@ -8,6 +8,12 @@
 
 import SwiftUI
 
+enum ToastCategory {
+    case signUp
+    case deleteAccount
+    case complain
+}
+
 struct CustomToastView: View {
     var content: String
     
