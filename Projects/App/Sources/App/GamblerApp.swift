@@ -17,14 +17,13 @@ import GoogleSignIn
 @main
 struct GamblerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    @StateObject private var tabSelection = TabSelection()
 
     init() {
         let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_APP_KEY"] ?? ""
         SDKInitializer.InitSDK(appKey: "\(kakaoAppKey)")
         KakaoSDK.initSDK(appKey: kakaoAppKey as? String ?? "")
         
-      UITabBar.appearance().scrollEdgeAppearance = .init()
+        UITabBar.appearance().scrollEdgeAppearance = .init()
     }
     
     var sharedModelContainer: ModelContainer = {
@@ -32,7 +31,7 @@ struct GamblerApp: App {
             SearchKeyword.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
+        
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
@@ -40,10 +39,19 @@ struct GamblerApp: App {
         }
     }()
     
+    @StateObject private var myPageViewModel = MyPageViewModel()
+    @StateObject private var loginViewModel = LoginViewModel()
+    @StateObject private var appNavigationPath = AppNavigationPath()
+    @StateObject private var homeViewModel = HomeViewModel()
+    @StateObject private var gameListViewModel = GameListViewModel()
+    @StateObject private var gameDetailViewModel = GameDetailViewModel()
+    @StateObject private var shopListViewModel = ShopListViewModel()
+    @StateObject private var reviewViewModel = ReviewViewModel()
+    @StateObject private var tabSelection = TabSelection()
+    
     var body: some Scene {
         WindowGroup {
             TabBarView()
-                .environmentObject(tabSelection)
                 .onAppear {
                     Task {
                         await startTask()
@@ -54,9 +62,18 @@ struct GamblerApp: App {
                         _ = AuthController.handleOpenUrl(url: url)
                     }
                 }
-//            MainView()
+            //            MainView()
         }
         .modelContainer(sharedModelContainer)
+        .environmentObject(homeViewModel)
+        .environmentObject(appNavigationPath)
+        .environmentObject(gameListViewModel)
+        .environmentObject(gameDetailViewModel)
+        .environmentObject(shopListViewModel)
+        .environmentObject(myPageViewModel)
+        .environmentObject(loginViewModel)
+        .environmentObject(reviewViewModel)
+        .environmentObject(tabSelection)
     }
     
     func startTask() async {
@@ -70,22 +87,4 @@ struct GamblerApp: App {
             locationManager.requestWhenInUseAuthorization()
         }
     }
-}
-
-struct ContentView: View {
-    var body: some View {
-        Text("테스트")
-            .font(.head1B)
-        Text("테스트")
-        Text("테스트")
-            .font(.head1B)
-            .foregroundStyle(Color.primaryDefault)
-        GamblerAsset.bell.swiftUIImage
-            .renderingMode(.template) // 렌더링 모드 설정 시 색상 변경 가능
-            .foregroundStyle(Color.gray300)
-    }
-}
-
-#Preview {
-    ContentView()
 }

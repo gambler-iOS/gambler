@@ -126,7 +126,7 @@ struct ShopDetailInfoView: View {
     private var RoundCornerView: some View {
         Rectangle()
             .foregroundColor(.white)
-            .frame(width: UIScreen.main.bounds.width, height: 180)
+            .frame(width: UIScreen.main.bounds.width, height: 800)
             .roundedCorner(20, corners: [.topLeft, .topRight])
     }
     

@@ -32,9 +32,15 @@ struct RecentKeywordView: View {
                     }
                 }
             }
-            TagLayout(alignment: .leading, spacing: 8) {
-                ForEach(items) { item in
-                    ChipView(label: item.keyword, size: .medium)
+            if items.isEmpty {
+                Text("게임, 지역, 장르를 검색해보세요!")
+                    .font(.body2M)
+                    .foregroundStyle(Color.gray400)
+            } else {
+                TagLayout(alignment: .leading, spacing: 8) {
+                    ForEach(items) { item in
+                        ChipView(label: item.keyword, size: .medium)
+                    }
                 }
             }
         }

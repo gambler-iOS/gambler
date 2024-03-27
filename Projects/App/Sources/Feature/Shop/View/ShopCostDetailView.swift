@@ -11,8 +11,23 @@ import SwiftUI
 struct ShopCostDetailView: View {
     let shop: Shop
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            makeInfoTable(title: "운영 시간", content: shop.openingHour)
+        if let data = shop.openingHour {
+            VStack(alignment: .leading, spacing: 0) {
+                makeInfoTable(title: "운영 시간", content: shop.openingHour)
+            }
+        } else {
+            VStack(alignment: .leading, content: {
+                HStack {
+                    Text("운영 시간")
+                        .font(.body1B)
+                    Spacer()
+                }
+                HStack {
+                    Text("등록 되지 않음.")
+                }
+                .font(.body2M)
+                .padding(.top, 8)
+            })
         }
     }
     

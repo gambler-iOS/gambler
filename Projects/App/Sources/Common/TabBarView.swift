@@ -19,25 +19,10 @@ final class TabSelection: ObservableObject {
 struct TabBarView: View {
     @EnvironmentObject private var tabSelection: TabSelection
     @State private var draw = false
-    @StateObject private var myPageViewModel = MyPageViewModel()
-    @StateObject private var loginViewModel = LoginViewModel()
-    @StateObject private var appNavigationPath = AppNavigationPath()
-    @StateObject private var homeViewModel = HomeViewModel()
-    @StateObject private var gameListViewModel = GameListViewModel()
-    @StateObject private var gameDetailViewModel = GameDetailViewModel()
-    @StateObject private var shopListViewModel = ShopListViewModel()
-    @StateObject private var profileEditViewModel = ProfileEditViewModel()
-    @StateObject private var reviewViewModel = ReviewViewModel()
     
     var body: some View {
         TabView(selection: $tabSelection.selectedTab) {
-            
             HomeView()
-                .environmentObject(homeViewModel)
-                .environmentObject(appNavigationPath)
-                .environmentObject(gameListViewModel)
-                .environmentObject(gameDetailViewModel)
-                .environmentObject(shopListViewModel)
                 .tabItem {
                     HStack {
                         (tabSelection.selectedTab == 0 ?
@@ -48,7 +33,6 @@ struct TabBarView: View {
                 .tag(0)
             
             MapView(draw: $draw)
-                .environmentObject(appNavigationPath)
                 .tabItem {
                     HStack {
                         (tabSelection.selectedTab == 1 ?
@@ -58,21 +42,22 @@ struct TabBarView: View {
                     }
                 }
                 .tag(1)
-            
-            SearchMainView()
-                .tabItem {
-                    HStack {
-                        (tabSelection.selectedTab == 2 ?
-                         GamblerAsset.tabSearchSelected.swiftUIImage : GamblerAsset.tabSearch.swiftUIImage)
-                        Text("검색")
-                    }
+            SearchMainView(searchBoxController:
+                            MultiController.controller.searchBoxController,
+                           shopHitsController: MultiController.controller.shopHitsController,
+                           gameHitsController: MultiController.controller.gameHitsController,
+                           shopStatsController: MultiController.controller.shopStatsController, gameStatsController: MultiController.controller.gameStatsController
+            )
+            .tabItem {
+                HStack {
+                    (tabSelection.selectedTab == 2 ?
+                     GamblerAsset.tabSearchSelected.swiftUIImage : GamblerAsset.tabSearch.swiftUIImage)
+                    Text("검색")
                 }
-                .tag(2)
+            }
+            .tag(2)
             
             MyPageView()
-                .environmentObject(myPageViewModel)
-                .environmentObject(profileEditViewModel)
-                .environmentObject(appNavigationPath)
                 .tabItem {
                     HStack {
                         (tabSelection.selectedTab == 3 ?
@@ -83,8 +68,6 @@ struct TabBarView: View {
                 .tag(3)
         }
         .tint(Color.primaryDefault)
-        .environmentObject(loginViewModel)
-        .environmentObject(reviewViewModel)
         .onAppear {
             self.draw = true
         }
