@@ -11,9 +11,13 @@ import Kingfisher
 
 struct GameDetailView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var gameDetailViewModel: GameDetailViewModel
     @State private var offsetY: CGFloat = CGFloat.zero
-    private let mainImageHeight: CGFloat = 290
+    @State private var isWriteReviewButton: Bool = false
+    @State private var isHeartButton: Bool = false
+    @State private var isShowingToast: Bool = false
+    private let headerImageHeight: CGFloat = 290
     let game: Game
     
     var body: some View {
@@ -33,35 +37,21 @@ struct GameDetailView: View {
                         .clipped()
                         .frame(
                             width: geometry.size.width,
-                            height: mainImageHeight + (offset > 0 ? offset : 0)
+                            height: headerImageHeight + (offset > 0 ? offset : 0)
                         )
                         .offset(y: (offset > 0 ? -offset : 0))
                 }
+                RoundCornerView
+                    .offset(y: headerImageHeight - 20)
             }
-            .frame(minHeight: mainImageHeight)
+            .frame(minHeight: headerImageHeight)
             
             VStack(alignment: .leading, spacing: 32) {
-                HStack(alignment: .center, spacing: 8) {
-                    Text(game.gameName)
-                        .font(.subHead1B)
-                    ReviewRatingCellView(rating: gameDetailViewModel.game.reviewRatingAverage)
-                }
-                .padding(.leading, 24)
-                .padding(.top, 32)
+                titleView
+                    .padding(.horizontal, 24)
                 
-                HStack(alignment: .center, spacing: .zero) {
-                    ItemButtonView(image: GamblerAsset.heartGray.swiftUIImage, buttonName: "찜하기") {
-                        
-                    }
-                    
-                    Spacer()
-                    
-                    ItemButtonView(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
-                        
-                    }
-                }
-                .frame(height: 72)
-                .padding(EdgeInsets(top: -10, leading: 71, bottom: -32, trailing: 71))
+                gameItemButtonsView
+                    .padding([.horizontal, .bottom], 24)
                 
                 BorderView()
                 
@@ -82,25 +72,46 @@ struct GameDetailView: View {
                 GameSimilarHScrollView(title: "비슷한 인원수의 게임", games: gameDetailViewModel.similarPlayerGames)
             }
             .background(Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: 16.0))
         }
         .onAppear {
-            print("detail appear")
             setGameInViewModel()
         }
         .task {
-            print("detail task")
-            await gameDetailViewModel.fetchData()
+            await gameDetailViewModel.fetchReviewData()
+            await gameDetailViewModel.fetchSimilarGameData()
         }
         .ignoresSafeArea(.all, edges: .top)
         .navigationTitle(offsetY < -5 ? "\(game.gameName)" : "")
         .navigationBarTitleDisplayMode(.inline)
         .modifier(BackButton())
+        .buttonStyle(HiddenClickAnimationButtonStyle())
+        .overlay {
+            if isShowingToast {
+                toastMessageView
+            }
+        }
+    }
+    
+    private var toastMessageView: some View {
+        CustomToastView(content: "리뷰 작성이 완료되었습니다!")
+            .offset(y: UIScreen.main.bounds.height * 0.3)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    withAnimation {
+                        isShowingToast = false
+                    }
+                }
+            }
     }
     
     private func setGameInViewModel() {
         DispatchQueue.main.async {
             gameDetailViewModel.game = game
+            if let curUser = loginViewModel.currentUser, let likeGameArray = curUser.likeGameId {
+                if likeGameArray.contains(game.id) {
+                    isHeartButton = true
+                }
+            }
         }
     }
     
@@ -110,6 +121,87 @@ struct GameDetailView: View {
         }
         return EmptyView()
     }
+    
+    private var RoundCornerView: some View {
+        Rectangle()
+            .foregroundColor(.white)
+            .frame(width: UIScreen.main.bounds.width, height: 40)
+            .clipShape(TempRoundedCorner(radius: 20, corners: [.topLeft, .topRight]))
+    }
+    
+    private var titleView: some View {
+        HStack(alignment: .center, spacing: 8) {
+            Text(game.gameName)
+                .font(.subHead1B)
+            ReviewRatingCellView(rating: gameDetailViewModel.game.reviewRatingAverage)
+        }
+    }
+    
+    private var gameItemButtonsView: some View {
+        GeometryReader { geometry in
+            HStack(alignment: .center, spacing: .zero) {
+                ItemButtonView(
+                    image: isHeartButton == false ?
+                    GamblerAsset.heartGray.swiftUIImage : GamblerAsset.heartRed.swiftUIImage,
+                    buttonName: "찜하기") {
+                        
+                        isHeartButton.toggle()
+                        updateLikeGameList()
+                    }
+                    .frame(width: geometry.size.width / 2)
+                
+                ItemButtonView(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
+                    isWriteReviewButton = true
+                }
+                .navigationDestination(isPresented: $isWriteReviewButton) {
+                    WriteReviewView(isShowingToast: $isShowingToast, reviewableItem: game)
+                }
+                .frame(width: geometry.size.width / 2)
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+    
+    private func updateLikeGameList() {
+        guard var curUser = loginViewModel.currentUser else {
+            appNavigationPath.homeViewPath.append("로그인")
+            return
+        }
+        
+        var userLikeDictionary: [AnyHashable: Any] = [:]
+        var updatedLikeArray: [String] = []
+        
+        if let likeGameIdArray = curUser.likeGameId {
+            updatedLikeArray = likeGameIdArray
+        }
+        
+        if isHeartButton {
+            updatedLikeArray.append(game.id)
+        } else {
+            updatedLikeArray.removeAll { $0 == game.id }
+        }
+        
+        curUser.likeGameId = updatedLikeArray
+        
+        userLikeDictionary["likeGameId"] = updatedLikeArray
+        
+        Task {
+            await loginViewModel.updateLikeList(likePostIds: userLikeDictionary)
+        }
+    }
+}
+
+private struct TempRoundedCorner: Shape {
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+    
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect,
+                                byRoundingCorners: corners,
+                                cornerRadii: CGSize(width: radius, height: radius))
+        
+        return Path(path.cgPath)
+    }
 }
 
 #Preview {
@@ -117,5 +209,6 @@ struct GameDetailView: View {
         GameDetailView(game: Game.dummyGame)
             .environmentObject(AppNavigationPath())
             .environmentObject(GameDetailViewModel())
+            .environmentObject(LoginViewModel())
     }
 }

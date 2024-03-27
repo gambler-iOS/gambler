@@ -42,7 +42,7 @@ struct FloatingCellView: View {
                         
                         Spacer()
                         
-                        HeartCellView(isLike: isLike)
+                        HeartCellView(isLike: isLike, postId: shop.id, postType: AppConstants.PostType.shop)
                     }
                     
                     ReviewRatingCellView(rating: shop.reviewRatingAverage)
@@ -50,7 +50,8 @@ struct FloatingCellView: View {
                         .font(.body2M)
                         .foregroundStyle(Color.gray400)
                         .frame(height: 42, alignment: .top)
-                      
+                        .multilineTextAlignment(.leading)
+                    
                     Spacer()
                     
                 }

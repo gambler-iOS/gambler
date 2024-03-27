@@ -18,12 +18,12 @@ final class MyPageViewModel: ObservableObject {
         case game = "게임"
     }
     
-    @Published var user: User = User.dummyUser
+    @Published var user: User? = User.dummyUser
     @Published var shopReviews: [Review] = []
     @Published var gameReviews: [Review] = []
     @Published var likeShops: [Shop] = []
     @Published var likeGames: [Game] = []
-    var appVersion: String = "1.0.1"
+    var appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String 
     
     var numnberOfReviews: String = ""
     var numberOfLikes: String = ""
@@ -31,7 +31,7 @@ final class MyPageViewModel: ObservableObject {
     init() {
         self.numnberOfReviews = getNumberOfReviews()
         self.numberOfLikes = getNumberOfLikes()
-        generateDummyData()
+//        generateDummyData()
     }
     
     private func generateDummyData() {
@@ -58,7 +58,7 @@ final class MyPageViewModel: ObservableObject {
                 id: UUID().uuidString,
                 shopName: "레드버튼 강남점",
                 shopAddress: "address",
-                shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
+                shopCountry: "서울특별시 삼성동", shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
                 location: GeoPoint(latitude: 120.1, longitude: 140),
                 shopPhoneNumber: "010-5555", menu: ["커피": 1000],
                 openingHour: ["10시"],
@@ -66,7 +66,8 @@ final class MyPageViewModel: ObservableObject {
                 shopDetailImage: ["detailImage"],
                 createdDate: Date(),
                 reviewCount: 3,
-                reviewRatingAverage: 3.5))
+                reviewRatingAverage: 3.5)
+                             )
             
             likeGames.append(Game(
                 id: UUID().uuidString,
@@ -94,8 +95,8 @@ final class MyPageViewModel: ObservableObject {
     }
     
     private func getNumberOfLikes() -> String {
-        let likeGames = user.likeGameId ?? []
-        let likeShops = user.likeShopId ?? []
+        let likeGames = user?.likeGameId ?? []
+        let likeShops = user?.likeShopId ?? []
         
         let numberOfReviewInt = likeGames.count + likeShops.count
         return "\(numberOfReviewInt)"

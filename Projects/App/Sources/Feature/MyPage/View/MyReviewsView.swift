@@ -30,24 +30,35 @@ struct MyReviewsView: View {
     
     @ViewBuilder
     private func reviewListView(reviewData: [Review]) -> some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                Rectangle()
-                    .frame(height: 0)
-                    .padding(.bottom, 0)
-                
-                ForEach(reviewData, id: \.self) { review in
-                    ReviewDetailCellView(reviewData: review)
-                        .padding(.bottom, -8)
+        if reviewData.isEmpty {
+            VStack {
+                Spacer()
+                Text("작성된 리뷰가 없습니다.")
+                Text("첫 리뷰를 남겨주세요!")
+                Spacer()
+            }
+            .font(.body1M)
+            .foregroundStyle(Color.black)
+        } else {
+            ScrollView {
+                VStack(spacing: 24) {
+                    Rectangle()
+                        .frame(height: 0)
+                        .padding(.bottom, 0)         
                     
-                    if review != reviewData.last {
-                        Divider()
+                    ForEach(reviewData, id: \.self) { review in
+                        ReviewDetailCellView(reviewData: review)
+                            .padding(.bottom, -8)
+                        
+                        if review != reviewData.last {
+                            Divider()
+                        }
                     }
                 }
             }
+            .padding(.horizontal, 24)
+            .scrollIndicators(.hidden)
         }
-        .padding(.horizontal, 24)
-        .scrollIndicators(.hidden)
     }
 }
 

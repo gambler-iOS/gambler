@@ -11,6 +11,7 @@ import SwiftUI
 struct ListItemView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject private var loginViewModel: LoginViewModel
+
     @Binding var isShowingToast: Bool
     
     var body: some View {
@@ -37,18 +38,14 @@ struct ListItemView: View {
                 Group {
                     HStack {
                         Text("버전 정보")
-                        Text(myPageViewModel.appVersion)  // 이거는 변수로 받아야 함
+                        Text(myPageViewModel.appVersion ?? "unknown")
                     }
                     
                     listBodyView(title: "개발자 정보", destination: AboutDevelopersView())
                     
                     Button {
                         Task {
-                            do {
-                                try await loginViewModel.signOut()
-                            } catch {
-                                print("로그아웃 실패 Error: \(error)")
-                            }
+                            await loginViewModel.logoutFromFirebaseAndSocial()
                         }
                     } label: {
                         Text("로그아웃")

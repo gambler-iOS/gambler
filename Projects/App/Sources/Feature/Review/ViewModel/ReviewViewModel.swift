@@ -53,11 +53,12 @@ final class ReviewViewModel: ObservableObject {
                                        createdDate: Date()
  ))
             
-            dummyShops.append(Shop(
+            dummyShops.append(
+                Shop(
                 id: UUID().uuidString,
                 shopName: "레드버튼 강남점",
                 shopAddress: "address",
-                shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
+                shopCountry: "서울특별시 삼성동", shopImage: "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20171201_108%2F1512073471785j1m5s_JPEG%2F201605__DSC0645.jpg",
                 location: GeoPoint(latitude: 120.1, longitude: 140),
                 shopPhoneNumber: "010-5555", menu: ["커피": 1000],
                 openingHour: ["10시"],
@@ -65,7 +66,8 @@ final class ReviewViewModel: ObservableObject {
                 shopDetailImage: ["detailImage"],
                 createdDate: Date(),
                 reviewCount: 3,
-                reviewRatingAverage: 3.5))
+                reviewRatingAverage: 3.5)
+                              )
         }
     }
 }

@@ -67,7 +67,6 @@ struct TabBarView: View {
         .onDisappear {
             self.draw = false
         }
-        
     }
 }
 

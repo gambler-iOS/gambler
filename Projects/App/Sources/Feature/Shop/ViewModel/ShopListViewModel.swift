@@ -44,7 +44,6 @@ final class ShopListViewModel: ObservableObject {
         }
         self.shops = tempShops
     }
-    
 }
 
 enum ListTypeEnum: String {

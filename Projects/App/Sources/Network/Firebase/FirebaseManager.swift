@@ -9,6 +9,7 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import CoreLocation
 
 final class FirebaseManager {
     static let shared = FirebaseManager()
@@ -72,6 +73,7 @@ final class FirebaseManager {
     ///   - collectionName: FirebaseStore 에서 지정된 Collection 이름
     ///   - field: 비교할 데이터의 field
     ///   - isEqualTo : 비교할 데이터
+    ///   - orderBy: 정렬할 데이터의 field
     ///   - limit: 가져오는 데이터 개수 제한할 때 사용 (옵셔널)
     /// - Returns: [T]
     /// - Example:
@@ -79,9 +81,12 @@ final class FirebaseManager {
     /// fetchWhereIsEqualToData(collectionName: "Users", field: "nickname", isEqualTo: "nick name string")
     /// ```
     func fetchWhereIsEqualToData<T: AvailableFirebase>(collectionName: String, field: String, isEqualTo data: Any,
-                                                       limit: Int? = nil) async throws -> [T] {
+                                                       orderBy: String? = nil, limit: Int? = nil) async throws -> [T] {
         var collectionRef = db.collection(collectionName)
             .whereField(field, isEqualTo: data)
+        if let orderBy {
+            collectionRef = collectionRef.order(by: orderBy, descending: true)
+        }
         if let limit {
             collectionRef = collectionRef.limit(to: limit)
         }
@@ -126,6 +131,21 @@ final class FirebaseManager {
     func fetchOneData<T: AvailableFirebase>(collectionName: String, byId: String) async throws -> T? {
         let querySnapshot = try await db.collection(collectionName)
             .whereField("id", isEqualTo: byId).getDocuments()
+        let result = querySnapshot.documents.compactMap { try? $0.data(as: T.self) }
+        return result.first ?? nil
+    }
+    
+    /// 지정한 collection 에서 임의의 1개의 데이터만 리턴
+    /// - Parameters:
+    ///   - collectionName: FirebaseStore 에서 지정된 Collection 이름
+    /// - Returns: T?
+    /// - Example:
+    /// ```swift
+    /// fetchOneAnyData(collectionName: AppConstants.CollectionName.shops)
+    /// ```
+    func fetchOneAnyData<T: AvailableFirebase>(collectionName: String) async throws -> T? {
+        let collectionRef = db.collection(collectionName).limit(to: 1)
+        let querySnapshot = try await collectionRef.getDocuments()
         let result = querySnapshot.documents.compactMap { try? $0.data(as: T.self) }
         return result.first ?? nil
     }

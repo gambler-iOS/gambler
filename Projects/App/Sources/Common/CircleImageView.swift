@@ -31,5 +31,5 @@ struct CircleImageView: View {
 }
 
 #Preview {
-    CircleImageView(imageURL: MyPageViewModel().user.profileImageURL ?? "", size: 64)
+    CircleImageView(imageURL: MyPageViewModel().user?.profileImageURL ?? "", size: 64)
 }
