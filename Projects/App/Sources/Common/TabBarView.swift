@@ -20,7 +20,7 @@ struct TabBarView: View {
     @StateObject private var shopListViewModel = ShopListViewModel()
     @StateObject private var profileEditViewModel = ProfileEditViewModel()
     @StateObject private var reviewViewModel = ReviewViewModel()
-
+    
     var body: some View {
         TabView(selection: $selectedTab) {
             
@@ -82,7 +82,6 @@ struct TabBarView: View {
         .onDisappear {
             self.draw = false
         }
-    
     }
 }
 

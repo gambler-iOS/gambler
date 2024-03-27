@@ -15,17 +15,16 @@ struct GameDetailInfoView: View {
     var body: some View {
         VStack(spacing: 32) {
             TagLayout {
-                ChipView(label: "👥 3 - 10명", size: .medium)
-                ChipView(label: "🕛 10분 내외", size: .medium)
-                ChipView(label: "📖 마피아", size: .medium)
-                ChipView(label: "🟡 난이도 하", size: .medium)
+                ForEach(game.chipViewLabel, id: \.self) { label in
+                    ChipView(label: label, size: .medium)
+                }
             }
             VStack(spacing: 24) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("게임 방법")
                         .font(.body1B)
                     // 색상 8A8A8A
-                    Text(game.descriptionContent)
+                    Text(splitTextByPeriod(text: game.descriptionContent))
                         .font(.body2M)
                         .foregroundStyle(Color.gray500)
                 }
@@ -44,6 +43,12 @@ struct GameDetailInfoView: View {
             }
         }
         .padding(.horizontal, 24)
+    }
+    
+    private func splitTextByPeriod(text: String) -> String {
+            var newText = text
+            newText = newText.replacingOccurrences(of: ". ", with: ".\n")
+            return newText
     }
 }
 

@@ -13,11 +13,11 @@ struct GameGridItemView: View {
     let game: Game
     let likeGameIdArray: [String]
     
-    var playerString: String {
+    private var playerString: String {
         "인원 \(game.gameIntroduction.minPlayerCount) - \(game.gameIntroduction.maxPlayerCount)명"
     }
     
-    var isLike: Bool {
+    private var isLike: Bool {
         likeGameIdArray.contains { id in
             id == game.id
         }
@@ -34,8 +34,8 @@ struct GameGridItemView: View {
                     .scaledToFit()
                     .padding(.bottom, 8)
                     .overlay(alignment: .topTrailing) {
-                        HeartCellView(isLike: isLike)
-                        .padding(8)
+                        HeartCellView(isLike: isLike, postId: game.id, postType: AppConstants.PostType.game)
+                            .padding(8)
                     }
             } else {
                 RoundedRectangle(cornerRadius: 8.0)
@@ -46,6 +46,9 @@ struct GameGridItemView: View {
             Text(game.gameName)
                 .font(.body1M)
                 .foregroundStyle(Color.gray700)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(minWidth: 124, idealWidth: 155, maxWidth: 200, alignment: .leading)
             
             HStack(spacing: 8) {
                 ReviewRatingCellView(rating: game.reviewRatingAverage)

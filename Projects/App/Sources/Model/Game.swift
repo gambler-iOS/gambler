@@ -23,6 +23,36 @@ struct Game: AvailableFirebase, AvailableAggregateReview, Hashable {
     var reviewCount: Int
     var reviewRatingAverage: Double
     let gameIntroduction: GameIntroduction
+    
+    private var difficultyToString: String {
+        switch gameIntroduction.difficulty {
+        case ...1.0:
+            return "최하"
+        case ...2.0:
+            return "하"
+        case ...3.0:
+            return "중"
+        case ...4.0:
+            return "상"
+        case ...4.5:
+            return "최상"
+        default:
+            return "Unknown"
+        }
+    }
+    
+    var chipViewLabel: [String] {
+        var labelArray: [String] = [
+            "👥 \(gameIntroduction.minPlayerCount) - \(gameIntroduction.maxPlayerCount)명",
+            "🕛 \(gameIntroduction.playTime)분 내외",
+            "🟡 난이도 \(difficultyToString)"
+        ]
+        
+        for genre in gameIntroduction.genre {
+            labelArray.append(genre.koreanName)
+        }
+        return labelArray
+    }
 }
 
 struct GameIntroduction: Codable, Hashable {
@@ -30,14 +60,14 @@ struct GameIntroduction: Codable, Hashable {
     let minPlayerCount: Int
     let maxPlayerCount: Int
     let playTime: Int
-    let genre: [GameTheme]
+    let genre: [GameGenre]
 }
 
 /// 예제: 열거형 사용
 /// let theme: GameTheme = .fantasy
 /// print(theme.rawValue)      // 출력: "Fantasy"
 /// print(theme.koreanName)    // 출력: "판타지"
-enum GameTheme: String, Codable {
+enum GameGenre: String, Codable, CaseIterable {
     case ageOfReason = "Age of Reason"
     case renaissance = "Renaissance"
     case fantasy = "Fantasy"
@@ -173,6 +203,77 @@ enum GameTheme: String, Codable {
         case .comicBookStrip: return "만화 책 / 만화"
         case .zombies: return "좀비"
         case .realTime: return "실시간"
+        }
+    }
+    
+    var imageName: String {
+        switch self {
+        case .ageOfReason: return "ageOfReason"
+        case .renaissance: return "renaissance"
+        case .fantasy: return "fantasy"
+        case .abstractStrategy: return "abstractStrategy"
+        case .mythology: return "mythology"
+        case .moviesTVRadioTheme: return "moviesTVRadioTheme"
+        case .worldWarII: return "worldWarII"
+        case .math: return "math"
+        case .novelBased: return "novelBased"
+        case .civilization: return "civilization"
+        case .medieval: return "medieval"
+        case .miniatures: return "miniatures"
+        case .modernWarfare: return "modernWarfare"
+        case .maze: return "maze"
+        case .bluffing: return "bluffing"
+        case .horror: return "horror"
+        case .dice: return "dice"
+        case .wordGame: return "wordGame"
+        case .animals: return "animals"
+        case .territoryBuilding: return "territoryBuilding"
+        case .deduction: return "deduction"
+        case .civilWar: return "civilWar"
+        case .cardGame: return "cardGame"
+        case .memory: return "memory"
+        case .farming: return "farming"
+        case .fighting: return "fighting"
+        case .puzzle: return "puzzle"
+        case .scienceFiction: return "scienceFiction"
+        case .nautical: return "nautical"
+        case .environmental: return "environmental"
+        case .medical: return "medical"
+        case .arabian: return "arabian"
+        case .matureAdult: return "matureAdult"
+        case .childrensGame: return "childrensGame"
+        case .spaceExploration: return "spaceExploration"
+        case .collectibleComponents: return "collectibleComponents"
+        case .educational: return "educational"
+        case .postNapoleonic: return "postNapoleonic"
+        case .wargame: return "wargame"
+        case .political: return "political"
+        case .travel: return "travel"
+        case .negotiation: return "negotiation"
+        case .humor: return "humor"
+        case .ancient: return "ancient"
+        case .racing: return "racing"
+        case .religious: return "religious"
+        case .economic: return "economic"
+        case .transportation: return "transportation"
+        case .trains: return "trains"
+        case .prehistoric: return "prehistoric"
+        case .murderMystery: return "murderMystery"
+        case .aviationFlight: return "aviationFlight"
+        case .cityBuilding: return "cityBuilding"
+        case .partyGame: return "partyGame"
+        case .pirates: return "pirates"
+        case .printPlay: return "printPlay"
+        case .spiesSecretAgents: return "spiesSecretAgents"
+        case .exploration: return "exploration"
+        case .number: return "number"
+        case .adventure: return "adventure"
+        case .americanWest: return "americanWest"
+        case .expansionForBaseGame: return "expansionForBaseGame"
+        case .industryManufacturing: return "industryManufacturing"
+        case .comicBookStrip: return "comicBookStrip"
+        case .zombies: return "zombies"
+        case .realTime: return "realTime"
         }
     }
 }
