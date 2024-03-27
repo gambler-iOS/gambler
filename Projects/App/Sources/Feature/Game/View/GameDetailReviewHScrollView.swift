@@ -37,7 +37,7 @@ struct GameDetailReviewHScrollView: View {
             }
             .padding(.trailing, 24)
             .navigationDestination(isPresented: $isNavigation) {
-                ReviewDetailView(reviewableItem: game)
+                ReviewDetailView(reviewableItem: game, targetName: game.gameName)
             }
             
             if game.reviewCount != 0 {

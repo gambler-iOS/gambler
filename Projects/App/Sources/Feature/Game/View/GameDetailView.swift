@@ -131,7 +131,7 @@ struct GameDetailView: View {
     
     private var titleView: some View {
         HStack(alignment: .center, spacing: 8) {
-            Text(game.gameName)
+            Text(gameDetailViewModel.game.gameName)
                 .font(.subHead1B)
             ReviewRatingCellView(rating: gameDetailViewModel.game.reviewRatingAverage)
         }

@@ -17,7 +17,7 @@ final class GameDetailViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
     
     init() {
-                generateDummyData()
+//        generateDummyData()
     }
     
     private func generateDummyData() {
