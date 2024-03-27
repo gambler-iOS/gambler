@@ -10,13 +10,25 @@ import SwiftUI
 import Kingfisher
 import KakaoSDKAuth
 import KakaoSDKCommon
+import PhotosUI
 
 struct MyPageView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @EnvironmentObject private var profileEditViewModel: ProfileEditViewModel
     
-    @State private var isShowingToast: Bool = false
+    var toastMessage: String {
+        
+        switch myPageViewModel.toastCategory {
+        case .complain:
+            return "신고가 완료되었어요!"
+        case .signUp:
+            return "회원가입이 완료되었습니다!"
+        case .deleteAccount:
+            return "회원탈퇴에 성공했습니다. 아쉽지만 다음에 또 만나요!"
+        }
+    }
     
     var currentUser: User? {
         return loginViewModel.currentUser
@@ -24,7 +36,13 @@ struct MyPageView: View {
     
     var body: some View {
         if loginViewModel.authState != .signedIn {
-                MyPageSignedOutView()
+            MyPageSignedOutView()
+                .overlay {
+                    if myPageViewModel.isShowingToast {
+                        toastMessageView
+                            .padding(.horizontal, 24)
+                    }
+                }
         } else { // SignedIn
             NavigationStack {
                 ScrollView {
@@ -33,22 +51,31 @@ struct MyPageView: View {
                         
                         HStack {
                             Spacer()
-                            navigationView(title: "나의 리뷰", destination: MyReviewsView(), count: "\(currentUser?.myReviewsCount ?? 0)")
+                            navigationView(title: "나의 리뷰",
+                                           count: "\(currentUser?.myReviewsCount ?? 0)",
+                                           destination: MyReviewsView())
                             Spacer()
                             Divider()
                                 .frame(width: 1, height: 44)
                                 .foregroundStyle(Color.gray200)
                             Spacer()
-                            navigationView(title: "좋아요", destination: MyLikesView(), count: "\(currentUser?.myLikesCount ?? 0)")
+                            navigationView(title: "좋아요", 
+                                           count: "\(currentUser?.myLikesCount ?? 0)",
+                                           destination: MyLikesView())
                             Spacer()
                         }
                         .frame(height: 140)
                         .background(Color.gray50)
                         .clipShape(.rect(cornerRadius: 8))
+                        .onAppear {
+                            Task {
+                                await myPageViewModel.fetchReviewData()
+                            }
+                        }
                         
-                        ListItemView(isShowingToast: $isShowingToast)
+                        ListItemView()
                     } .overlay {
-                        if isShowingToast {
+                        if myPageViewModel.isShowingToast {
                             toastMessageView
                         }
                     }
@@ -63,7 +90,17 @@ struct MyPageView: View {
     @ViewBuilder
     private func myPageHeaderView(user: User?) -> some View {
         HStack(spacing: 8) {
-            CircleImageView(imageURL: user?.profileImageURL ?? "", size: 64)
+            if myPageViewModel.profileImageChanged {
+                if let data = profileEditViewModel.imageData, let uiImage = UIImage(data: data) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 64, height: 64)
+                        .clipShape(.circle)
+                }
+            } else {
+                CircleImageView(imageURL: user?.profileImageURL ?? "" , size: 64)
+            }
             
             VStack(alignment: .leading, spacing: 8) {
                 Text(user?.nickname ?? "")
@@ -76,7 +113,7 @@ struct MyPageView: View {
     }
     
     @ViewBuilder
-    private func navigationView(title: String, destination: some View, count: String) -> some View {
+    private func navigationView(title: String, count: String, destination: some View) -> some View {
         NavigationLink {
             destination
         } label: {
@@ -92,12 +129,12 @@ struct MyPageView: View {
     }
     
     private var toastMessageView: some View {
-        CustomToastView(content: "신고가 완료되었어요!")
+        CustomToastView(content: toastMessage)
             .offset(y: UIScreen.main.bounds.height * 0.3)
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                     withAnimation {
-                        isShowingToast = false
+                        myPageViewModel.isShowingToast = false
                     }
                 }
             }
@@ -108,5 +145,6 @@ struct MyPageView: View {
     MyPageView()
         .environmentObject(MyPageViewModel())
         .environmentObject(LoginViewModel())
-//        .environmentObject(AppNavigationPath())
+        .environmentObject(ProfileEditViewModel())
+        .environmentObject(AppNavigationPath())
 }
