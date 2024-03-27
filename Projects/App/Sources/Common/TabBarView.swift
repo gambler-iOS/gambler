@@ -8,8 +8,16 @@
 
 import SwiftUI
 
+final class TabSelection: ObservableObject {
+    @Published var selectedTab = 0
+    
+    func goToHomeTab() {
+        selectedTab = 0
+    }
+}
+
 struct TabBarView: View {
-    @State private var selectedTab = 0
+    @EnvironmentObject private var tabSelection: TabSelection
     @State private var draw = false
     @StateObject private var myPageViewModel = MyPageViewModel()
     @StateObject private var loginViewModel = LoginViewModel()
@@ -22,7 +30,7 @@ struct TabBarView: View {
     @StateObject private var reviewViewModel = ReviewViewModel()
     
     var body: some View {
-        TabView(selection: $selectedTab) {
+        TabView(selection: $tabSelection.selectedTab) {
             
             HomeView()
                 .environmentObject(homeViewModel)
@@ -32,7 +40,7 @@ struct TabBarView: View {
                 .environmentObject(shopListViewModel)
                 .tabItem {
                     HStack {
-                        (selectedTab == 0 ?
+                        (tabSelection.selectedTab == 0 ?
                          GamblerAsset.tabHomeSelected.swiftUIImage : GamblerAsset.tabHome.swiftUIImage)
                         Text("홈")
                     }
@@ -42,7 +50,7 @@ struct TabBarView: View {
             MapView(draw: $draw)
                 .tabItem {
                     HStack {
-                        (selectedTab == 1 ?
+                        (tabSelection.selectedTab == 1 ?
                          GamblerAsset.tabMapSelected.swiftUIImage : GamblerAsset.tabMap.swiftUIImage)
                         Text("내 주변")
                         
@@ -53,7 +61,7 @@ struct TabBarView: View {
             SearchMainView()
                 .tabItem {
                     HStack {
-                        (selectedTab == 2 ?
+                        (tabSelection.selectedTab == 2 ?
                          GamblerAsset.tabSearchSelected.swiftUIImage : GamblerAsset.tabSearch.swiftUIImage)
                         Text("검색")
                     }
@@ -66,7 +74,7 @@ struct TabBarView: View {
                 .environmentObject(appNavigationPath)
                 .tabItem {
                     HStack {
-                        (selectedTab == 3 ?
+                        (tabSelection.selectedTab == 3 ?
                          GamblerAsset.tabProfileSelected.swiftUIImage : GamblerAsset.tabProfile.swiftUIImage)
                         Text("마이")
                     }
@@ -87,4 +95,5 @@ struct TabBarView: View {
 
 #Preview {
     TabBarView()
+        .environmentObject(TabSelection())
 }

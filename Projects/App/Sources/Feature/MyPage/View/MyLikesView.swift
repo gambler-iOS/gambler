@@ -10,6 +10,8 @@ import SwiftUI
 
 struct MyLikesView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
+    @EnvironmentObject private var tabSelection: TabSelection
+
     @State private var selectedFilter = AppConstants.MyPageFilter.allCases.first ?? .shop
     @State private var showHomeView: Bool = false
     
@@ -88,14 +90,10 @@ struct MyLikesView: View {
             Text("좋아하는 \(category)을 추가해보세요!")
             
             CTAButton(disabled: .constant(false), title: "홈으로 가기") {
-                // 링크 걸기
-                showHomeView.toggle()
+                tabSelection.goToHomeTab()
             }
             .frame(width: 180)
-            .navigationDestination(isPresented: $showHomeView) {
-                HomeView()
-                    .modifier(BackButton())
-            }
+
             Spacer()
         }
     }
@@ -104,4 +102,5 @@ struct MyLikesView: View {
 #Preview {
     MyLikesView()
         .environmentObject(MyPageViewModel())
+        .environmentObject(TabSelection())
 }

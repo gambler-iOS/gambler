@@ -17,6 +17,7 @@ import GoogleSignIn
 @main
 struct GamblerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @StateObject private var tabSelection = TabSelection()
 
     init() {
         let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_APP_KEY"] ?? ""
@@ -42,6 +43,7 @@ struct GamblerApp: App {
     var body: some Scene {
         WindowGroup {
             TabBarView()
+                .environmentObject(tabSelection)
                 .onAppear {
                     Task {
                         await startTask()
