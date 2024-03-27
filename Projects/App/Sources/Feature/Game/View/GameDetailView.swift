@@ -131,7 +131,7 @@ struct GameDetailView: View {
     
     private var titleView: some View {
         HStack(alignment: .center, spacing: 8) {
-            Text(game.gameName)
+            Text(gameDetailViewModel.game.gameName)
                 .font(.subHead1B)
             ReviewRatingCellView(rating: gameDetailViewModel.game.reviewRatingAverage)
         }
@@ -145,12 +145,16 @@ struct GameDetailView: View {
                     GamblerAsset.heartGray.swiftUIImage : GamblerAsset.heartRed.swiftUIImage,
                     buttonName: "찜하기") {
                         
-                        isHeartButton.toggle()
                         updateLikeGameList()
+                        isHeartButton = ((loginViewModel.currentUser?.likeGameId?.contains(game.id)) != nil)
                     }
                     .frame(width: geometry.size.width / 2)
                 
                 ItemButtonView(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
+                    guard loginViewModel.currentUser != nil else {
+                        appNavigationPath.homeViewPath.append("로그인")
+                        return
+                    }
                     isWriteReviewButton = true
                 }
                 .navigationDestination(isPresented: $isWriteReviewButton) {

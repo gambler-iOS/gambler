@@ -91,6 +91,11 @@ struct WriteReviewView: View {
                                                images: selectedPhotosData)
             
             loginViewModel.currentUser?.myReviewsCount += 1
+            if reviewableItem is Game {
+                await gameDetailViewModel.updateGameAggregateReview(appendReviewRating: rating)
+            } else if reviewableItem is Shop {
+                
+            }
             isUploading = false
             dismiss()
             withAnimation(.easeIn(duration: 0.4)) {
@@ -98,37 +103,6 @@ struct WriteReviewView: View {
             }
         }
     }
-   
-//     private func submitReview() {
-//         Task {
-//             if let userId = loginViewModel.currentUser?.id {
-//                 isUploading = true
-//                 await reviewViewModel.addData(review:
-//                                                 Review(id: UUID().uuidString,
-//                                                        postId: reviewableItem.id,
-//                                                        userId: userId,
-//                                                        reviewContent: reviewContent,
-//                                                        reviewRating: rating,
-//                                                        reviewImage:
-//                                                         try await StorageManager
-//                                                     .uploadImages(selectedPhotosData,
-//                                                                   folder: .review),
-//                                                        createdDate: Date()) )
-//                 if let game = reviewableItem as? Game {
-//                     await gameDetailViewModel.updateGameAggregateReview(appendReviewRating: rating)
-//                 } else if let shop = reviewableItem as? Shop {
-                    
-//                 }
-//                 await reviewViewModel.fetchData()
-//                 isUploading = false
-//             }
-//         }
-//         dismiss()
-//         withAnimation(.easeIn(duration: 0.4)) {
-//             isShowingToast = true
-
-//         }
-//     }
     
     @ViewBuilder
     private func headerView(reviewableItem: AvailableAggregateReview) -> some View {
@@ -159,4 +133,5 @@ struct WriteReviewView: View {
     WriteReviewView(isShowingToast: .constant(false), reviewableItem: Shop.dummyShop)
         .environmentObject(ReviewViewModel())
         .environmentObject(LoginViewModel())
+        .environmentObject(GameDetailViewModel())
 }

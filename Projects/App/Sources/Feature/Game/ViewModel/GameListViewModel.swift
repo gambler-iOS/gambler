@@ -27,6 +27,22 @@ final class GameListViewModel: ObservableObject {
         return []
     }
     
+    private func extractMaxPlayerFromTitle(_ title: String) -> Int? {
+        guard let regex = try? NSRegularExpression(pattern: "\\d+") else {
+            return nil
+        }
+        
+        let matches = regex.matches(in: title, range: NSRange(title.startIndex..., in: title))
+        
+        if let match = matches.first {
+            if let range = Range(match.range, in: title) {
+                return Int(title[range])
+            }
+        }
+        
+        return nil
+    }
+    
     init() {
 //        generateDummyData()
     }
@@ -56,6 +72,14 @@ final class GameListViewModel: ObservableObject {
                                              field: "gameIntroduction.maxPlayerCount",
                                              isEqualTo: games.first?.gameIntroduction.maxPlayerCount ?? 0,
                                              limit: 5)
+            } else if title.contains("최대 인원수") {
+                if let maxPlayer = extractMaxPlayerFromTitle(title) {
+                    tempGames = try await firebaseManager
+                        .fetchWhereIsEqualToData(collectionName: collectionName,
+                                                 field: "gameIntroduction.maxPlayerCount",
+                                                 isEqualTo: maxPlayer,
+                                                 limit: 5)
+                }
             } else {
                 /// 종류별 Best 에서 장르 하나 선택 시 진입
                 tempGames = try await firebaseManager

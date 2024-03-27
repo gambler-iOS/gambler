@@ -17,12 +17,13 @@ final class GameDetailViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
     
     init() {
-        //        generateDummyData()
+//        generateDummyData()
     }
     
     private func generateDummyData() {
         similarGenreGames = Game.dummyGameList
         similarPlayerGames = Game.dummyGameList
+        reviews.append(Review.dummyGameReview)
         reviews.append(Review.dummyGameReview)
     }
     
