@@ -49,10 +49,11 @@ struct HomeView: View {
                         GameListView(title: title)
                     } else if title.contains("매장") {
                         ShopListView(title: title)
-                    } else if title == "로그인" {
-                        LoginView()
                     }
                 }
+                .navigationDestination(isPresented: $appNavigationPath.isGoTologin, destination: {
+                    LoginView()
+                })
                 .buttonStyle(HiddenClickAnimationButtonStyle())
             }
             .coordinateSpace(name: "HOMESCROLL")

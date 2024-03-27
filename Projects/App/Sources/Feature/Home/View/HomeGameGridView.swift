@@ -10,11 +10,11 @@ import SwiftUI
 
 struct HomeGameGridView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     let title: String
     let games: [Game]
-    let columns: [GridItem] = Array(repeating:
-            .init(.flexible(minimum: 124, maximum: 200),
-                  spacing: 17, alignment: .leading), count: 2)
+    private let columns: [GridItem] = Array(repeating:
+            .init(.flexible(minimum: 124, maximum: 200), spacing: 17, alignment: .leading), count: 2)
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -26,7 +26,7 @@ struct HomeGameGridView: View {
             LazyVGrid(columns: columns, spacing: 24, content: {
                 ForEach(games) { game in
                     NavigationLink(value: game) {
-                        GameGridItemView(game: game, likeGameIdArray: [])
+                        GameGridItemView(game: game)
                     }
                 }
             })

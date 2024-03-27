@@ -11,14 +11,7 @@ import Kingfisher
 
 struct ShopListCellView: View {
     let shop: Shop
-    let likeShopIdArray: [String]
-    
-    var isLike: Bool {
-        likeShopIdArray.contains { id in
-            id == shop.id
-        }
-    }
-    
+
     var body: some View {
         VStack {
             HStack(alignment: .top, spacing: 16) {
@@ -44,7 +37,7 @@ struct ShopListCellView: View {
                         }
                         Spacer()
                         
-                        HeartCellView(isLike: isLike, postId: shop.id, postType: AppConstants.PostType.shop)
+                        HeartCellView(postId: shop.id, postType: AppConstants.PostType.shop)
                     }
 
                     ReviewRatingCellView(rating: shop.reviewRatingAverage)
@@ -64,5 +57,5 @@ struct ShopListCellView: View {
 }
 
 #Preview {
-    ShopListCellView(shop: Shop.dummyShop, likeShopIdArray: [])
+    ShopListCellView(shop: Shop.dummyShop)
 }

@@ -34,7 +34,7 @@ struct SearchResultView: View {
                     if shopHitsCount < 3 {
                         ForEach(0..<shopHitsCount, id: \.self) { index in
                             if let shop = shopHitsController.hits[index] {
-                                ShopListCellView(shop: shop.object, likeShopIdArray: [])
+                                ShopListCellView(shop: shop.object)
                                     .onTapGesture {
                                         appNavigationPath.searchViewPath.append(shop.object)
                                     }
@@ -43,7 +43,7 @@ struct SearchResultView: View {
                     } else {
                         ForEach(0..<3, id: \.self) { index in
                             if let shop = shopHitsController.hits[index] {
-                                ShopListCellView(shop: shop.object, likeShopIdArray: [])
+                                ShopListCellView(shop: shop.object)
                                     .onTapGesture {
                                         appNavigationPath.searchViewPath.append(shop.object)
                                     }
@@ -69,7 +69,7 @@ struct SearchResultView: View {
                     if gameHitsCount < 3 {
                         ForEach(0..<gameHitsCount, id: \.self) { index in
                             if let game = gameHitsController.hits[index] {
-                                GameListItemView(game: game.object, likeGameIdArray: [])
+                                GameListItemView(game: game.object)
                                     .onTapGesture {
                                         appNavigationPath.searchViewPath.append(game.object)
                                     }
@@ -78,7 +78,7 @@ struct SearchResultView: View {
                     } else {
                         ForEach(0..<3, id: \.self) { index in
                             if let game = gameHitsController.hits[index] {
-                                GameListItemView(game: game.object, likeGameIdArray: [])
+                                GameListItemView(game: game.object)
                                     .onTapGesture {
                                         appNavigationPath.searchViewPath.append(game.object)
                                     }

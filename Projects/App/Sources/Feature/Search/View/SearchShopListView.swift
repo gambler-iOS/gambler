@@ -17,7 +17,7 @@ struct SearchShopListView: View {
     var body: some View {
         VStack {
             InfiniteList(shopViewModel) { shop in
-                ShopListCellView(shop: shop.object, likeShopIdArray: [])
+                ShopListCellView(shop: shop.object)
                     .onTapGesture {
                         appNavigationPath.searchViewPath.append(shop.object)
                     }

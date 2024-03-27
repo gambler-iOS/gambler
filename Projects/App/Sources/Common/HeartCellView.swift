@@ -11,11 +11,24 @@ import SwiftUI
 struct HeartCellView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
-    let isLike: Bool
     let postId: String
     let postType: AppConstants.PostType
     @State private var isLiked: Bool = false
-//    var onHeartTapped: () -> Void = {}
+    
+    private var getCurrentHeartState: Bool {
+        if let curUser = loginViewModel.currentUser {
+            if postType == .game {
+                if let likeGameArray = curUser.likeGameId {
+                    return likeGameArray.contains { $0 == postId }
+                }
+            } else if postType == .shop {
+                if let likeShopArray = curUser.likeShopId {
+                    return likeShopArray.contains { $0 == postId }
+                }
+            }
+        }
+        return false
+    }
     
     var body: some View {
         VStack {
@@ -34,7 +47,7 @@ struct HeartCellView: View {
             }
         }
         .onAppear {
-            isLiked = isLike
+            isLiked = getCurrentHeartState
         }
         .onTapGesture {
             isLiked.toggle()
@@ -44,10 +57,9 @@ struct HeartCellView: View {
     
     private func updateLikeList() {
         guard var curUser = loginViewModel.currentUser else {
-            appNavigationPath.homeViewPath.append("로그인")
+            appNavigationPath.isGoTologin = true
             return
         }
-        
         var userLikeDictionary: [AnyHashable: Any] = [:]
         var likeKey: String = ""
         var updatedLikeArray: [String] = []
@@ -71,9 +83,9 @@ struct HeartCellView: View {
         }
         
         if postType == .game {
-            curUser.likeGameId = updatedLikeArray
+            loginViewModel.currentUser?.likeGameId = updatedLikeArray
         } else {
-            curUser.likeShopId = updatedLikeArray
+            loginViewModel.currentUser?.likeShopId = updatedLikeArray
         }
         
         userLikeDictionary[likeKey] = updatedLikeArray
@@ -85,5 +97,5 @@ struct HeartCellView: View {
 }
 
 #Preview {
-    HeartCellView(isLike: true, postId: "", postType: AppConstants.PostType.game)
+    HeartCellView(postId: "", postType: AppConstants.PostType.game)
 }

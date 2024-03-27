@@ -10,6 +10,7 @@ import SwiftUI
 
 struct HomeShopListView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     let title: String
     var shops: [Shop]
     
@@ -23,7 +24,7 @@ struct HomeShopListView: View {
                 
                 ForEach(shops) { shop in
                     NavigationLink(value: shop) {
-                        ShopListCellView(shop: shop, likeShopIdArray: [])
+                        ShopListCellView(shop: shop)
                     }
                     if shop != shops.last {
                         Divider()

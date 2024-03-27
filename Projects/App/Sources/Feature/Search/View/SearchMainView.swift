@@ -58,6 +58,9 @@ struct SearchMainView: View {
                 .navigationDestination(for: Game.self) { game in
                     GameDetailView(game: game)
                 }
+                .navigationDestination(isPresented: $appNavigationPath.isGoTologin, destination: {
+                    LoginView()
+                })
             }
         }
     }

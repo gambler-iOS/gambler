@@ -42,7 +42,7 @@ struct FloatingCellView: View {
                         
                         Spacer()
                         
-                        HeartCellView(isLike: isLike, postId: shop.id, postType: AppConstants.PostType.shop)
+                        HeartCellView(postId: shop.id, postType: AppConstants.PostType.shop)
                     }
                     
                     ReviewRatingCellView(rating: shop.reviewRatingAverage)

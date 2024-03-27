@@ -24,7 +24,7 @@ struct MapSheetView: View {
                     VStack(spacing: 24) {
                         ForEach(mapViewModel.areaInShopList) { shop in
                             NavigationLink(value: shop) {
-                                ShopListCellView(shop: shop, likeShopIdArray: [])
+                                ShopListCellView(shop: shop)
                             }
                             if shop != mapViewModel.areaInShopList.last {
                                 Divider()

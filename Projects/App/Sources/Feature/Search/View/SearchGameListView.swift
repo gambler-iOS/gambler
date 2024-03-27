@@ -17,7 +17,7 @@ struct SearchGameListView: View {
     var body: some View {
         VStack {
             InfiniteList(gameViewModel) { game in
-                GameListItemView(game: game.object, likeGameIdArray: [])
+                GameListItemView(game: game.object)
                     .onTapGesture {
                         appNavigationPath.searchViewPath.append(game.object)
                     }
@@ -30,5 +30,3 @@ struct SearchGameListView: View {
         .modifier(BackButton())
     }
 }
-
-
