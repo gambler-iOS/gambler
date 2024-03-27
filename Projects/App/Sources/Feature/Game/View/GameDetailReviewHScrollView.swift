@@ -11,6 +11,8 @@ import SwiftUI
 struct GameDetailReviewHScrollView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @EnvironmentObject private var gameDetailViewModel: GameDetailViewModel
+    @EnvironmentObject private var loginViewModel: LoginViewModel
+    @State private var isNavigation: Bool = false
     private var game: Game {
         gameDetailViewModel.game
     }
@@ -27,17 +29,34 @@ struct GameDetailReviewHScrollView: View {
         VStack(spacing: 24) {
             DetailSectionHeaderView(title: "리뷰",
                                     reviewInfo: "\(formattedReviewRatingAverage)(\(game.reviewCount))") {
-                appNavigationPath.homeViewPath.append("리뷰")
+                guard loginViewModel.currentUser != nil else {
+                    appNavigationPath.homeViewPath.append("로그인")
+                    return
+                }
+                isNavigation = true
             }
             .padding(.trailing, 24)
+            .navigationDestination(isPresented: $isNavigation) {
+                ReviewDetailView(reviewableItem: game)
+            }
             
-            ScrollView(.horizontal) {
-                HStack(spacing: 8) {
-                    ForEach(gameDetailViewModel.reviews) { review in
-                        ReviewListCellView(review: review)
-                            .frame(width: 254)
+            if game.reviewCount != 0 {
+                ScrollView(.horizontal) {
+                    HStack(spacing: 8) {
+                        ForEach(gameDetailViewModel.reviews) { review in
+                            ReviewListCellView(review: review)
+                        }
                     }
                 }
+            } else {
+                VStack {
+                    Text("첫 번째 리뷰를 남겨주세요!")
+                        .font(.body2M)
+                        .foregroundStyle(Color.gray400)
+                }
+                .frame(height: 114)
+                .frame(maxWidth: .infinity)
+                .padding(.trailing, 24)
             }
         }
         .padding(.leading, 24)

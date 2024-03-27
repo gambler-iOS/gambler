@@ -41,6 +41,9 @@ struct HomeView: View {
                 .navigationDestination(for: GameGenre.self) { genre in
                     GameListView(title: genre.koreanName)
                 }
+                .navigationDestination(for: Int.self) { maxPlayer in
+                    GameListView(title: "최대 인원수 \(maxPlayer)인")
+                }
                 .navigationDestination(for: String.self) { title in
                     if title.contains("게임") {
                         GameListView(title: title)

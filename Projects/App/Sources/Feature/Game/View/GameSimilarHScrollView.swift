@@ -15,10 +15,17 @@ struct GameSimilarHScrollView: View {
     
     var body: some View {
         VStack(spacing: 24) {
-            DetailSectionHeaderView(title: title) {
-                appNavigationPath.homeViewPath.append(title)
+            if title.contains("장르") {
+                NavigationLink(value: games.first?.gameIntroduction.genre.first) {
+                    headerView(title: title, showGrid: false)
+                        .padding(.trailing, 24)
+                }
+            } else if title.contains("인원수") {
+                NavigationLink(value: games.first?.gameIntroduction.maxPlayerCount) {
+                    headerView(title: title, showGrid: false)
+                        .padding(.trailing, 24)
+                }
             }
-            .padding(.trailing, 24)
             
             ScrollView(.horizontal) {
                 HStack(spacing: 16) {
@@ -32,6 +39,21 @@ struct GameSimilarHScrollView: View {
             }
         }
         .padding(.leading, 24)
+    }
+    
+    @ViewBuilder
+    private func headerView(title: String, showGrid: Bool) -> some View {
+        HStack(spacing: .zero) {
+            Text(title)
+                .font(.subHead1B)
+                .foregroundStyle(.black)
+            
+            Spacer()
+            
+            GamblerAsset.arrowRight.swiftUIImage
+                .resizable()
+                .frame(width: 24, height: 24)
+        }
     }
 }
 
