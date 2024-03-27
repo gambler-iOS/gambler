@@ -10,9 +10,10 @@ import SwiftUI
 
 struct MyLikesView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
+    @EnvironmentObject private var tabSelection: TabSelection
+
     @State private var selectedFilter = AppConstants.MyPageFilter.allCases.first ?? .shop
-    @State private var showShopView: Bool = false
-    @State private var showGameView: Bool = false
+    @State private var showHomeView: Bool = false
     
     var body: some View {
         VStack(spacing: 6) {
@@ -33,21 +34,7 @@ struct MyLikesView: View {
     @ViewBuilder
     private func shopListView(shops: [Shop]) -> some View {
         if shops.isEmpty {
-            VStack(spacing: 32) {
-                Spacer()
-                Text("좋아하는 매장을 추가해보세요!")
-                
-                CTAButton(disabled: .constant(false), title: "매장 보러가기") {
-                    // 링크 걸기
-                    showShopView.toggle()
-                }
-                .frame(width: 180)
-                .navigationDestination(isPresented: $showShopView) {
-                    HomeShopListView(title: "인기 매장", shops: [Shop.dummyShop])
-                        .modifier(BackButton())
-                }
-                Spacer()
-            }
+            emptyView(category: "매장")
         } else {
             ScrollView {
                 VStack(spacing: 24) {
@@ -76,20 +63,7 @@ struct MyLikesView: View {
                           spacing: 17, alignment: .leading), count: 2)
         
         if games.isEmpty {
-            VStack(spacing: 32) {
-                Spacer()
-                Text("좋아하는 게임을 추가해보세요!")
-                CTAButton(disabled: .constant(false), title: "게임 보러가기") {
-                    // 링크 걸기
-                    showGameView.toggle()
-                }
-                .frame(width: 180)
-                .navigationDestination(isPresented: $showGameView) {
-                    HomeGameGridView(title: "인기 게임", games: HomeViewModel().popularGames)
-                        .modifier(BackButton())
-                }
-                Spacer()
-            }
+            emptyView(category: "게임")
         } else {
             ScrollView {
                 VStack(spacing: 24) {
@@ -108,9 +82,25 @@ struct MyLikesView: View {
             .scrollIndicators(.hidden)
         }
     }
+    
+    @ViewBuilder
+    private func emptyView(category: String) -> some View {
+        VStack(spacing: 32) {
+            Spacer()
+            Text("좋아하는 \(category)을 추가해보세요!")
+            
+            CTAButton(disabled: .constant(false), title: "홈으로 가기") {
+                tabSelection.goToHomeTab()
+            }
+            .frame(width: 180)
+
+            Spacer()
+        }
+    }
 }
 
 #Preview {
     MyLikesView()
         .environmentObject(MyPageViewModel())
+        .environmentObject(TabSelection())
 }

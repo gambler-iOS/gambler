@@ -12,47 +12,61 @@ import KakaoMapsSDK
 import CoreLocation
 
 struct MapView: View {
-    // 임시
-    @StateObject private var shopStore = ShopStore()
-    @Binding var draw: Bool
-    @State private var isLoading: Bool = true
-    @State private var isShowingSheet: Bool = false
+
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @StateObject private var mapViewModel = MapViewModel()
+    
     @State private var selectedShop: Shop = Shop.dummyShop
     @State private var userLocate: GeoPoint = GeoPoint.defaultPoint
+    @State private var isLoading: Bool = true
+    @State private var isShowingSheet: Bool = false
+    
+    @Binding var draw: Bool
     
     var body: some View {
-        KakaoMapView(userLocate: $userLocate, selectedShop: $selectedShop,
-                     draw: $draw, isShowingSheet: $isShowingSheet, isLoading: $isLoading)
-        .overlay {
-            if !isShowingSheet && !isLoading {
-                FloatingView(shopStore: shopStore, selectedShop: $selectedShop,
-                             isShowingSheet: $isShowingSheet, userLocate: $userLocate)
-                .frame(width: 327, height: 182)
-                .offset(y: 250)
+        NavigationStack(path: $appNavigationPath.mapViewPath) {
+            KakaoMapView(mapViewModel: mapViewModel,
+                         userLocate: $userLocate,
+                         selectedShop: $selectedShop,
+                         draw: $draw,
+                         isShowingSheet: $isShowingSheet,
+                         isLoading: $isLoading)
+            .overlay {
+                if !isShowingSheet && !isLoading {
+                    FloatingView(mapViewModel: mapViewModel, 
+                                 selectedShop: $selectedShop,
+                                 isShowingSheet: $isShowingSheet, 
+                                 userLocate: $userLocate)
+                    .frame(width: 327, height: 182)
+                    .offset(y: 250)
+                }
             }
+            .overlay {
+                if isLoading {
+                    ProgressView()
+                        .tint(.gray400)
+                        .offset(y: 0)
+                }
+                if isShowingSheet {
+                    MapSheetView(mapViewModel: mapViewModel, userLocate: $userLocate)
+                        .opacity(isShowingSheet ? 1 : 0)
+                        .transition(.move(edge: .bottom))
+                        .offset(y: getSafeAreaTop())
+                        .overlay {
+                            showMapButton
+                                .offset(y: 300)
+                        }
+                }
+            }
+            .overlay(safetyAreaTopScreen, alignment: .top)
+            .task {
+                if selectedShop == Shop.dummyShop {
+                    selectedShop = await mapViewModel.fetchOneShop()
+                }
+            }
+            .edgesIgnoringSafeArea(.top)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .overlay {
-            if isLoading {
-                ProgressView()
-                    .tint(.gray400)
-                    .offset(y: 0)
-            }
-            if isShowingSheet {
-                MapSheetView(shopStore: shopStore)
-                    .opacity(isShowingSheet ? 1 : 0)
-                    .transition(.move(edge: .bottom))
-                    .offset(y: getSafeAreaTop())
-                    .overlay {
-                        showMapButton
-                            .offset(y: 300)
-                    }
-            }
-        }
-        .overlay(
-            safetyAreaTopScreen, alignment: .top
-        )
-        .edgesIgnoringSafeArea(.top)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     private var showMapButton: some View {
@@ -78,6 +92,12 @@ struct MapView: View {
 }
 
 #Preview {
-    KakaoMapView(userLocate: .constant(GeoPoint.defaultPoint), selectedShop: .constant(Shop.dummyShop),
-                 draw: .constant(true), isShowingSheet: .constant(false), isLoading: .constant(false))
+    NavigationStack {
+        KakaoMapView(mapViewModel: MapViewModel(),
+                     userLocate: .constant(GeoPoint.defaultPoint),
+                     selectedShop: .constant(Shop.dummyShop),
+                     draw: .constant(true), 
+                     isShowingSheet: .constant(false),
+                     isLoading: .constant(false))
+    }
 }

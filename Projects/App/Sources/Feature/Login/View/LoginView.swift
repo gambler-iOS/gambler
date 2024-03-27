@@ -11,7 +11,6 @@ import AuthenticationServices
 
 struct LoginView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
-
     @State private var isShowingRegistrationView: Bool = false
     
     var body: some View {
@@ -82,6 +81,7 @@ struct LoginView: View {
             }
         }
         .modifier(BackButton())
+        .modifier(CustomLoadingView(isLoading: AuthService.shared.isLoading))
         .toolbar(.hidden, for: .tabBar)
         .navigationDestination(isPresented: $isShowingRegistrationView) {
             RegistrationView()

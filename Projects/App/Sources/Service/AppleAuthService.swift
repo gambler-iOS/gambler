@@ -114,6 +114,8 @@ extension AppleAuthService {
         if case .failure(let failure) = result {
             print(#fileID, #function, #line, "- \(failure.localizedDescription)")
         } else if case .success(let authorization) = result {
+            AuthService.shared.isLoading = true
+
             if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
                 guard let nonce = Self.currentNonce else {
                     fatalError("Invalid state: a login callback was received, but no login request was sent.")

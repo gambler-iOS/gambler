@@ -9,6 +9,7 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import CoreLocation
 
 final class FirebaseManager {
     static let shared = FirebaseManager()
@@ -130,6 +131,21 @@ final class FirebaseManager {
     func fetchOneData<T: AvailableFirebase>(collectionName: String, byId: String) async throws -> T? {
         let querySnapshot = try await db.collection(collectionName)
             .whereField("id", isEqualTo: byId).getDocuments()
+        let result = querySnapshot.documents.compactMap { try? $0.data(as: T.self) }
+        return result.first ?? nil
+    }
+    
+    /// 지정한 collection 에서 임의의 1개의 데이터만 리턴
+    /// - Parameters:
+    ///   - collectionName: FirebaseStore 에서 지정된 Collection 이름
+    /// - Returns: T?
+    /// - Example:
+    /// ```swift
+    /// fetchOneAnyData(collectionName: AppConstants.CollectionName.shops)
+    /// ```
+    func fetchOneAnyData<T: AvailableFirebase>(collectionName: String) async throws -> T? {
+        let collectionRef = db.collection(collectionName).limit(to: 1)
+        let querySnapshot = try await collectionRef.getDocuments()
         let result = querySnapshot.documents.compactMap { try? $0.data(as: T.self) }
         return result.first ?? nil
     }

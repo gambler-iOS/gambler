@@ -19,9 +19,9 @@ struct MyReviewsView: View {
             
             switch selectedFilter {
             case .shop:
-                reviewListView(reviewData: myPageViewModel.shopReviews)
+                reviewListView(reviewDatas: myPageViewModel.shopReviews)
             case .game:
-                reviewListView(reviewData: myPageViewModel.gameReviews)
+                reviewListView(reviewDatas: myPageViewModel.gameReviews)
             }
         }
         .navigationTitle("나의 리뷰")
@@ -29,8 +29,8 @@ struct MyReviewsView: View {
     }
     
     @ViewBuilder
-    private func reviewListView(reviewData: [Review]) -> some View {
-        if reviewData.isEmpty {
+    private func reviewListView(reviewDatas: [ReviewData]) -> some View {
+        if reviewDatas.isEmpty {
             VStack {
                 Spacer()
                 Text("작성된 리뷰가 없습니다.")
@@ -46,11 +46,11 @@ struct MyReviewsView: View {
                         .frame(height: 0)
                         .padding(.bottom, 0)         
                     
-                    ForEach(reviewData, id: \.self) { review in
-                        ReviewDetailCellView(reviewData: review)
+                    ForEach(reviewDatas, id: \.self) { reviewData in
+                        ReviewDetailCellView(name: reviewData.name, reviewData: reviewData.review)
                             .padding(.bottom, -8)
                         
-                        if review != reviewData.last {
+                        if reviewData != reviewDatas.last {
                             Divider()
                         }
                     }

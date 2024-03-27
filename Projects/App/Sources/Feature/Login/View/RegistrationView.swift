@@ -33,7 +33,7 @@ struct RegistrationView: View {
             Spacer()
             
             if isShowingToast {
-                Toast(message: toastMessage, show: $isShowingToast)
+                toastMessageView
                     .padding(.bottom, 16)
             }
             
@@ -80,17 +80,17 @@ struct RegistrationView: View {
         }
     }
     
-//    private var toastMessageView: some View {
-//        CustomToastView(content: toastMessage)
+    private var toastMessageView: some View {
+        CustomToastView(content: toastMessage)
 //            .offset(y: UIScreen.main.bounds.height * 0.3)
-//            .onAppear {
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-//                    withAnimation {
-//                        isShowingToast = false
-//                    }
-//                }
-//            }
-//    }
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    withAnimation {
+                        isShowingToast = false
+                    }
+                }
+            }
+    }
 
     /// 닉네임 중복검사
     /// - Returns: 중복 - true / 중복 없을 시 false

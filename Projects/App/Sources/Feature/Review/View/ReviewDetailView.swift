@@ -12,13 +12,13 @@ struct ReviewDetailView: View {
     @EnvironmentObject private var reviewViewModel: ReviewViewModel
     @State private var isShowingToast: Bool = false
     let reviewableItem: AvailableAggregateReview
+    let targetName: String  // 앱/게임 이름
     
     var reviewRatingCount: String {
         "\(String(format: "%.1f", reviewableItem.reviewRatingAverage))(\(reviewableItem.reviewCount))"
     }
     
     var body: some View {
-        //        ScrollView {
         VStack(spacing: 24) {
             HStack(spacing: 8) {
                 Text("리뷰")
@@ -30,15 +30,15 @@ struct ReviewDetailView: View {
                 Spacer()
             }
             
-            if reviewViewModel.dummyReviews.isEmpty {
+            if reviewViewModel.reviews.isEmpty {
                 EmptyView()
             } else {
                 ScrollView {
                     VStack(spacing: 16) {
-                        ForEach(reviewViewModel.dummyReviews, id: \.self) { review in
-                            ReviewDetailCellView(reviewData: review)
+                        ForEach(reviewViewModel.reviews, id: \.self) { review in
+                            ReviewDetailCellView(name: targetName, reviewData: review)
                             
-                            if review != reviewViewModel.dummyReviews.last {
+                            if review != reviewViewModel.reviews.last {
                                 Divider()
                             }
                         }
@@ -47,6 +47,11 @@ struct ReviewDetailView: View {
             }
         }
         .padding(.horizontal, 24)
+        .onAppear {
+            Task {
+                await reviewViewModel.fetchReviewData(reviewableItem: reviewableItem)
+            }
+        }
         .scrollIndicators(.hidden)
         .navigationTitle("리뷰 상세")
         .navigationBarTitleDisplayMode(.inline)
@@ -97,7 +102,7 @@ struct ReviewDetailView: View {
 
 #Preview {
     NavigationStack {
-        ReviewDetailView(reviewableItem: Shop.dummyShop)
+        ReviewDetailView(reviewableItem: Shop.dummyShop, targetName: "하나비")
             .environmentObject(ReviewViewModel())
     }
 }

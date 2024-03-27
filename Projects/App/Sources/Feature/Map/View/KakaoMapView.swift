@@ -11,6 +11,8 @@ import KakaoMapsSDK
 import CoreLocation
 
 struct KakaoMapView: UIViewRepresentable {
+    @ObservedObject var mapViewModel: MapViewModel
+    
     @Binding var userLocate: GeoPoint
     @Binding var selectedShop: Shop
     @Binding var draw: Bool
@@ -38,7 +40,10 @@ struct KakaoMapView: UIViewRepresentable {
     
     func makeCoordinator() -> KakaoMapCoordinator {
         return KakaoMapCoordinator(userLocate: $userLocate,
-                                   isShowingSheet: $isShowingSheet, tappedShop: $selectedShop, isLoading: $isLoading)
+                                   isShowingSheet: $isShowingSheet,
+                                   tappedShop: $selectedShop,
+                                   isLoading: $isLoading,
+                                   mapViewModel: _mapViewModel)
     }
     
     static func dismantleUIView(_ uiView: KMViewContainer, coordinator: KakaoMapCoordinator) {
@@ -50,6 +55,7 @@ struct KakaoMapView: UIViewRepresentable {
         @Binding var selectedShop: Shop
         @Binding var isShowingSheet: Bool
         @Binding var isLoading: Bool
+        @ObservedObject var mapViewModel: MapViewModel
         
         let locationManager = CLLocationManager()
         var controller: KMController?
@@ -62,12 +68,13 @@ struct KakaoMapView: UIViewRepresentable {
         var firstTap: Bool = true
         
         init (userLocate: Binding<GeoPoint>, isShowingSheet: Binding<Bool>,
-              tappedShop: Binding<Shop>, isLoading: Binding<Bool>) {
+              tappedShop: Binding<Shop>, isLoading: Binding<Bool>, mapViewModel: ObservedObject<MapViewModel>) {
             first = true
             self._userLocate = userLocate
             self._isShowingSheet = isShowingSheet
             self._selectedShop = tappedShop
             self._isLoading = isLoading
+            self._mapViewModel = mapViewModel
             super.init()
         }
         
@@ -94,17 +101,16 @@ struct KakaoMapView: UIViewRepresentable {
                 mapView.setLogoPosition(
                     origin: GuiAlignment(vAlign: .bottom, hAlign: .right),
                     position: CGPoint(x: 10.0, y: -UIScreen.main.bounds.height * 0.2 + 20))
-                cameraStartHandler = mapView
-                    .addCameraWillMovedEventHandler(target: self, handler: KakaoMapCoordinator.cameraWillMove)
-                cameraStoppedHandler = mapView
-                    .addCameraStoppedEventHandler(target: self, handler: KakaoMapCoordinator.onCameraStopped)
                 getUserLocation()
                 createLabelLayer()
                 createPoiStyle()
                 createUserLocationPoi()
-                createPoisOnMap()
                 createSpriteGUI()
                 moveCameraToFocus(MapPoint(longitude: userLocate.longitude,  latitude: userLocate.latitude))
+                cameraStartHandler = mapView
+                    .addCameraWillMovedEventHandler(target: self, handler: KakaoMapCoordinator.cameraWillMove)
+                cameraStoppedHandler = mapView
+                    .addCameraStoppedEventHandler(target: self, handler: KakaoMapCoordinator.onCameraStopped)
             }
         }
         
@@ -116,12 +122,25 @@ struct KakaoMapView: UIViewRepresentable {
         }
         
         func onCameraStopped(_ param: CameraActionEventParam) {
-            if param.by == .notUserAction {
-                cameraStoppedHandler?.dispose()
-            }
-        
+            fetchShopListInArea()
         }
         
+        func fetchShopListInArea() {
+            Task {
+                if let mapView = controller?.getView("mapview") as? KakaoMap {
+                    let m = mapView.getPosition(CGPoint(x: mapView.viewRect.width * 0.5, 
+                                                        y: mapView.viewRect.height * 0.5))
+                    let mapCountry = await mapViewModel
+                        .getCountry(mapPoint: GeoPoint(latitude: m.wgsCoord.latitude, 
+                                                       longitude: m.wgsCoord.longitude))
+                    print("포인트: \(GeoPoint(latitude: m.wgsCoord.latitude, longitude: m.wgsCoord.longitude))")
+                    print("현재 주소: \(mapCountry)")
+                    await mapViewModel.fetchCountryData(country: mapCountry)
+                    createPoisOnMap()
+                }
+            }
+        }
+    
         func containerDidResized(_ size: CGSize) {
             if let mapView = controller?.getView("mapview") as? KakaoMap {
                 mapView.viewRect = CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: size)

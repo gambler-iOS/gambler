@@ -50,7 +50,8 @@ struct FloatingCellView: View {
                         .font(.body2M)
                         .foregroundStyle(Color.gray400)
                         .frame(height: 42, alignment: .top)
-                      
+                        .multilineTextAlignment(.leading)
+                    
                     Spacer()
                     
                 }

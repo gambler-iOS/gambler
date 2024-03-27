@@ -98,13 +98,12 @@ extension KakaoMapView.KakaoMapCoordinator {
               marker?.show()
           }
       }
-    
+
     func createPoisOnMap() {
         if let mapView = controller?.getView("mapview") as? KakaoMap {
             let manager = mapView.getLabelManager()
             let layer = manager.getLabelLayer(layerID: "PoiLayer")
-            
-            for markerData in Shop.dummyShopList {
+            for markerData in mapViewModel.fetchNewShopList {
                 let poiOption = PoiOptions(styleID: "shopPoiIconStyle")
                 poiOption.rank = 0
                 poiOption.transformType = .decal
@@ -116,7 +115,6 @@ extension KakaoMapView.KakaoMapCoordinator {
                 marker?.userObject = markerData as AnyObject
                 _ = marker?.addPoiTappedEventHandler(target: self,
                                                          handler: KakaoMapView.KakaoMapCoordinator.poiDidTapped)
-                print("[Action: create Poi] markerData = \(markerData)")
                 marker?.show()
             }
         }
@@ -211,7 +209,6 @@ extension KakaoMapView.KakaoMapCoordinator {
                                                            orderType: .rank, zOrder: 7000)
             _ = manager.addLabelLayer(option: myLocationLayerOption)
             
-           
         }
     }
 }
