@@ -10,6 +10,7 @@ import SwiftUI
 import AuthenticationServices
 
 struct LoginView: View {
+    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @State private var isShowingRegistrationView: Bool = false
     
@@ -78,6 +79,11 @@ struct LoginView: View {
         .onReceive(loginViewModel.$authState) { authState in
             if authState == .creatingAccount && loginViewModel.userSession != nil {
                 isShowingRegistrationView = true
+            }
+        }
+        .onChange(of: loginViewModel.authState) { _, newValue in
+            if newValue == .signedIn {
+                dismiss()
             }
         }
         .modifier(BackButton())

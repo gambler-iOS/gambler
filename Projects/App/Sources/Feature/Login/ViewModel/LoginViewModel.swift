@@ -43,6 +43,7 @@ final class LoginViewModel: ObservableObject {
                 print("User is nil")
                 self.authState = .signedOut
                 self.currentUser = nil
+                AuthService.shared.isLoading = false
                 return
             }
             

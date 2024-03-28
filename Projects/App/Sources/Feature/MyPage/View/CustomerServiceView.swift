@@ -77,7 +77,6 @@ struct CustomerServiceView: View {
                                                                   folder: .complain),
                                                          createdDate: Date()))
             myPageViewModel.toastCategory = .complain
-            myPageViewModel.isShowingToast = true
         }
         presentationMode.wrappedValue.dismiss()
         withAnimation(.easeIn(duration: 0.4)) {
