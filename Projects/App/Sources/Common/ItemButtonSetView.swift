@@ -10,11 +10,30 @@ import SwiftUI
 import UIKit
 
 struct ItemButtonSetView: View {
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     let type: MyPageFilter
+    @Binding var isShowingToast: Bool
     var shop: Shop?
     var game: Game?
     
     @State private var heartState: Bool = false
+    @State private var isWriteReviewButton: Bool = false
+    
+    private var getCurrentHeartState: Bool {
+        if let curUser = loginViewModel.currentUser {
+            if type == .game {
+                if let likeGameArray = curUser.likeGameId {
+                    return likeGameArray.contains { $0 == game?.id }
+                }
+            } else if type == .shop {
+                if let likeShopArray = curUser.likeShopId {
+                    return likeShopArray.contains { $0 == shop?.id }
+                }
+            }
+        }
+        return false
+    }
     
     var body: some View {
         HStack(spacing: 0) {
@@ -25,6 +44,9 @@ struct ItemButtonSetView: View {
                 GameButtonSet
             }
         }
+        .onAppear {
+            heartState = getCurrentHeartState
+        }
     }
     
     private var ShopButtonSet: some View {
@@ -34,10 +56,15 @@ struct ItemButtonSetView: View {
             }
             ItemButtonView(image: heartState ? GamblerAsset.heartRed.swiftUIImage :
                         GamblerAsset.heartGray.swiftUIImage, buttonName: "찜하기") {
-                tappedHeart()
+                updateLikeList()
             }
             ItemButtonView(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
                 tappedReview()
+            }
+        }
+        .navigationDestination(isPresented: $isWriteReviewButton) {
+            if let shop {
+                WriteReviewView(isShowingToast: $isShowingToast, reviewableItem: shop)
             }
         }
     }
@@ -45,11 +72,16 @@ struct ItemButtonSetView: View {
     private var GameButtonSet: some View {
         Group {
             ItemButtonView(image: heartState ? GamblerAsset.heartRed.swiftUIImage :
-                        GamblerAsset.heartGray.swiftUIImage, buttonName: "찜하기") {
-                tappedHeart()
+                            GamblerAsset.heartGray.swiftUIImage, buttonName: "찜하기") {
+                updateLikeList()
             }
             ItemButtonView(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
                 tappedReview()
+            }
+        }
+        .navigationDestination(isPresented: $isWriteReviewButton) {
+            if let game {
+                WriteReviewView(isShowingToast: $isShowingToast, reviewableItem: game)
             }
         }
     }
@@ -61,12 +93,60 @@ struct ItemButtonSetView: View {
         }
     }
     
-    private func tappedHeart() {
-        heartState.toggle()
+    private func tappedReview() {
+        guard loginViewModel.currentUser != nil else {
+            appNavigationPath.isGoTologin = true
+            return
+        }
+        isWriteReviewButton = true
     }
     
-    private func tappedReview() {
+    private func updateLikeList() {
+        guard let curUser = loginViewModel.currentUser else {
+            appNavigationPath.isGoTologin = true
+            return
+        }
+        var userLikeDictionary: [AnyHashable: Any] = [:]
+        var likeKey: String = ""
+        var updatedLikeArray: [String] = []
+        var postId: String = ""
         
+        if type == .game {
+            likeKey = "likeGameId"
+            postId = game?.id ?? ""
+            if let likeGameIdArray = curUser.likeGameId {
+                updatedLikeArray = likeGameIdArray
+            }
+        } else {
+            likeKey = "likeShopId"
+            postId = shop?.id ?? ""
+            if let likeShopIdArray = curUser.likeShopId {
+                updatedLikeArray = likeShopIdArray
+            }
+        }
+        if postId.isEmpty {
+            return
+        }
+        
+        if heartState {
+            updatedLikeArray.removeAll { $0 == postId }
+            heartState = false
+        } else {
+            updatedLikeArray.append(postId)
+            heartState = true
+        }
+        
+        if type == .game {
+            loginViewModel.currentUser?.likeGameId = updatedLikeArray
+        } else {
+            loginViewModel.currentUser?.likeShopId = updatedLikeArray
+        }
+        
+        userLikeDictionary[likeKey] = updatedLikeArray
+        
+        Task {
+            await loginViewModel.updateLikeList(likePostIds: userLikeDictionary)
+        }
     }
 }
 
@@ -96,5 +176,7 @@ struct ItemButtonView: View {
 
 #Preview {
 //    ItemButtonSetView(type: .shop, shop: Shop.dummyShop)
-    ItemButtonSetView(type: .game, game: Game.dummyGame)
+    ItemButtonSetView(type: .game, isShowingToast: .constant(false), game: Game.dummyGame)
+        .environmentObject(AppNavigationPath())
+        .environmentObject(LoginViewModel())
 }

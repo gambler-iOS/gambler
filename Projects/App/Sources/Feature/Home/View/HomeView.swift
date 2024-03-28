@@ -58,6 +58,7 @@ struct HomeView: View {
             }
             .coordinateSpace(name: "HOMESCROLL")
             .ignoresSafeArea(.all, edges: .top)
+            .background(.white)
             .task {
                 await homeViewModel.fetchData()
                 await eventBannerViewModel.fetchData()
@@ -112,4 +113,5 @@ struct HiddenClickAnimationButtonStyle: ButtonStyle {
     HomeView()
         .environmentObject(HomeViewModel())
         .environmentObject(AppNavigationPath())
+        .environmentObject(LoginViewModel())
 }

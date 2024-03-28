@@ -16,6 +16,7 @@ struct ShopDetailInfoView: View {
     @State private var isShowingFullScreen: Bool = false
     @State private var url: URL?
     @State private var isHeartButton: Bool = false
+    @State private var isShowingToast: Bool = false
     let mainImageHeight: CGFloat = 200
     let shop: Shop
     
@@ -46,7 +47,7 @@ struct ShopDetailInfoView: View {
                     .padding(.horizontal, 24)
                     .padding(.top, 16)
                 
-                ItemButtonSetView(type: .shop, shop: shop)
+                ItemButtonSetView(type: .shop, isShowingToast: $isShowingToast, shop: shop)
                     .padding(.horizontal, 24)
                     .padding(.top, 32)
                 
@@ -113,6 +114,17 @@ struct ShopDetailInfoView: View {
             .overlay(
                 safetyAreaScreenView, alignment: .top
             )
+            .overlay {
+                if isShowingToast {
+                    toastMessageView
+                        .padding(.horizontal, 24)
+                }
+            }
+            .onAppear {
+                if let curUser = loginViewModel.currentUser, let likeShopArray = curUser.likeShopId {
+                    isHeartButton = likeShopArray.contains { $0 == shop.id }
+                }
+            }
 
             if isShowingFullScreen {
                 withAnimation(.smooth()) {
@@ -175,36 +187,22 @@ struct ShopDetailInfoView: View {
         }
     }
     
-    private func updateLikeShopList() {
-        guard var curUser = loginViewModel.currentUser else {
-            appNavigationPath.isGoTologin = true
-            return
-        }
-        
-        var userLikeDictionary: [AnyHashable: Any] = [:]
-        var updatedLikeArray: [String] = []
-        
-        if let likeShopIdArray = curUser.likeShopId {
-            updatedLikeArray = likeShopIdArray
-        }
-        
-        if isHeartButton {
-            updatedLikeArray.append(shop.id)
-        } else {
-            updatedLikeArray.removeAll { $0 == shop.id }
-        }
-        
-        loginViewModel.currentUser?.likeShopId = updatedLikeArray
-        
-        userLikeDictionary["likeShopId"] = updatedLikeArray
-        
-        Task {
-            await loginViewModel.updateLikeList(likePostIds: userLikeDictionary)
-        }
+    private var toastMessageView: some View {
+        CustomToastView(content: "리뷰 작성이 완료되었습니다!")
+            .offset(y: UIScreen.main.bounds.height * 0.3)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    withAnimation {
+                        isShowingToast = false
+                    }
+                }
+            }
     }
 }
 
 #Preview {
     ShopDetailInfoView(shop: Shop.dummyShop)
         .environmentObject(ShopListViewModel())
+        .environmentObject(AppNavigationPath())
+        .environmentObject(LoginViewModel())
 }
