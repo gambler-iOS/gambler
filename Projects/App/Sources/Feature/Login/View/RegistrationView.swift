@@ -11,12 +11,13 @@ import SwiftUI
 struct RegistrationView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var loginViewModel: LoginViewModel
+    @EnvironmentObject var appNavigationPath: AppNavigationPath
     
     @State private var isDisabled: Bool = true
     @State private var nicknameText: String = ""
     @State private var isDuplicated: Bool = false
     @State private var isShowingToast = false
-    @State private var isShowingRegisterTermsOfUseView: Bool = false
+
     private let textField: String = "닉네임을 입력해주세요."
     private var toastMessage: String {
         isDuplicated ? "아이디가 중복됩니다. 다시 입력해주세요!": "아이디 중복확인이 완료되었습니다!"
@@ -39,7 +40,7 @@ struct RegistrationView: View {
             
             CTAButton(disabled: $isDisabled, title: "다음") {
                 AuthService.shared.tempUser?.nickname = nicknameText
-                isShowingRegisterTermsOfUseView = true
+                appNavigationPath.loginViewPath.append(LoginViewOptions.temsOfAgreeView)
             }
             .padding(.bottom, 24)
         }
@@ -51,15 +52,9 @@ struct RegistrationView: View {
             }
         }
         .navigationTitle("회원가입")
-        .navigationDestination(isPresented: $isShowingRegisterTermsOfUseView) {
-            RegisterTermsOfUseView()
-        }
         .onAppear {
             Task {
-                guard let user = AuthService.shared.tempUser else {
-                    print("DummyUser 없음 - 가져오기 실패")
-                    return
-                }
+                guard let user = AuthService.shared.tempUser else { return }
                 self.nicknameText = user.nickname
             }
         }
@@ -91,22 +86,10 @@ struct RegistrationView: View {
                 }
             }
     }
-
-    /// 닉네임 중복검사
-    /// - Returns: 중복 - true / 중복 없을 시 false
-    private func duplicateCheck() async {
-        do {
-            let user: [User] = try await FirebaseManager.shared
-                .fetchWhereIsEqualToData(collectionName: "Users", field: "nickname", isEqualTo: nicknameText)
-            
-            isDuplicated = user.isEmpty ? false : true
-        } catch {
-            print("Error fetching RegistrationView : \(error.localizedDescription)")
-        }
-    }
 }
 
 #Preview {
     RegistrationView()
         .environmentObject(LoginViewModel())
+        .environmentObject(AppNavigationPath())
 }

@@ -11,6 +11,7 @@ import SwiftUI
 struct ListItemView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject private var loginViewModel: LoginViewModel
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
     
     var body: some View {
         HStack {
@@ -19,13 +20,25 @@ struct ListItemView: View {
                     .font(.subHead2B)
                 
                 Group {
-                    listBodyView(title: "프로필 수정", destination: ProfileEditView())
-
-                    listBodyView(title: "고객센터", destination: CustomerServiceView())
+                    Text("프로필 수정")
+                        .onTapGesture {
+                            appNavigationPath.myPageViewPath.append(MyPageViewOptions.profileEditView)
+                        }
                     
-                    listBodyView(title: "공지사항", destination: AnnouncementsView())
+                    Text("고객센터")
+                        .onTapGesture {
+                            appNavigationPath.myPageViewPath.append(MyPageViewOptions.customerServiceView)
+                        }
                     
-                    listBodyView(title: "이용약관", destination: TermsOfUseView())
+                    Text("공지사항")
+                        .onTapGesture {
+                            appNavigationPath.myPageViewPath.append(MyPageViewOptions.announcementsView)
+                        }
+                    
+                    Text("이용약관")
+                        .onTapGesture {
+                            appNavigationPath.myPageViewPath.append(MyPageViewOptions.termsOfUseView)
+                        }
                 }
                 .font(.body1M)
                 .frame(height: 48)
@@ -39,11 +52,15 @@ struct ListItemView: View {
                         Text(myPageViewModel.appVersion ?? "unknown")
                     }
                     
-                    listBodyView(title: "개발자 정보", destination: AboutDevelopersView())
+                    Text("개발자 정보")
+                        .onTapGesture {
+                            appNavigationPath.myPageViewPath.append(MyPageViewOptions.aboutDevelopersView)
+                        }
                     
                     Button {
                         Task {
                             if await loginViewModel.logoutFromFirebaseAndSocial() {
+                                appNavigationPath.myPageViewPath = .init()
                                 myPageViewModel.toastCategory = .signOut
                                 myPageViewModel.isShowingToast = true
                             }
@@ -56,6 +73,9 @@ struct ListItemView: View {
                 .frame(height: 48)
             }
             .foregroundStyle(Color.gray700)
+            .navigationDestination(for: MyPageViewOptions.self) { option in
+                option.view()
+            }
             Spacer()
         }
     }
@@ -68,12 +88,27 @@ struct ListItemView: View {
         }
     }
     
-    @ViewBuilder
-    private func listBodyView(title: String, destination: some View) -> some View {
-        NavigationLink {
-            destination
-        } label: {
-            Text(title)
+    enum MyPageViewOptions: Hashable {
+        case profileEditView
+        case customerServiceView
+        case announcementsView
+        case termsOfUseView
+        case aboutDevelopersView
+
+        
+        @ViewBuilder func view() -> some View {
+            switch self {
+            case .profileEditView:
+                ProfileEditView()
+            case .customerServiceView:
+                CustomerServiceView()
+            case .announcementsView:
+                AnnouncementsView()
+            case .termsOfUseView:
+                TermsOfUseView()
+            case .aboutDevelopersView:
+                AboutDevelopersView()
+            }
         }
     }
 }
@@ -82,4 +117,5 @@ struct ListItemView: View {
     ListItemView()
         .environmentObject(MyPageViewModel())
         .environmentObject(LoginViewModel())
+        .environmentObject(AppNavigationPath())
 }

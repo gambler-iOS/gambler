@@ -12,7 +12,7 @@ import AuthenticationServices
 struct LoginView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var loginViewModel: LoginViewModel
-    @State private var isShowingRegistrationView: Bool = false
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
     
     var body: some View {
         VStack(spacing: .zero) {
@@ -76,9 +76,9 @@ struct LoginView: View {
             .padding(.bottom, 32)
         }
         .padding(.horizontal, 24)
-        .onReceive(loginViewModel.$authState) { authState in
-            if authState == .creatingAccount && loginViewModel.userSession != nil {
-                isShowingRegistrationView = true
+        .onChange(of: loginViewModel.authState) { _, newAuth in
+            if newAuth == .creatingAccount && loginViewModel.userSession != nil {
+                appNavigationPath.loginViewPath.append(LoginViewOptions.regstrationView)
             }
         }
         .onChange(of: loginViewModel.authState) { _, newValue in
@@ -89,12 +89,10 @@ struct LoginView: View {
         .modifier(BackButton())
         .modifier(CustomLoadingView(isLoading: AuthService.shared.isLoading))
         .toolbar(.hidden, for: .tabBar)
-        .navigationDestination(isPresented: $isShowingRegistrationView) {
-            RegistrationView()
-        }
     }
 }
 #Preview {
     LoginView()
         .environmentObject(LoginViewModel())
+        .environmentObject(AppNavigationPath())
 }

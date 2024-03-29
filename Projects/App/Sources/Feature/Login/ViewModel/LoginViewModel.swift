@@ -103,7 +103,6 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
-
     /// 로그아웃 - 연결된 소셜도 연결 취소
     func logoutFromFirebaseAndSocial() async -> Bool {
         await withCheckedContinuation { continuation in

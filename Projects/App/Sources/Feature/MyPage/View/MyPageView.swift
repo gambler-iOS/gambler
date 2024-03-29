@@ -36,7 +36,8 @@ struct MyPageView: View {
     }
     
     var body: some View {
-        if loginViewModel.authState != .signedIn {
+        switch loginViewModel.authState {
+        case .signedOut, .creatingAccount:
             MyPageSignedOutView()
                 .overlay {
                     if myPageViewModel.isShowingToast {
@@ -44,8 +45,8 @@ struct MyPageView: View {
                             .padding(.horizontal, 24)
                     }
                 }
-        } else { // SignedIn
-            NavigationStack {
+        case .signedIn:
+            NavigationStack(path: $appNavigationPath.myPageViewPath) {
                 ScrollView {
                     VStack(spacing: .zero) {
                         myPageHeaderView(user: currentUser)
@@ -60,7 +61,7 @@ struct MyPageView: View {
                                 .frame(width: 1, height: 44)
                                 .foregroundStyle(Color.gray200)
                             Spacer()
-                            navigationView(title: "좋아요", 
+                            navigationView(title: "좋아요",
                                            count: "\(currentUser?.myLikesCount ?? 0)",
                                            destination: MyLikesView())
                             Spacer()
@@ -68,22 +69,23 @@ struct MyPageView: View {
                         .frame(height: 140)
                         .background(Color.gray50)
                         .clipShape(.rect(cornerRadius: 8))
-                        .onAppear {
-                            Task {
-                                await myPageViewModel.fetchReviewData()
-                            }
-                        }
-                        
                         ListItemView()
-                    } .overlay {
-                        if myPageViewModel.isShowingToast {
-                            toastMessageView
-                        }
                     }
                 }
                 .padding(.horizontal, 24)
                 .scrollIndicators(.hidden)
-           }
+                .onAppear {
+                    Task {
+                        await myPageViewModel.fetchReviewData()
+                    }
+                }
+            }
+            .overlay {
+                if myPageViewModel.isShowingToast {
+                    toastMessageView
+                        .padding(.horizontal, 24)
+                }
+            }
         }
     }
     

@@ -18,17 +18,19 @@ struct MyPageSignedOutView: View {
                 Text("로그인 시 사용이 가능합니다.")
                     .font(.subHead2B)
                     .foregroundStyle(Color.gray700)
-
+                
                 CTAButton(disabled: .constant(false), title: "로그인 하러가기") {
                     Task {
-                        appNavigationPath.isGoTologin = true
-                        await loginViewModel.logoutFromFirebaseAndSocial()
+                        if await loginViewModel.logoutFromFirebaseAndSocial() {
+                            print("로그아웃")
+                        }
+                        appNavigationPath.loginViewPath.append(LoginViewOptions.loginView)
                     }
                 }
                 .frame(width: 180)
             }
-            .navigationDestination(isPresented: $appNavigationPath.isGoTologin) {
-                LoginView()
+            .navigationDestination(for: LoginViewOptions.self) { option in
+                option.view()
             }
         }
     }
