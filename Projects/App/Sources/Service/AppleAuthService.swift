@@ -147,6 +147,7 @@ extension AppleAuthService {
                         print(#fileID, #function, #line, "- tempUSer ")
                         dump(AuthService.shared.tempUser)
                     } catch {
+                        AuthService.shared.isLoading = false
                         print("Error authenticating: \(error.localizedDescription)")
                     }
                 }

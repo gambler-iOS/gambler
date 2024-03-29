@@ -47,6 +47,7 @@ struct GamblerApp: App {
     @StateObject private var gameDetailViewModel = GameDetailViewModel()
     @StateObject private var shopListViewModel = ShopListViewModel()
     @StateObject private var reviewViewModel = ReviewViewModel()
+    @StateObject private var profileEditViewModel = ProfileEditViewModel()
     @StateObject private var tabSelection = TabSelection()
     
     var body: some Scene {
@@ -73,6 +74,7 @@ struct GamblerApp: App {
         .environmentObject(myPageViewModel)
         .environmentObject(loginViewModel)
         .environmentObject(reviewViewModel)
+        .environmentObject(profileEditViewModel)
         .environmentObject(tabSelection)
     }
     

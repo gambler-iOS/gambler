@@ -24,8 +24,8 @@ final class GoogleAuthSerVice {
             if let error {
                 print("GoogleSignInError: failed to sign in with Google, \(error))")
             }
-            AuthService.shared.isLoading = true
             guard let gidUser = user else { return }
+            AuthService.shared.isLoading = true
             Task {
                 do {
                     let result = try await GoogleAuthSerVice.shared.authenticateGoogle(gidUser)
@@ -41,6 +41,7 @@ final class GoogleAuthSerVice {
                                                              loginPlatform: .google)
                     }
                 } catch {
+                    AuthService.shared.isLoading = false
                     print("GoogleSignInError: failed to authenticate with Google, \(error))")
                 }
             }

@@ -11,7 +11,6 @@ import SwiftUI
 struct MyPageSignedOutView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
-    @State private var isShowingloginView: Bool = false
     
     var body: some View {
         NavigationStack(path: $appNavigationPath.loginViewPath) {
@@ -22,13 +21,13 @@ struct MyPageSignedOutView: View {
 
                 CTAButton(disabled: .constant(false), title: "로그인 하러가기") {
                     Task {
-                        isShowingloginView.toggle()
+                        appNavigationPath.isGoTologin = true
                         await loginViewModel.logoutFromFirebaseAndSocial()
                     }
                 }
                 .frame(width: 180)
             }
-            .navigationDestination(isPresented: $isShowingloginView) {
+            .navigationDestination(isPresented: $appNavigationPath.isGoTologin) {
                 LoginView()
             }
         }

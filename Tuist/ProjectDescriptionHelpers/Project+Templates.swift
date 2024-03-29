@@ -38,7 +38,8 @@ public extension Project {
                 resources: resources,
                 entitlements: entitlements,
                 scripts: [.SwiftLintShell],
-                dependencies: dependencies
+                dependencies: dependencies,
+                environmentVariables: ["IDEPreferLogStreaming": .init(stringLiteral: "YES")]
             )
 
             let testTarget = Target(
@@ -49,7 +50,8 @@ public extension Project {
                 deploymentTarget: deploymentTarget,
                 infoPlist: .default,
                 sources: ["Tests/**"],
-                dependencies: [.target(name: name)]
+                dependencies: [.target(name: name)],
+                environmentVariables: ["IDEPreferLogStreaming": .init(stringLiteral: "YES")]
             )
 
             let schemes: [Scheme] = [.makeScheme(target: .debug, name: name)]
