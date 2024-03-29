@@ -10,6 +10,7 @@ import SwiftUI
 
 enum ToastCategory {
     case signUp
+    case signOut
     case deleteAccount
     case complain
 }

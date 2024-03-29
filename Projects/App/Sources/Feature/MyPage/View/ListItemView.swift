@@ -43,7 +43,10 @@ struct ListItemView: View {
                     
                     Button {
                         Task {
-                            await loginViewModel.logoutFromFirebaseAndSocial()
+                            if await loginViewModel.logoutFromFirebaseAndSocial() {
+                                myPageViewModel.toastCategory = .signOut
+                                myPageViewModel.isShowingToast = true
+                            }
                         }
                     } label: {
                         Text("로그아웃")

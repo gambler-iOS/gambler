@@ -76,8 +76,8 @@ struct CustomerServiceView: View {
                                                     .uploadImages(selectedPhotosData,
                                                                   folder: .complain),
                                                          createdDate: Date()))
-            myPageViewModel.toastCategory = .complain
         }
+        myPageViewModel.toastCategory = .complain
         presentationMode.wrappedValue.dismiss()
         withAnimation(.easeIn(duration: 0.4)) {
             myPageViewModel.isShowingToast = true

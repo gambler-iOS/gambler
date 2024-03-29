@@ -105,27 +105,35 @@ final class LoginViewModel: ObservableObject {
     
 
     /// 로그아웃 - 연결된 소셜도 연결 취소
-    func logoutFromFirebaseAndSocial() async {
-        guard let user = Auth.auth().currentUser else {
-            return
-        }
-        
-        Task {
-            for profile in user.providerData {
-                switch profile.providerID {
-                case "password":
-                    await AuthService.shared.signOut()
-                    await KakaoAuthService.shared.handleKakaoLogout()
-                case "apple.com":
-                    await AuthService.shared.signOut()
-                case "google.com":
-                    await AuthService.shared.signOut()
-                    await GoogleAuthSerVice.shared.signOutFromGoogle()
-                default:
-                    print("다른 방법으로 로그인함")
-                }
+    func logoutFromFirebaseAndSocial() async -> Bool {
+        await withCheckedContinuation { continuation in
+            
+            guard let user = Auth.auth().currentUser else {
+                continuation.resume(returning: false)
+                return
             }
-            self.resetAuth()
+            
+            Task {
+                for profile in user.providerData {
+                    switch profile.providerID {
+                    case "password":
+                        await AuthService.shared.signOut()
+                        await KakaoAuthService.shared.handleKakaoLogout()
+                        continuation.resume(returning: true)
+                    case "apple.com":
+                        await AuthService.shared.signOut()
+                        continuation.resume(returning: true)
+                    case "google.com":
+                        await AuthService.shared.signOut()
+                        await GoogleAuthSerVice.shared.signOutFromGoogle()
+                        continuation.resume(returning: true)
+                    default:
+                        print("다른 방법으로 로그인함")
+                        continuation.resume(returning: false)
+                    }
+                }
+                self.resetAuth()
+            }
         }
     }
   

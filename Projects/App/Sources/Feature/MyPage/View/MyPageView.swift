@@ -19,12 +19,13 @@ struct MyPageView: View {
     @EnvironmentObject private var profileEditViewModel: ProfileEditViewModel
     
     var toastMessage: String {
-        
         switch myPageViewModel.toastCategory {
         case .complain:
             return "신고가 완료되었어요!"
         case .signUp:
             return "회원가입이 완료되었습니다!"
+        case .signOut:
+            return "로그아웃이 완료되었습니다!"
         case .deleteAccount:
             return "회원탈퇴에 성공했습니다. 아쉽지만 다음에 또 만나요!"
         }
@@ -79,7 +80,6 @@ struct MyPageView: View {
                             toastMessageView
                         }
                     }
-                   
                 }
                 .padding(.horizontal, 24)
                 .scrollIndicators(.hidden)
