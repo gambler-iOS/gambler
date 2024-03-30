@@ -38,13 +38,15 @@ struct MyPageView: View {
     var body: some View {
         switch loginViewModel.authState {
         case .signedOut, .creatingAccount:
-            MyPageSignedOutView()
-                .overlay {
-                    if myPageViewModel.isShowingToast {
-                        toastMessageView
-                            .padding(.horizontal, 24)
-                    }
+            NavigationStack {
+                MyPageSignedOutView()
+            }
+            .overlay {
+                if myPageViewModel.isShowingToast {
+                    toastMessageView
+                        .padding(.horizontal, 24)
                 }
+            }
         case .signedIn:
             NavigationStack(path: $appNavigationPath.myPageViewPath) {
                 ScrollView {

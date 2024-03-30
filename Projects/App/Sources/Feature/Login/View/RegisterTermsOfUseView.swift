@@ -75,11 +75,11 @@ struct RegisterTermsOfUseView: View {
                 Task {
                     myPageViewModel.toastCategory = .signUp
                     myPageViewModel.isShowingToast = true
+                    appNavigationPath.returnToPreLogin()
                     
                     AuthService.shared.uploadUserToFirestore(user: user)
                     await loginViewModel.fetchUserData()
                     loginViewModel.authState = .signedIn
-                    appNavigationPath.loginViewPath = .init()
                     withAnimation(.easeIn(duration: 0.4)) {
                         myPageViewModel.isShowingToast = true
                     }

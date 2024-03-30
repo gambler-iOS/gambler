@@ -76,14 +76,17 @@ struct LoginView: View {
             .padding(.bottom, 32)
         }
         .padding(.horizontal, 24)
+        .navigationDestination(isPresented: $appNavigationPath.registViewIsActive) {
+            RegistrationView()
+        }
         .onChange(of: loginViewModel.authState) { _, newAuth in
             if newAuth == .creatingAccount && loginViewModel.userSession != nil {
-                appNavigationPath.loginViewPath.append(LoginViewOptions.regstrationView)
+                appNavigationPath.registViewIsActive = true
             }
         }
         .onChange(of: loginViewModel.authState) { _, newValue in
             if newValue == .signedIn {
-                dismiss()
+                appNavigationPath.isGoTologin = false
             }
         }
         .modifier(BackButton())

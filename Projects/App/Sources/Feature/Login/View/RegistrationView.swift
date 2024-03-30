@@ -40,9 +40,12 @@ struct RegistrationView: View {
             
             CTAButton(disabled: $isDisabled, title: "다음") {
                 AuthService.shared.tempUser?.nickname = nicknameText
-                appNavigationPath.loginViewPath.append(LoginViewOptions.temsOfAgreeView)
+                appNavigationPath.registTermsViewIsActive = true
             }
             .padding(.bottom, 24)
+            .navigationDestination(isPresented: $appNavigationPath.registTermsViewIsActive) {
+                RegisterTermsOfUseView()
+            }
         }
         .padding(.horizontal, 24)
         .navigationBarBackButtonHidden(true)
@@ -77,7 +80,6 @@ struct RegistrationView: View {
     
     private var toastMessageView: some View {
         CustomToastView(content: toastMessage)
-//            .offset(y: UIScreen.main.bounds.height * 0.3)
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                     withAnimation {
