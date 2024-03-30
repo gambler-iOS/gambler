@@ -12,7 +12,7 @@ struct ListItemView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
-    
+    @State private var isShowTermsOfUserView: Bool = false
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 0) {
@@ -74,7 +74,18 @@ struct ListItemView: View {
             }
             .foregroundStyle(Color.gray700)
             .navigationDestination(for: MyPageViewOptions.self) { option in
-                option.view()
+                switch option {
+                case .profileEditView:
+                    ProfileEditView()
+                case .customerServiceView:
+                    CustomerServiceView()
+                case .announcementsView:
+                    AnnouncementsView()
+                case .termsOfUseView:
+                    MyWebView(siteURL: $myPageViewModel.termsOfUserSiteURL, title: "이용약관")
+                case .aboutDevelopersView:
+                    MyWebView(siteURL: $myPageViewModel.developerInfoSiteURL, title: "개발자 정보")
+                }
             }
             Spacer()
         }
@@ -94,22 +105,6 @@ struct ListItemView: View {
         case announcementsView
         case termsOfUseView
         case aboutDevelopersView
-
-        
-        @ViewBuilder func view() -> some View {
-            switch self {
-            case .profileEditView:
-                ProfileEditView()
-            case .customerServiceView:
-                CustomerServiceView()
-            case .announcementsView:
-                AnnouncementsView()
-            case .termsOfUseView:
-                TermsOfUseView()
-            case .aboutDevelopersView:
-                AboutDevelopersView()
-            }
-        }
     }
 }
 

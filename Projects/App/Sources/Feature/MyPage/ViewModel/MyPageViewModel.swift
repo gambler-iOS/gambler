@@ -23,7 +23,9 @@ final class MyPageViewModel: ObservableObject {
     @Published var profileImageChanged: Bool = false
     @Published var isShowingToast: Bool = false
     @Published var toastCategory: ToastCategory = .complain
-
+    @Published var termsOfUserSiteURL: String = "https://www.naver.com"
+    @Published var developerInfoSiteURL: String = "https://www.google.co.kr"
+    
     let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
     
     private let firebaseManager = FirebaseManager.shared
