@@ -32,7 +32,7 @@ struct LoginView: View {
             
             HStack {
                 Spacer()
-                Image("logo")
+                Image("DiceLogo")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 254, height: 203)
