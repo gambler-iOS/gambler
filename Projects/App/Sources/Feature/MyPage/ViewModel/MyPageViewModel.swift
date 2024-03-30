@@ -32,6 +32,44 @@ final class MyPageViewModel: ObservableObject {
     init() { }
     
     @MainActor
+    func fetchLikeGames(user: User?) async {
+        Task {
+            guard let gameIds = user?.likeGameId else { return }
+            likeGames.removeAll()
+            
+            do {
+                for gameId in gameIds {
+                    if let game: Game = try await firebaseManager
+                        .fetchOneData(collectionName: AppConstants.CollectionName.games, byId: gameId) {
+                        likeGames.append(game)
+                    }
+                }
+            } catch {
+                print("Error fetchLikeGameInfo() MyLikesView : \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    @MainActor
+    func fetchLikeShops(user: User?) async {
+        Task {
+            guard let shopIds = user?.likeShopId else { return }
+            likeShops.removeAll()
+            
+            do {
+                for shopId in shopIds {
+                    if let shop: Shop = try await firebaseManager
+                        .fetchOneData(collectionName: AppConstants.CollectionName.shops, byId: shopId) {
+                        likeShops.append(shop)
+                    }
+                }
+            } catch {
+                print("Error fetchLikeShopInfo() MyLikesView : \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    @MainActor
     func fetchReviewData() async {
         Task {
             guard let user = Auth.auth().currentUser else { return }
