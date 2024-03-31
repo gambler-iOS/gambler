@@ -106,7 +106,7 @@ struct ShopDetailInfoView: View {
                     .frame(height: 215)
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, 24)
-                    .padding(.bottom, 24)
+                    .padding(.bottom, 36)
                     .disabled(true)
             }
             .background(.white)
@@ -202,9 +202,4 @@ struct ShopDetailInfoView: View {
             await loginViewModel.updateLikeList(likePostIds: userLikeDictionary)
         }
     }
-}
-
-#Preview {
-    ShopDetailInfoView(shop: Shop.dummyShop)
-        .environmentObject(ShopListViewModel())
 }
