@@ -22,11 +22,12 @@ struct GameDetailInfoView: View {
             VStack(spacing: 24) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("게임 방법")
-                        .font(.body1B)
-                    // 색상 8A8A8A
+                        .font(.subHead1B)
+                        .padding(.bottom,8)
                     Text(splitTextByPeriod(text: game.descriptionContent))
-                        .font(.body2M)
+                        .font(.body1M)
                         .foregroundStyle(Color.gray500)
+                        .lineSpacing(8.0)
                 }
                 VStack(spacing: .zero) {
                     if let descriptionImageUrls = game.descriptionImage {
