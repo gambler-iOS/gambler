@@ -12,7 +12,6 @@ import KakaoMapsSDK
 import CoreLocation
 
 struct MapView: View {
-
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @StateObject private var mapViewModel = MapViewModel()
     

@@ -110,6 +110,10 @@ struct ShopDetailInfoView: View {
                     .disabled(true)
             }
             .background(.white)
+            .navigationTitle(offsetY < -5 ? "\(shop.shopName)" : "")
+            .navigationBarTitleDisplayMode(.inline)
+            .modifier(BackButton())
+            .buttonStyle(HiddenClickAnimationButtonStyle())
             .overlay(
                 safetyAreaScreenView, alignment: .top
             )
