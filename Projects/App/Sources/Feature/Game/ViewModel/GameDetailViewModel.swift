@@ -85,10 +85,10 @@ final class GameDetailViewModel: ObservableObject {
     
     /// review 작성 후 게임 모델 내 리뷰 관련 데이터 업데이트된 내용 화면에 다시 출력하기 위해 사용
     @MainActor
-    func fetchGameInfo() async {
+    func fetchGameInfo(id: String) async {
         do {
             if let data: Game = try await firebaseManager
-                .fetchOneData(collectionName: AppConstants.CollectionName.games, byId: game.id) {
+                .fetchOneData(collectionName: AppConstants.CollectionName.games, byId: id) {
                 
                 game = data
             }
