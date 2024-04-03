@@ -16,7 +16,6 @@ struct HomeGameGenreHScrollView: View {
     var body: some View {
         VStack(spacing: 24) {
             SectionHeaderView(title: title)
-                .padding(.trailing, 24)
                 .onTapGesture {
                     appNavigationPath.homeViewPath.append(title)
                 }
@@ -30,8 +29,9 @@ struct HomeGameGenreHScrollView: View {
                     }
                 }
             }
+            .scrollIndicators(.hidden)
         }
-        .padding(.leading, 24)
+        .padding(.horizontal, 24)
         .padding(.vertical, 32)
         .background(Color.gray50)
     }

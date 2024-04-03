@@ -11,15 +11,23 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject private var homeViewModel: HomeViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @EnvironmentObject private var loginViewModel: LoginViewModel
     @StateObject private var eventBannerViewModel = EventBannerViewModel()
     @State private var path = NavigationPath()
+    
+    private var popularGamesTitle: String {
+        if let curUser = loginViewModel.currentUser {
+            return "\(curUser.nickname)님이 좋아하실 인기게임"
+        }
+        return "인기게임"
+    }
     
     var body: some View {
         NavigationStack(path: $appNavigationPath.homeViewPath) {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 32) {
                     EventBannerView(eventBannerViewModel: eventBannerViewModel)
-                    HomeGameGridView(title: "채영님이 좋아하실 인기게임", games: homeViewModel.popularGames)
+                    HomeGameGridView(title: popularGamesTitle, games: homeViewModel.popularGames)
                     BorderView()
                     HomeShopListView(title: "인기 매장", shops: homeViewModel.popularShops)
                     BorderView()
@@ -62,6 +70,18 @@ struct HomeView: View {
             .task {
                 await homeViewModel.fetchData()
                 await eventBannerViewModel.fetchData()
+            }
+            .overlay {
+                if homeViewModel.isLoading {
+                    Color.white.opacity(0.9)
+                                .edgesIgnoringSafeArea(.all)
+                                .onTapGesture { }
+                    
+                    ProgressView()
+                        .tint(.gray400)
+                        .offset(y: 0)
+                        .frame(width: 200, height: 200)
+                }
             }
         }
     }

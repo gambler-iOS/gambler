@@ -19,12 +19,13 @@ struct MyPageView: View {
     @EnvironmentObject private var profileEditViewModel: ProfileEditViewModel
     
     var toastMessage: String {
-        
         switch myPageViewModel.toastCategory {
         case .complain:
             return "신고가 완료되었어요!"
         case .signUp:
             return "회원가입이 완료되었습니다!"
+        case .signOut:
+            return "로그아웃이 완료되었습니다!"
         case .deleteAccount:
             return "회원탈퇴에 성공했습니다. 아쉽지만 다음에 또 만나요!"
         }
@@ -35,16 +36,19 @@ struct MyPageView: View {
     }
     
     var body: some View {
-        if loginViewModel.authState != .signedIn {
-            MyPageSignedOutView()
-                .overlay {
-                    if myPageViewModel.isShowingToast {
-                        toastMessageView
-                            .padding(.horizontal, 24)
-                    }
-                }
-        } else { // SignedIn
+        switch loginViewModel.authState {
+        case .signedOut, .creatingAccount:
             NavigationStack {
+                MyPageSignedOutView()
+            }
+            .overlay {
+                if myPageViewModel.isShowingToast {
+                    toastMessageView
+                        .padding(.horizontal, 24)
+                }
+            }
+        case .signedIn:
+            NavigationStack(path: $appNavigationPath.myPageViewPath) {
                 ScrollView {
                     VStack(spacing: .zero) {
                         myPageHeaderView(user: currentUser)
@@ -59,7 +63,7 @@ struct MyPageView: View {
                                 .frame(width: 1, height: 44)
                                 .foregroundStyle(Color.gray200)
                             Spacer()
-                            navigationView(title: "좋아요", 
+                            navigationView(title: "좋아요",
                                            count: "\(currentUser?.myLikesCount ?? 0)",
                                            destination: MyLikesView())
                             Spacer()
@@ -67,23 +71,23 @@ struct MyPageView: View {
                         .frame(height: 140)
                         .background(Color.gray50)
                         .clipShape(.rect(cornerRadius: 8))
-                        .onAppear {
-                            Task {
-                                await myPageViewModel.fetchReviewData()
-                            }
-                        }
-                        
                         ListItemView()
-                    } .overlay {
-                        if myPageViewModel.isShowingToast {
-                            toastMessageView
-                        }
                     }
-                   
                 }
                 .padding(.horizontal, 24)
                 .scrollIndicators(.hidden)
-           }
+                .onAppear {
+                    Task {
+                        await myPageViewModel.fetchReviewData()
+                    }
+                }
+            }
+            .overlay {
+                if myPageViewModel.isShowingToast {
+                    toastMessageView
+                        .padding(.horizontal, 24)
+                }
+            }
         }
     }
     

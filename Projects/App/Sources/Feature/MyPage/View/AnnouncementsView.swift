@@ -32,6 +32,7 @@ struct AnnouncementsView: View {
                             .padding(.horizontal, 8)
                         }
                         Divider()
+
                     }
                 }
             }
@@ -40,6 +41,7 @@ struct AnnouncementsView: View {
         .modifier(BackButton())
         .task {
             await announcementsViewModel.fetchData()
+
         }
     }
     

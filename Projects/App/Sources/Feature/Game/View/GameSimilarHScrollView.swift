@@ -18,12 +18,10 @@ struct GameSimilarHScrollView: View {
             if title.contains("장르") {
                 NavigationLink(value: games.first?.gameIntroduction.genre.first) {
                     headerView(title: title, showGrid: false)
-                        .padding(.trailing, 24)
                 }
             } else if title.contains("인원수") {
                 NavigationLink(value: games.first?.gameIntroduction.maxPlayerCount) {
                     headerView(title: title, showGrid: false)
-                        .padding(.trailing, 24)
                 }
             }
             
@@ -37,8 +35,9 @@ struct GameSimilarHScrollView: View {
                     }
                 }
             }
+            .scrollIndicators(.hidden)
         }
-        .padding(.leading, 24)
+        .padding(.horizontal, 24)
     }
     
     @ViewBuilder

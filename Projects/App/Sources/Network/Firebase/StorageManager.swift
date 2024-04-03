@@ -36,23 +36,6 @@ enum StoragePath {
             return "EventBanners"
         }
     }
-    
-    var fieldName: String {  // game, shop은 개인이미지, 여러이미지들이 있음...
-        switch self {
-        case .user:
-            return "profileImageURL"
-        case .review:
-            return "reviewImage"
-        case .shop:
-            return "shopImage"
-        case .game:
-            return "gameImage"
-        case .complain:
-            return "complainImage"
-        case .eventBanner:
-            return "bannerImage"
-        }
-    }
 }
 
 final class StorageManager {
@@ -74,35 +57,6 @@ final class StorageManager {
         try await updateProfileImage(folder: folder)
     }
 
-    #warning("Field도 enum으로 만들어야할지")
-    #warning("이미지 여러개 올리는 부분은 미완성입니다... 주석부분")
-//    func loadImages(fromItems items: [PhotosPickerItem], folder: StoragePath, collectionName: String) async throws {
-//        
-//        var images: [UIImage] = []
-//        
-//        guard !items.isEmpty else { return }  // 비어있다면
-//        
-//        for item in items {
-//            guard let data = try? await item.loadTransferable(type: Data.self) else { continue }
-//            guard let uiImage = UIImage(data: data) else { continue }
-//            images.append(uiImage)
-//        }
-//        
-//        try await updateImages(images: images, folder: folder, collectionName: collectionName)
-//    }
-//    
-//    /// 이미지들을 스토어에 업데이트
-//    private func updateImages(images: [UIImage], folder: StoragePath, collectionName: String) async throws {
-//        guard !images.isEmpty else { return }
-//        
-//        guard let imageUrl = try? await self.uploadImages(images, folder: folder) else { return }
-//        
-//        // 여기서 id가 뭐징
-//        try await FirebaseManager.shared.updateData(collectionName: "Users", objectType: User.self, byId: currentUid, data: [folder.fieldName: imageUrl]) // 여기는 배열인데
-//    }
-    
-    
-    
     /// 프로필 이미지를 스토어에 업데이트
     private func updateProfileImage(folder: StoragePath) async throws {
         guard let image = self.uiImage else { return }

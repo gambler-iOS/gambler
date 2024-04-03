@@ -17,7 +17,12 @@ struct RegisterTermsOfUseView: View {
     @State private var agreedAll: Bool = false
     @State private var agreedFirstItem: Bool = false
     @State private var agreedSecondItem: Bool = false
-    
+    @State private var termsOfUserSafariActive = false
+    @State private var personalInformationSafariActive = false
+
+#warning ("주소 변경 해야함")
+    private let personalInformationLink: String = "https://www.google.co.kr"
+
     var body: some View {
         VStack(spacing: .zero) {
             Text("이용약관에 동의해주세요.")
@@ -75,11 +80,11 @@ struct RegisterTermsOfUseView: View {
                 Task {
                     myPageViewModel.toastCategory = .signUp
                     myPageViewModel.isShowingToast = true
+                    appNavigationPath.returnToPreLogin()
                     
                     AuthService.shared.uploadUserToFirestore(user: user)
                     await loginViewModel.fetchUserData()
                     loginViewModel.authState = .signedIn
-                    appNavigationPath.loginViewPath = .init()
                     withAnimation(.easeIn(duration: 0.4)) {
                         myPageViewModel.isShowingToast = true
                     }
@@ -90,6 +95,12 @@ struct RegisterTermsOfUseView: View {
         .padding(.horizontal, 24)
         .modifier(BackButton())
         .navigationTitle("회원가입")
+        .sheet(isPresented: $termsOfUserSafariActive) {
+            WebView(siteURL: myPageViewModel.termsOfUserSiteURL)
+        }
+        .sheet(isPresented: $personalInformationSafariActive) {
+            WebView(siteURL: personalInformationLink)
+        }
     }
     
     @ViewBuilder
@@ -99,6 +110,14 @@ struct RegisterTermsOfUseView: View {
             Text(title)
                 .font(.body1B)
                 .foregroundStyle(Color.black)
+                .underline(title == "전체동의" ? false: true)
+                .onTapGesture {
+                    if title == "이용약관 동의(필수)" {
+                        termsOfUserSafariActive = true
+                    } else if title == "개인정보 수집 및 이용동의(필수)" {
+                        personalInformationSafariActive = true
+                    }
+                }
             Spacer()
         }
         .padding(.vertical, 16)

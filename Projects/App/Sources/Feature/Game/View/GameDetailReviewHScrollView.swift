@@ -35,7 +35,6 @@ struct GameDetailReviewHScrollView: View {
                 }
                 isNavigation = true
             }
-            .padding(.trailing, 24)
             .navigationDestination(isPresented: $isNavigation) {
                 ReviewDetailView(reviewableItem: game, targetName: game.gameName)
             }
@@ -48,6 +47,7 @@ struct GameDetailReviewHScrollView: View {
                         }
                     }
                 }
+                .scrollIndicators(.hidden)
             } else {
                 VStack {
                     Text("첫 번째 리뷰를 남겨주세요!")
@@ -56,10 +56,9 @@ struct GameDetailReviewHScrollView: View {
                 }
                 .frame(height: 114)
                 .frame(maxWidth: .infinity)
-                .padding(.trailing, 24)
             }
         }
-        .padding(.leading, 24)
+        .padding(.horizontal, 24)
     }
 }
 
