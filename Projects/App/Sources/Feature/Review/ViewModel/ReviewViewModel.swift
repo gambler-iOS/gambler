@@ -15,32 +15,35 @@ final class ReviewViewModel: ObservableObject {
     private let storageManager = StorageManager.shared
     private let collectionName: String = AppConstants.CollectionName.reviews
     private var category: ReviewCategory = .game
-        
+
     init() { }
     
-    func submitReview(user: User?, reviewableItem: AvailableAggregateReview, reviewContent: String, reviewRating: Double, images: [Data]?) async {
-        
-        guard let user else { return }
-        
-        if reviewableItem is Game {
-            category = .game
-        } else if reviewableItem is Shop {
-            category = .shop
-        }
-        Task {
-            let reviewImages: [String]? = await uploadImages(selectedPhotosData: images)
+    func submitReview(user: User?, reviewableItem: AvailableAggregateReview, reviewContent: String, reviewRating: Double, images: [Data]?) async -> Bool {
+        await withCheckedContinuation { continuation in
             
-            let review = Review(id: UUID().uuidString,
-                                postId: reviewableItem.id,
-                                userId: user.id,
-                                reviewContent: reviewContent,
-                                reviewRating: reviewRating,
-                                reviewImage: reviewImages,
-                                createdDate: Date(),
-                                category: category)
+            guard let user else { return }
             
-            await self.addReview(review: review)
-            await self.updateUserReviewCount(user: user)
+            if reviewableItem is Game {
+                category = .game
+            } else if reviewableItem is Shop {
+                category = .shop
+            }
+            Task {
+                let reviewImages: [String]? = await uploadImages(selectedPhotosData: images)
+                
+                let review = Review(id: UUID().uuidString,
+                                    postId: reviewableItem.id,
+                                    userId: user.id,
+                                    reviewContent: reviewContent,
+                                    reviewRating: reviewRating,
+                                    reviewImage: reviewImages,
+                                    createdDate: Date(),
+                                    category: category)
+                
+                await self.addReview(review: review)
+                await self.updateUserReviewCount(user: user)
+                continuation.resume(returning: true)
+            }
         }
     }
     

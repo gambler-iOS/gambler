@@ -67,8 +67,14 @@ struct WriteReviewView: View {
             }
             .overlay {
                 if isUploading {
+                    Color.white.opacity(0.6)
+                        .edgesIgnoringSafeArea(.all)
+                        .onTapGesture { }
+                    
                     ProgressView()
                         .tint(.gray400)
+                        .offset(y: 0)
+                        .frame(width: 200, height: 200)
                 }
             }
             .onReceive([self.rating].publisher.first()) { _ in
@@ -84,22 +90,23 @@ struct WriteReviewView: View {
     private func reply() async {
         Task {
             isUploading = true
-            await reviewViewModel.submitReview(user: loginViewModel.currentUser,
-                                               reviewableItem: reviewableItem,
-                                               reviewContent: reviewContent,
-                                               reviewRating: rating,
-                                               images: selectedPhotosData)
-            
-            loginViewModel.currentUser?.myReviewsCount += 1
-            if reviewableItem is Game {
-                await gameDetailViewModel.updateGameAggregateReview(appendReviewRating: rating)
-            } else if reviewableItem is Shop {
+            if await reviewViewModel.submitReview(user: loginViewModel.currentUser,
+                                                  reviewableItem: reviewableItem,
+                                                  reviewContent: reviewContent,
+                                                  reviewRating: rating,
+                                                  images: selectedPhotosData) {
+                loginViewModel.currentUser?.myReviewsCount += 1
+                if reviewableItem is Game {
+                    await gameDetailViewModel.updateGameAggregateReview(appendReviewRating: rating)
+                } else if reviewableItem is Shop {
+                    
+                }
                 
-            }
-            isUploading = false
-            dismiss()
-            withAnimation(.easeIn(duration: 0.4)) {
-                isShowingToast = true
+                isUploading = false
+                dismiss()
+                withAnimation(.easeIn(duration: 0.4)) {
+                    isShowingToast = true
+                }
             }
         }
     }
