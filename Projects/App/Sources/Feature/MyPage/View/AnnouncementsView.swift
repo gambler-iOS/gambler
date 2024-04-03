@@ -24,7 +24,7 @@ struct AnnouncementsView: View {
                         
                         NavigationLink(destination: 
                                         WKView(siteURL: .constant(notice.noticeLink))
-                                            .navigationTitle("공지사항")
+                                            .navigationTitle(notice.noticeTitle)
                                             .modifier(BackButton())) {
                             announcementsCellView(title: notice.noticeTitle,
                                                   createdDate: notice.createdDate)

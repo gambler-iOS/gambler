@@ -11,7 +11,7 @@ import SwiftUI
 import SafariServices
 
 struct WebView: UIViewControllerRepresentable {
-    var siteURL: String
+    @Binding var siteURL: String
     
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) { }
 

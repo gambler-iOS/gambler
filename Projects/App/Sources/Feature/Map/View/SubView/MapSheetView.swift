@@ -15,12 +15,13 @@ struct MapSheetView: View {
     var body: some View {
         VStack {
             Text("내 주변")
-                .font(.body1M)
-                .padding(20)
+                .font(.subHead2B)
+                .padding(.top, 20)
+                .padding(.bottom, 10)
             ScrollView {
                 if mapViewModel.areaInShopList.isEmpty {
                     Text("주변에 매장이 없어요.")
-                        .font(.body1M)
+                        .font(.subHead1B)
                         .foregroundStyle(Color.gray400)
                         .frame(height: UIScreen.main.bounds.height)
                 } else {
@@ -33,8 +34,9 @@ struct MapSheetView: View {
                                 Divider()
                             }
                         }
-                    }.padding(24)
-                        .padding(.bottom, 50)
+                    }.padding(.top, 10)
+                        .padding(.horizontal, 24)
+                        .padding(.bottom, 80)
                 }
             }
         }
