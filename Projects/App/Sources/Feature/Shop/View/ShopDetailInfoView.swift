@@ -127,6 +127,7 @@ struct ShopDetailInfoView: View {
                 KakaoStaticView(shop: shop)
                     .frame(height: 215)
                     .frame(maxWidth: .infinity)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                     .padding(.horizontal, 24)
                     .padding(.bottom, 36)
                     .disabled(true)

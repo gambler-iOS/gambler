@@ -39,8 +39,7 @@ struct ShopListView: View {
                         }
                     }
                 }
-                .padding(.top, 24)
-                .padding(.horizontal, 24)
+                .padding(24)
             }
         }
         .navigationBarBackButtonHidden()
