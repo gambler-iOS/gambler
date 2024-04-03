@@ -64,6 +64,7 @@ struct MapView: View {
             .overlay(safetyAreaTopScreen, alignment: .top)
             .task {
                 if selectedShop == nil {
+                    await getUserLocation()
                     let country = await mapViewModel.getCountry(mapPoint: userLocate)
                     selectedShop = await mapViewModel.fetchOneShop(country: country)
                 }
@@ -95,6 +96,15 @@ struct MapView: View {
                 .foregroundColor(.white)
                 .opacity(isShowingSheet ? 1 : 0)
         }
+    }
+    
+    func getUserLocation() async {
+        let locationManager = CLLocationManager()
+        locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+        locationManager.distanceFilter = 20
+        let coordinate = locationManager.location?.coordinate
+        userLocate.latitude = coordinate?.latitude ?? GeoPoint.defaultPoint.latitude
+        userLocate.longitude = coordinate?.longitude ?? GeoPoint.defaultPoint.longitude
     }
 }
 
