@@ -33,12 +33,15 @@ struct MapView: View {
                          isLoading: $isLoading)
             .overlay {
                 if !isShowingSheet && !isLoading {
-                    FloatingView(mapViewModel: mapViewModel, 
-                                 selectedShop: $selectedShop,
-                                 isShowingSheet: $isShowingSheet, 
-                                 userLocate: $userLocate)
-                    .frame(width: 327, height: 182)
-                    .offset(y: 250)
+                    VStack {
+                        Spacer()
+                        FloatingView(mapViewModel: mapViewModel,
+                                     selectedShop: $selectedShop,
+                                     isShowingSheet: $isShowingSheet,
+                                     userLocate: $userLocate)
+                        .frame(width: 327, height: 182)
+                    }
+                    .padding(.bottom, 32)
                 }
             }
             .overlay {
@@ -54,7 +57,7 @@ struct MapView: View {
                         .offset(y: getSafeAreaTop())
                         .overlay {
                             showMapButton
-                                .offset(y: 330)
+                                .offset(y: UIScreen.main.bounds.height/2 - 80)
                         }
                 }
             }

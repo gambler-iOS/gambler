@@ -18,7 +18,7 @@ struct MapSheetView: View {
                 .font(.subHead2B)
                 .padding(.top, 20)
                 .padding(.bottom, 10)
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 if mapViewModel.areaInShopList.isEmpty {
                     Text("주변에 매장이 없어요.")
                         .font(.subHead1B)

@@ -92,7 +92,7 @@ struct KakaoMapView: UIViewRepresentable {
         
         func addViewSucceeded(_ viewName: String, viewInfoName: String) {
             settingMap()
-            isLoading  = false
+            isLoading = false
         }
         
         func settingMap() {
@@ -100,7 +100,9 @@ struct KakaoMapView: UIViewRepresentable {
                 mapView.setMargins(UIEdgeInsets(top: 0, left: 0, bottom: UIScreen.main.bounds.height * 0.2 , right: 0))
                 mapView.setLogoPosition(
                     origin: GuiAlignment(vAlign: .bottom, hAlign: .right),
-                    position: CGPoint(x: 10.0, y: -UIScreen.main.bounds.height * 0.2 + 20))
+                    position: CGPoint(x: 10.0, 
+                                      y: -UIScreen.main.bounds.height * 0.2 + 10))
+               
                 getUserLocation()
                 createLabelLayer()
                 createPoiStyle()
