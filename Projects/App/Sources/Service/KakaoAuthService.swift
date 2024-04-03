@@ -112,8 +112,7 @@ final class KakaoAuthService {
     private func loginKakaoTalk(email: String, password: String, name: String, profileImageURL: String) async {
         Task {
             if await AuthService.shared.loginWithEmail(email: email, password: password, name: name, profileImageURL: profileImageURL) {
-                // 로그인 성공
-                print(#fileID, #function, #line, "- email 로그인 성공 ~~~ ")
+                print(#fileID, #function, #line, "- email 로그인 성공")
             } else {
                 // 로그인 실패 - 회원가입 해야함
                 print("createUser 실행")
@@ -148,13 +147,11 @@ final class KakaoAuthService {
     func deleteKakaoAccount() async -> Bool {
         await withCheckedContinuation { continuation in
             guard let user = Auth.auth().currentUser else {
-                continuation.resume(returning: false)
                 return
             }
             
             // 마지막으로 로그인 한 날짜
             guard let lastSignInDate = user.metadata.lastSignInDate else {
-                continuation.resume(returning: false)
                 return
             }
             

@@ -11,6 +11,7 @@ import SwiftUI
 struct MyLikesView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject private var tabSelection: TabSelection
+    @EnvironmentObject private var loginViewModel: LoginViewModel
 
     @State private var selectedFilter = AppConstants.MyPageFilter.allCases.first ?? .shop
     @State private var showHomeView: Bool = false
@@ -28,6 +29,12 @@ struct MyLikesView: View {
             }
         }
         .navigationTitle("좋아요")
+        .onAppear {
+            Task {
+                await myPageViewModel.fetchLikeGames(user: loginViewModel.currentUser)
+                await myPageViewModel.fetchLikeShops(user: loginViewModel.currentUser)
+            }
+        }
         .modifier(BackButton())
     }
     
@@ -103,4 +110,5 @@ struct MyLikesView: View {
     MyLikesView()
         .environmentObject(MyPageViewModel())
         .environmentObject(TabSelection())
+        .environmentObject(LoginViewModel())
 }

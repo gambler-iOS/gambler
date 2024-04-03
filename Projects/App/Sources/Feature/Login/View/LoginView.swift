@@ -12,7 +12,7 @@ import AuthenticationServices
 struct LoginView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var loginViewModel: LoginViewModel
-    @State private var isShowingRegistrationView: Bool = false
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
     
     var body: some View {
         VStack(spacing: .zero) {
@@ -32,7 +32,7 @@ struct LoginView: View {
             
             HStack {
                 Spacer()
-                Image("logo")
+                Image("DiceLogo")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 254, height: 203)
@@ -76,25 +76,26 @@ struct LoginView: View {
             .padding(.bottom, 32)
         }
         .padding(.horizontal, 24)
-        .onReceive(loginViewModel.$authState) { authState in
-            if authState == .creatingAccount && loginViewModel.userSession != nil {
-                isShowingRegistrationView = true
+        .navigationDestination(isPresented: $appNavigationPath.registViewIsActive) {
+            RegistrationView()
+        }
+        .onChange(of: loginViewModel.authState) { _, newAuth in
+            if newAuth == .creatingAccount && loginViewModel.userSession != nil {
+                appNavigationPath.registViewIsActive = true
             }
         }
         .onChange(of: loginViewModel.authState) { _, newValue in
             if newValue == .signedIn {
-                dismiss()
+                appNavigationPath.isGoTologin = false
             }
         }
         .modifier(BackButton())
         .modifier(CustomLoadingView(isLoading: AuthService.shared.isLoading))
         .toolbar(.hidden, for: .tabBar)
-        .navigationDestination(isPresented: $isShowingRegistrationView) {
-            RegistrationView()
-        }
     }
 }
 #Preview {
     LoginView()
         .environmentObject(LoginViewModel())
+        .environmentObject(AppNavigationPath())
 }
