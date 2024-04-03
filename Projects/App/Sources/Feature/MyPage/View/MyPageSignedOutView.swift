@@ -23,12 +23,14 @@ struct MyPageSignedOutView: View {
                     if await loginViewModel.logoutFromFirebaseAndSocial() {
                         print("로그아웃")
                     }
-                    appNavigationPath.isGoTologin = true
+                    appNavigationPath.myPageViewPath.append(true)
                 }
             }
             .frame(width: 180)
-            .navigationDestination(isPresented: $appNavigationPath.isGoTologin) {
-                LoginView()
+            .navigationDestination(for: Bool.self) { boolean in
+                if boolean {
+                    LoginView()
+                }
             }
         }
     }

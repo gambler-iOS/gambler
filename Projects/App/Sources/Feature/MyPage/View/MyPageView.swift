@@ -36,19 +36,11 @@ struct MyPageView: View {
     }
     
     var body: some View {
-        switch loginViewModel.authState {
-        case .signedOut, .creatingAccount:
-            NavigationStack {
-                MyPageSignedOutView()
-            }
-            .overlay {
-                if myPageViewModel.isShowingToast {
-                    toastMessageView
-                        .padding(.horizontal, 24)
-                }
-            }
-        case .signedIn:
-            NavigationStack(path: $appNavigationPath.myPageViewPath) {
+        NavigationStack(path: $appNavigationPath.myPageViewPath) {
+            switch loginViewModel.authState {
+            case .signedOut, .creatingAccount:
+                    MyPageSignedOutView()
+            case .signedIn:
                 ScrollView {
                     VStack(spacing: .zero) {
                         myPageHeaderView(user: currentUser)
@@ -82,11 +74,11 @@ struct MyPageView: View {
                     }
                 }
             }
-            .overlay {
-                if myPageViewModel.isShowingToast {
-                    toastMessageView
-                        .padding(.horizontal, 24)
-                }
+        }
+        .overlay {
+            if myPageViewModel.isShowingToast {
+                toastMessageView
+                    .padding(.horizontal, 24)
             }
         }
     }

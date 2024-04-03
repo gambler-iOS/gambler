@@ -59,9 +59,11 @@ struct HomeView: View {
                         ShopListView(title: title)
                     }
                 }
-                .navigationDestination(isPresented: $appNavigationPath.isGoTologin, destination: {
-                    LoginView()
-                })
+                .navigationDestination(for: Bool.self) { boolean in
+                    if boolean {
+                        LoginView()
+                    }
+                }
                 .buttonStyle(HiddenClickAnimationButtonStyle())
             }
             .coordinateSpace(name: "HOMESCROLL")

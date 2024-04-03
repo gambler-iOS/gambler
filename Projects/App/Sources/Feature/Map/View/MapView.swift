@@ -12,7 +12,6 @@ import KakaoMapsSDK
 import CoreLocation
 
 struct MapView: View {
-
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @StateObject private var mapViewModel = MapViewModel()
     
@@ -66,9 +65,11 @@ struct MapView: View {
             }
             .edgesIgnoringSafeArea(.top)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .navigationDestination(isPresented: $appNavigationPath.isGoTologin, destination: {
-                LoginView()
-            })
+            .navigationDestination(for: Bool.self) { boolean in
+                if boolean {
+                    LoginView()
+                }
+            }
         }
     }
     

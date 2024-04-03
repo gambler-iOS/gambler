@@ -11,6 +11,7 @@ import SwiftUI
 struct HeartCellView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @EnvironmentObject private var tabSelected: TabSelection
     let postId: String
     let postType: AppConstants.PostType
     @State private var isLiked: Bool = false
@@ -57,7 +58,18 @@ struct HeartCellView: View {
     
     private func updateLikeList() {
         guard var curUser = loginViewModel.currentUser else {
-            appNavigationPath.isGoTologin = true
+            switch tabSelected.selectedTab {
+            case 0:
+                appNavigationPath.homeViewPath.append(true)
+            case 1:
+                appNavigationPath.mapViewPath.append(true)
+            case 2:
+                appNavigationPath.searchViewPath.append(true)
+            case 3:
+                appNavigationPath.myPageViewPath.append(true)
+            default:
+                appNavigationPath.isGoTologin = false
+            }
             return
         }
         var userLikeDictionary: [AnyHashable: Any] = [:]
@@ -95,7 +107,6 @@ struct HeartCellView: View {
         }
     }
 }
-
 #Preview {
     HeartCellView(postId: "", postType: AppConstants.PostType.game)
 }

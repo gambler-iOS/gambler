@@ -39,9 +39,8 @@ struct ShopListView: View {
                         }
                     }
                 }
-                .padding(.top, 24)
+                .padding(24)
             }
-            .padding(.horizontal, 24)
         }
         .navigationBarBackButtonHidden()
         .task {
@@ -71,13 +70,6 @@ struct ShopListView: View {
                 .frame(width: 24, height: 24)
         }
         .frame(height: 30)
-    }
-}
-
-#Preview {
-    NavigationStack {
-        ShopListView(title: "인기 매장")
-            .environmentObject(AppNavigationPath())
-            .environmentObject(ShopListViewModel())
+        .padding(.horizontal, 24)
     }
 }

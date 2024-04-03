@@ -41,8 +41,10 @@ struct FloatingCellView: View {
                             .foregroundStyle(Color.gray700)
                         
                         Spacer()
-                        
+                    }
+                    .overlay(alignment: .topTrailing) {
                         HeartCellView(postId: shop.id, postType: AppConstants.PostType.shop)
+//                            .padding(8)
                     }
                     
                     ReviewRatingCellView(rating: shop.reviewRatingAverage)
