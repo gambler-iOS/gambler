@@ -20,8 +20,7 @@ struct RegisterTermsOfUseView: View {
     @State private var termsOfUserSafariActive = false
     @State private var personalInformationSafariActive = false
 
-#warning ("주소 변경 해야함")
-    private let personalInformationLink: String = "https://www.google.co.kr"
+    private let personalInformationLink: String = "https://raw.githubusercontent.com/gambler-iOS/gambler-WebPage/main/Pricacy.md"
 
     var body: some View {
         VStack(spacing: .zero) {

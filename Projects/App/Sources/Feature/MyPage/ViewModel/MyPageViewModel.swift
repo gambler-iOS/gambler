@@ -23,8 +23,8 @@ final class MyPageViewModel: ObservableObject {
     @Published var profileImageChanged: Bool = false
     @Published var isShowingToast: Bool = false
     @Published var toastCategory: ToastCategory = .complain
-    @Published var termsOfUserSiteURL: String = "https://www.naver.com"
-    @Published var developerInfoSiteURL: String = "https://www.google.co.kr"
+    @Published var termsOfUserSiteURL: String = "https://raw.githubusercontent.com/gambler-iOS/gambler-WebPage/main/Terms%20of%20Use.md"
+    @Published var developerInfoSiteURL: String = "https://github.com/gambler-iOS/gambler"
     
     let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
     
