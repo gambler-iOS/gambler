@@ -174,7 +174,7 @@ extension KakaoMapView.KakaoMapCoordinator {
             
             spriteGui.origin = GuiAlignment(vAlign: .top, hAlign: .right)
             spriteGui.position = CGPoint(x: getSafeAreaTop(),
-                                         y: UIScreen.main.bounds.height + 50)
+                                         y: UIScreen.main.bounds.height + getSafeAreaTop() * 2)
             
             let gpsButton = GuiButton("GPS Button")
             gpsButton.image = UIImage(named: "Location")?

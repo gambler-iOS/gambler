@@ -135,16 +135,18 @@ final class FirebaseManager {
         return result.first ?? nil
     }
     
-    /// 지정한 collection 에서 임의의 1개의 데이터만 리턴
+    /// 지정한 collection 에서 특정 필드에서 byData 값이 일치하는 1개의 데이터만 리턴
     /// - Parameters:
     ///   - collectionName: FirebaseStore 에서 지정된 Collection 이름
     /// - Returns: T?
     /// - Example:
     /// ```swift
-    /// fetchOneAnyData(collectionName: AppConstants.CollectionName.shops)
+    /// firebaseManager.fetchWhereOneData(collectionName: collectionName, field: "shopCountry", byData: country)
     /// ```
-    func fetchOneAnyData<T: AvailableFirebase>(collectionName: String) async throws -> T? {
-        let collectionRef = db.collection(collectionName).limit(to: 1)
+    func fetchWhereOneData<T: AvailableFirebase>(collectionName: String, field: String, byData: String) async throws -> T? {
+        let collectionRef = db.collection(collectionName)
+            .whereField(field, isEqualTo: byData)
+            .limit(to: 1)
         let querySnapshot = try await collectionRef.getDocuments()
         let result = querySnapshot.documents.compactMap { try? $0.data(as: T.self) }
         return result.first ?? nil

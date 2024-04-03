@@ -14,7 +14,7 @@ struct KakaoMapView: UIViewRepresentable {
     @ObservedObject var mapViewModel: MapViewModel
     
     @Binding var userLocate: GeoPoint
-    @Binding var selectedShop: Shop
+    @Binding var selectedShop: Shop?
     @Binding var draw: Bool
     @Binding var isShowingSheet: Bool
     @Binding var isLoading: Bool
@@ -52,7 +52,7 @@ struct KakaoMapView: UIViewRepresentable {
     
     final class KakaoMapCoordinator: NSObject, MapControllerDelegate, GuiEventDelegate, KakaoMapEventDelegate {
         @Binding var userLocate: GeoPoint
-        @Binding var selectedShop: Shop
+        @Binding var selectedShop: Shop?
         @Binding var isShowingSheet: Bool
         @Binding var isLoading: Bool
         @ObservedObject var mapViewModel: MapViewModel
@@ -68,7 +68,7 @@ struct KakaoMapView: UIViewRepresentable {
         var firstTap: Bool = true
         
         init (userLocate: Binding<GeoPoint>, isShowingSheet: Binding<Bool>,
-              tappedShop: Binding<Shop>, isLoading: Binding<Bool>, mapViewModel: ObservedObject<MapViewModel>) {
+              tappedShop: Binding<Shop?>, isLoading: Binding<Bool>, mapViewModel: ObservedObject<MapViewModel>) {
             first = true
             self._userLocate = userLocate
             self._isShowingSheet = isShowingSheet
@@ -92,7 +92,7 @@ struct KakaoMapView: UIViewRepresentable {
         
         func addViewSucceeded(_ viewName: String, viewInfoName: String) {
             settingMap()
-            isLoading  = false
+            isLoading = false
         }
         
         func settingMap() {
@@ -100,7 +100,9 @@ struct KakaoMapView: UIViewRepresentable {
                 mapView.setMargins(UIEdgeInsets(top: 0, left: 0, bottom: UIScreen.main.bounds.height * 0.2 , right: 0))
                 mapView.setLogoPosition(
                     origin: GuiAlignment(vAlign: .bottom, hAlign: .right),
-                    position: CGPoint(x: 10.0, y: -UIScreen.main.bounds.height * 0.2 + 20))
+                    position: CGPoint(x: 10.0, 
+                                      y: -UIScreen.main.bounds.height * 0.2 + 10))
+               
                 getUserLocation()
                 createLabelLayer()
                 createPoiStyle()
