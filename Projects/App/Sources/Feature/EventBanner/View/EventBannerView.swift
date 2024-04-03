@@ -62,6 +62,7 @@ struct EventBannerView: View {
                                         .padding(.leading, 24)
                                         .offset(x: (offset > 0 ? offset / 2 : 0))
                                     }
+                                    .roundedCorner(16, corners: [.bottomLeft, .bottomRight])
                             }
                             .offset(x: (offset > 0 ? -offset / 2 : 0), y: (offset > 0 ? -offset : 0))
                             .onAppear {
