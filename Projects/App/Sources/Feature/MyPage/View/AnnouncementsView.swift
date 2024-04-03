@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct AnnouncementsView: View {
-    @State private var showingWebSheet: Bool = false
+    @State private var showingWebView: Bool = false
     @State private var urlLink: String = ""
     
     var body: some View {
@@ -23,14 +23,14 @@ struct AnnouncementsView: View {
                     .padding(8)
                     .padding(.horizontal, 8)
                     .onTapGesture {
-                        showingWebSheet = true
+                        showingWebView = true
                         urlLink = notice.noticeLink
                     }
                     Divider()
                 }
             }
-            .sheet(isPresented: $showingWebSheet) {
-                WebView(siteURL: urlLink)
+            .navigationDestination(isPresented: $showingWebView) {
+                MyWebView(siteURL: $urlLink, title: "공지사항")
             }
             .navigationTitle("공지사항")
             .modifier(BackButton())

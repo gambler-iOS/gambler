@@ -14,7 +14,6 @@ struct GameDetailView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var gameDetailViewModel: GameDetailViewModel
     @State private var offsetY: CGFloat = CGFloat.zero
-    @State private var isWriteReviewButton: Bool = false
     @State private var isHeartButton: Bool = false
     @State private var isShowingToast: Bool = false
     private let headerImageHeight: CGFloat = 290
@@ -50,8 +49,10 @@ struct GameDetailView: View {
                 titleView
                     .padding(.horizontal, 24)
                 
-                gameItemButtonsView
-                    .padding([.horizontal, .bottom], 24)
+                ItemButtonSetView(type: .game, isShowingToast: $isShowingToast, game: game)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, -32)
                 
                 BorderView()
                 
@@ -72,6 +73,7 @@ struct GameDetailView: View {
                 GameSimilarHScrollView(title: "비슷한 인원수의 게임", games: gameDetailViewModel.similarPlayerGames)
             }
             .background(Color.white)
+            .padding(.bottom, 32)
         }
         .onAppear {
             setGameInViewModel()
@@ -88,6 +90,7 @@ struct GameDetailView: View {
         .overlay {
             if isShowingToast {
                 toastMessageView
+                    .padding(.horizontal, 24)
             }
         }
     }
@@ -105,13 +108,9 @@ struct GameDetailView: View {
     }
     
     private func setGameInViewModel() {
-        DispatchQueue.main.async {
-            gameDetailViewModel.game = game
-            if let curUser = loginViewModel.currentUser, let likeGameArray = curUser.likeGameId {
-                if likeGameArray.contains(game.id) {
-                    isHeartButton = true
-                }
-            }
+        gameDetailViewModel.game = game
+        if let curUser = loginViewModel.currentUser, let likeGameArray = curUser.likeGameId {
+            isHeartButton = likeGameArray.contains { $0 == game.id }
         }
     }
     
@@ -126,7 +125,7 @@ struct GameDetailView: View {
         Rectangle()
             .foregroundColor(.white)
             .frame(width: UIScreen.main.bounds.width, height: 40)
-            .clipShape(TempRoundedCorner(radius: 20, corners: [.topLeft, .topRight]))
+            .roundedCorner(20, corners: [.topLeft, .topRight])
     }
     
     private var titleView: some View {
@@ -135,76 +134,6 @@ struct GameDetailView: View {
                 .font(.subHead1B)
             ReviewRatingCellView(rating: gameDetailViewModel.game.reviewRatingAverage)
         }
-    }
-    
-    private var gameItemButtonsView: some View {
-        GeometryReader { geometry in
-            HStack(alignment: .center, spacing: .zero) {
-                ItemButtonView(
-                    image: isHeartButton == false ?
-                    GamblerAsset.heartGray.swiftUIImage : GamblerAsset.heartRed.swiftUIImage,
-                    buttonName: "찜하기") {
-                        
-                        updateLikeGameList()
-                        isHeartButton = ((loginViewModel.currentUser?.likeGameId?.contains(game.id)) != nil)
-                    }
-                    .frame(width: geometry.size.width / 2)
-                
-                ItemButtonView(image: GamblerAsset.review.swiftUIImage, buttonName: "리뷰") {
-                    guard loginViewModel.currentUser != nil else {
-                        appNavigationPath.isGoTologin = true
-                        return
-                    }
-                    isWriteReviewButton = true
-                }
-                .navigationDestination(isPresented: $isWriteReviewButton) {
-                    WriteReviewView(isShowingToast: $isShowingToast, reviewableItem: game)
-                }
-                .frame(width: geometry.size.width / 2)
-            }
-        }
-        .frame(maxWidth: .infinity)
-    }
-    
-    private func updateLikeGameList() {
-        guard var curUser = loginViewModel.currentUser else {
-            appNavigationPath.isGoTologin = true
-            return
-        }
-        
-        var userLikeDictionary: [AnyHashable: Any] = [:]
-        var updatedLikeArray: [String] = []
-        
-        if let likeGameIdArray = curUser.likeGameId {
-            updatedLikeArray = likeGameIdArray
-        }
-        
-        if isHeartButton {
-            updatedLikeArray.append(game.id)
-        } else {
-            updatedLikeArray.removeAll { $0 == game.id }
-        }
-        
-        loginViewModel.currentUser?.likeGameId = updatedLikeArray
-        
-        userLikeDictionary["likeGameId"] = updatedLikeArray
-        
-        Task {
-            await loginViewModel.updateLikeList(likePostIds: userLikeDictionary)
-        }
-    }
-}
-
-private struct TempRoundedCorner: Shape {
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-    
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(roundedRect: rect,
-                                byRoundingCorners: corners,
-                                cornerRadii: CGSize(width: radius, height: radius))
-        
-        return Path(path.cgPath)
     }
 }
 

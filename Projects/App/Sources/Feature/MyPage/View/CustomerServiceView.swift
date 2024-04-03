@@ -10,8 +10,8 @@ import SwiftUI
 
 struct CustomerServiceView: View {
     let complainViewModel: ComplainViewModel = ComplainViewModel()
-    @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
     
     @State private var choiceCategory: ComplainCategory = .spam
     @State private var isShowingDropMenu = false
@@ -76,9 +76,9 @@ struct CustomerServiceView: View {
                                                     .uploadImages(selectedPhotosData,
                                                                   folder: .complain),
                                                          createdDate: Date()))
-            myPageViewModel.toastCategory = .complain
         }
-        presentationMode.wrappedValue.dismiss()
+        myPageViewModel.toastCategory = .complain
+        appNavigationPath.myPageViewPath.removeLast()
         withAnimation(.easeIn(duration: 0.4)) {
             myPageViewModel.isShowingToast = true
         }
@@ -122,4 +122,5 @@ struct CustomerServiceView: View {
 #Preview {
     CustomerServiceView()
         .environmentObject(MyPageViewModel())
+        .environmentObject(AppNavigationPath())
 }

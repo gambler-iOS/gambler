@@ -19,6 +19,8 @@ struct SectionHeaderView: View {
             Text(title)
                 .font(.subHead1B)
                 .foregroundStyle(Color.gray700)
+                .lineLimit(1)
+                .truncationMode(.tail)
             if let count {
                 Text("\(count)개")
                     .font(.subHead1B)

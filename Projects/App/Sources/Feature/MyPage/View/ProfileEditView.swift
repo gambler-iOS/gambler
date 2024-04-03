@@ -11,10 +11,10 @@ import PhotosUI
 import Kingfisher
 
 struct ProfileEditView: View {
-    @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject private var profileEditViewModel: ProfileEditViewModel
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
     
     @State private var nickName: String = ""
     @State private var email: String = ""
@@ -66,11 +66,12 @@ struct ProfileEditView: View {
                             content: "탈퇴 후에는 작성하신 리뷰를 수정 혹은 삭제할 수 없어요. 탈퇴 신청 전에 꼭 확인해주세요.") {
                 Task {
                     if await loginViewModel.deleteAndResetAuth() {
-                        // 회원탈퇴 토스트 메시지
+                        appNavigationPath.myPageViewPath.removeLast()
                         myPageViewModel.toastCategory = .deleteAccount
                         myPageViewModel.isShowingToast = true
                         // 재로그인시 로딩 활성화 방지
                         AuthService.shared.isLoading = false
+//                        loginViewModel.authState = .signedOut
                         isShowingResignModal = false
                     }
                 }
@@ -83,7 +84,7 @@ struct ProfileEditView: View {
     private func reply() {
         Task {
             myPageViewModel.profileImageChanged = true
-            presentationMode.wrappedValue.dismiss()
+            appNavigationPath.mapViewPath.removeLast()
             
             if await profileEditViewModel.uploadProfileImage(user: currentUser, selectedPhoto: profileEditViewModel.selectedPhoto) {
                 await loginViewModel.getUserDate()
@@ -189,4 +190,5 @@ struct ProfileEditView: View {
         .environmentObject(LoginViewModel())
         .environmentObject(MyPageViewModel())
         .environmentObject(ProfileEditViewModel())
+        .environmentObject(AppNavigationPath())
 }

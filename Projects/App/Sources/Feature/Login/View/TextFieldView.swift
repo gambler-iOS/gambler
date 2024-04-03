@@ -88,6 +88,7 @@ struct TextFieldView: View {
                         }
                 }
             }
+            .padding(.bottom, 8)
             Text("영문, 한글, 숫자를 사용하여 \(minLength)~\(maxLength)자까지 가능합니다.")
                 .font(.caption1M)
                 .foregroundStyle(textColor)
