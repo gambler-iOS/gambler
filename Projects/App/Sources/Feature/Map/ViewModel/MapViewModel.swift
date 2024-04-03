@@ -51,6 +51,7 @@ final class MapViewModel: ObservableObject {
     
     @MainActor
     func filterShopsByCountry(country: String) async {
+        areaInShopList.removeAll()
         areaInShopList = fetchedShopList.filter { $0.shopCountry == country }
     }
     

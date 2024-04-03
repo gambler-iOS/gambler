@@ -11,41 +11,35 @@ import SwiftUI
 struct AnnouncementsView: View {
     @StateObject private var announcementsViewModel = AnnouncementsViewModel()
     @State private var showingWebSheet: Bool = false
-    @State private var urlLink: String = ""
     
     var body: some View {
-        ScrollView {
+        VStack {
             if announcementsViewModel.notices.isEmpty {
-                Spacer()
                 Text("공지사항이 없습니다.")
-                    .onTapGesture {
-                        showingWebSheet = true
-                        //urlLink = notice.noticeLink
-                    }
-                Spacer()
+                    .font(.body2B)
+                    .foregroundStyle(Color.gray400)
             } else {
-                ForEach(announcementsViewModel.notices) { notice in
-                    announcementsCellView(title: notice.noticeTitle,
-                                          createdDate: notice.createdDate)
-                    .padding(8)
-                    .padding(.horizontal, 8)
-                    .onTapGesture {
-                        showingWebSheet = true
-                        urlLink = notice.noticeLink
+                ScrollView {
+                    ForEach(announcementsViewModel.notices) { notice in
+                        
+                        NavigationLink(destination: 
+                                        WKView(siteURL: .constant(notice.noticeLink))
+                                            .navigationTitle("공지사항")
+                                            .modifier(BackButton())) {
+                            announcementsCellView(title: notice.noticeTitle,
+                                                  createdDate: notice.createdDate)
+                            .padding(8)
+                            .padding(.horizontal, 8)
+                        }
+                        Divider()
                     }
-                    Divider()
                 }
             }
         }
-        .fullScreenCover(isPresented: $showingWebSheet) {
-            WebView(siteURL: "https://raw.githubusercontent.com/gambler-iOS/gambler-WebPage/main/Terms%20of%20Use.md")
-        }
         .navigationTitle("공지사항")
         .modifier(BackButton())
-        .onAppear {
-            Task {
-                await announcementsViewModel.fetchData()
-            }
+        .task {
+            await announcementsViewModel.fetchData()
         }
     }
     
