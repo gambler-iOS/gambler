@@ -52,9 +52,10 @@ final class MapViewModel: ObservableObject {
     @MainActor
     func filterShopsByCountry(country: String) async {
         areaInShopList.removeAll()
-        areaInShopList = fetchedShopList.filter { $0.shopCountry == country }
+        areaInShopList = Array(Set(fetchedShopList.filter { $0.shopCountry == country }))
     }
     
+    /*
     @MainActor
     func fetchUserAreaShopList(userPoint: GeoPoint) async {
         let boundary: Double = 10
@@ -66,7 +67,7 @@ final class MapViewModel: ObservableObject {
                                                                           longitude: shop.location.longitude)) {
             areaInShopList.append(shop)
         }
-    }
+    }*/
 }
 
 extension MapViewModel {

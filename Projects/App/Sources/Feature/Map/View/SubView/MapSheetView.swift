@@ -43,6 +43,8 @@ struct MapSheetView: View {
         .task {
             let country = await mapViewModel.getCountry(mapPoint: userLocate)
             await mapViewModel.filterShopsByCountry(country: country)
+            
+            print("데이터 가져올거임 !!!!!\(mapViewModel.areaInShopList.count)")
         }
         .navigationDestination(for: Shop.self) { shop in
             ShopDetailInfoView(shop: shop)
