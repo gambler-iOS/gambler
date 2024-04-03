@@ -23,5 +23,6 @@ final class AppNavigationPath: ObservableObject {
         isGoTologin = false
         registViewIsActive = false
         registTermsViewIsActive = false
+        myPageViewPath.removeLast()
     }
 }

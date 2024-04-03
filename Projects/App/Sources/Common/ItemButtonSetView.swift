@@ -12,6 +12,7 @@ import UIKit
 struct ItemButtonSetView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @EnvironmentObject private var loginViewModel: LoginViewModel
+    @EnvironmentObject private var tabSelection: TabSelection
     let type: MyPageFilter
     @Binding var isShowingToast: Bool
     var shop: Shop?
@@ -95,7 +96,18 @@ struct ItemButtonSetView: View {
     
     private func tappedReview() {
         guard loginViewModel.currentUser != nil else {
-            appNavigationPath.isGoTologin = true
+            switch tabSelection.selectedTab {
+            case 0:
+                appNavigationPath.homeViewPath.append(true)
+            case 1:
+                appNavigationPath.mapViewPath.append(true)
+            case 2:
+                appNavigationPath.searchViewPath.append(true)
+            case 3:
+                appNavigationPath.myPageViewPath.append(true)
+            default:
+                appNavigationPath.isGoTologin = false
+            }
             return
         }
         isWriteReviewButton = true
@@ -103,7 +115,18 @@ struct ItemButtonSetView: View {
     
     private func updateLikeList() {
         guard let curUser = loginViewModel.currentUser else {
-            appNavigationPath.isGoTologin = true
+            switch tabSelection.selectedTab {
+            case 0:
+                appNavigationPath.homeViewPath.append(true)
+            case 1:
+                appNavigationPath.mapViewPath.append(true)
+            case 2:
+                appNavigationPath.searchViewPath.append(true)
+            case 3:
+                appNavigationPath.myPageViewPath.append(true)
+            default:
+                appNavigationPath.isGoTologin = false
+            }
             return
         }
         var userLikeDictionary: [AnyHashable: Any] = [:]

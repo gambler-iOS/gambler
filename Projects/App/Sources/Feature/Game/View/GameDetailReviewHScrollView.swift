@@ -10,6 +10,7 @@ import SwiftUI
 
 struct GameDetailReviewHScrollView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @EnvironmentObject private var tabSelection: TabSelection
     @EnvironmentObject private var gameDetailViewModel: GameDetailViewModel
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @State private var isNavigation: Bool = false
@@ -30,7 +31,18 @@ struct GameDetailReviewHScrollView: View {
             DetailSectionHeaderView(title: "리뷰",
                                     reviewInfo: "\(formattedReviewRatingAverage)(\(game.reviewCount))") {
                 guard loginViewModel.currentUser != nil else {
-                    appNavigationPath.isGoTologin = true
+                    switch tabSelection.selectedTab {
+                    case 0:
+                        appNavigationPath.homeViewPath.append(true)
+                    case 1:
+                        appNavigationPath.mapViewPath.append(true)
+                    case 2:
+                        appNavigationPath.searchViewPath.append(true)
+                    case 3:
+                        appNavigationPath.myPageViewPath.append(true)
+                    default:
+                        appNavigationPath.isGoTologin = false
+                    }
                     return
                 }
                 isNavigation = true

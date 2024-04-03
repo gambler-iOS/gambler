@@ -10,6 +10,8 @@ import SwiftUI
 
 struct BackButton: ViewModifier {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @EnvironmentObject private var tabNum: TabSelection
     
     func body(content: Content) -> some View {
         content

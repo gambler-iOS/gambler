@@ -15,6 +15,7 @@ struct ProfileEditView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject private var profileEditViewModel: ProfileEditViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @EnvironmentObject private var tabSelection: TabSelection
     
     @State private var nickName: String = ""
     @State private var email: String = ""
@@ -66,13 +67,18 @@ struct ProfileEditView: View {
                             content: "탈퇴 후에는 작성하신 리뷰를 수정 혹은 삭제할 수 없어요. 탈퇴 신청 전에 꼭 확인해주세요.") {
                 Task {
                     if await loginViewModel.deleteAndResetAuth() {
-                        appNavigationPath.myPageViewPath.removeLast()
+//                        appNavigationPath.myPageViewPath = .init()
                         myPageViewModel.toastCategory = .deleteAccount
                         myPageViewModel.isShowingToast = true
+                        tabSelection.selectedTab = 0
                         // 재로그인시 로딩 활성화 방지
                         AuthService.shared.isLoading = false
 //                        loginViewModel.authState = .signedOut
                         isShowingResignModal = false
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                            appNavigationPath.myPageViewPath.removeLast()
+                        }
                     }
                 }
             }

@@ -65,9 +65,11 @@ struct MapView: View {
             }
             .edgesIgnoringSafeArea(.top)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .navigationDestination(isPresented: $appNavigationPath.isGoTologin, destination: {
-                LoginView()
-            })
+            .navigationDestination(for: Bool.self) { boolean in
+                if boolean {
+                    LoginView()
+                }
+            }
         }
     }
     

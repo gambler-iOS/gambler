@@ -13,6 +13,7 @@ struct ShopDetailInfoView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var shopDetailViewModel: ShopDetailViewModel
+    @EnvironmentObject private var tabSelection: TabSelection
     @State private var offsetY: CGFloat = CGFloat.zero
     @State private var isShowingFullScreen: Bool = false
     @State private var url: URL?
@@ -76,7 +77,18 @@ struct ShopDetailInfoView: View {
                 
                 ShopDetailHeaderView(shop: shop) {
                     guard loginViewModel.currentUser != nil else {
-                        appNavigationPath.isGoTologin = true
+                        switch tabSelection.selectedTab {
+                        case 0:
+                            appNavigationPath.homeViewPath.removeLast()
+                        case 1:
+                            appNavigationPath.mapViewPath.removeLast()
+                        case 2:
+                            appNavigationPath.searchViewPath.removeLast()
+                        case 3:
+                            appNavigationPath.myPageViewPath.removeLast()
+                        default:
+                            appNavigationPath.isGoTologin = false
+                        }
                         return
                     }
                     isNavigation = true
@@ -145,7 +157,7 @@ struct ShopDetailInfoView: View {
                     isHeartButton = likeShopArray.contains { $0 == shop.id }
                 }
             }
-
+            
             if isShowingFullScreen {
                 withAnimation(.smooth()) {
                     FullScreenImageView(isShowingFullScreen: $isShowingFullScreen, url: $url)

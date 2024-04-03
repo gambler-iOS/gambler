@@ -10,9 +10,10 @@ import SwiftUI
 import AuthenticationServices
 
 struct LoginView: View {
-    @Environment(\.dismiss) private var dismiss
+//    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @EnvironmentObject private var tabNum: TabSelection
     
     var body: some View {
         VStack(spacing: .zero) {
@@ -86,7 +87,18 @@ struct LoginView: View {
         }
         .onChange(of: loginViewModel.authState) { _, newValue in
             if newValue == .signedIn {
-                appNavigationPath.isGoTologin = false
+                switch tabNum.selectedTab {
+                case 0:
+                    appNavigationPath.homeViewPath.removeLast()
+                case 1:
+                    appNavigationPath.mapViewPath.removeLast()
+                case 2:
+                    appNavigationPath.searchViewPath.removeLast()
+                case 3:
+                    appNavigationPath.myPageViewPath.removeLast()
+                default:
+                    appNavigationPath.isGoTologin = false
+                }
             }
         }
         .modifier(BackButton())
