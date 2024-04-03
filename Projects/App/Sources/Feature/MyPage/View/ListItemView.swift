@@ -11,7 +11,7 @@ import SwiftUI
 struct ListItemView: View {
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject private var loginViewModel: LoginViewModel
-    
+  
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 0) {

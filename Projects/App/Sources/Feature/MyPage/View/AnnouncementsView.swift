@@ -9,15 +9,22 @@
 import SwiftUI
 
 struct AnnouncementsView: View {
+    @StateObject private var announcementsViewModel = AnnouncementsViewModel()
     @State private var showingWebSheet: Bool = false
     @State private var urlLink: String = ""
     
     var body: some View {
-        if Notice.dummyNotice.isEmpty {
-            Text("공지사항이 없습니다.")
-        } else {
-            ScrollView {
-                ForEach(Notice.dummyNotice) { notice in
+        ScrollView {
+            if announcementsViewModel.notices.isEmpty {
+                Spacer()
+                Text("공지사항이 없습니다.")
+                    .onTapGesture {
+                        showingWebSheet = true
+                        //urlLink = notice.noticeLink
+                    }
+                Spacer()
+            } else {
+                ForEach(announcementsViewModel.notices) { notice in
                     announcementsCellView(title: notice.noticeTitle,
                                           createdDate: notice.createdDate)
                     .padding(8)
@@ -29,11 +36,16 @@ struct AnnouncementsView: View {
                     Divider()
                 }
             }
-            .sheet(isPresented: $showingWebSheet) {
-                WebView(siteURL: urlLink)
+        }
+        .fullScreenCover(isPresented: $showingWebSheet) {
+            WebView(siteURL: "https://raw.githubusercontent.com/gambler-iOS/gambler-WebPage/main/Terms%20of%20Use.md")
+        }
+        .navigationTitle("공지사항")
+        .modifier(BackButton())
+        .onAppear {
+            Task {
+                await announcementsViewModel.fetchData()
             }
-            .navigationTitle("공지사항")
-            .modifier(BackButton())
         }
     }
     

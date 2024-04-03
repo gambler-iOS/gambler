@@ -10,15 +10,23 @@ import SwiftUI
 
 struct FloatingView: View {
     @ObservedObject var mapViewModel: MapViewModel
-    @Binding var selectedShop: Shop
+    @Binding var selectedShop: Shop?
     @Binding var isShowingSheet: Bool
     @Binding var userLocate: GeoPoint
     
     var body: some View {
         VStack(spacing: 0) {
-            NavigationLink(destination: ShopDetailInfoView(shop: selectedShop)) {
-                FloatingCellView(shop: selectedShop, likeShopIdArray: ["1"])
+            if selectedShop == nil {
+                Text("내 주변에 매장이 없어요.")
+                    .font(.body2B)
+                    .foregroundStyle(Color.gray400)
+                    .frame(height: 100)
                     .padding(16)
+            } else {
+                NavigationLink(destination: ShopDetailInfoView(shop: selectedShop ?? Shop.dummyShop)) {
+                    FloatingCellView(shop: selectedShop ?? Shop.dummyShop, likeShopIdArray: ["1"])
+                        .padding(16)
+                }
             }
             
             showListButtonView

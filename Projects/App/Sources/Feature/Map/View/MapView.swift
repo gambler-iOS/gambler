@@ -16,7 +16,7 @@ struct MapView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @StateObject private var mapViewModel = MapViewModel()
     
-    @State private var selectedShop: Shop = Shop.dummyShop
+    @State private var selectedShop: Shop?
     @State private var userLocate: GeoPoint = GeoPoint.defaultPoint
     @State private var isLoading: Bool = true
     @State private var isShowingSheet: Bool = false
@@ -54,14 +54,15 @@ struct MapView: View {
                         .offset(y: getSafeAreaTop())
                         .overlay {
                             showMapButton
-                                .offset(y: 300)
+                                .offset(y: 330)
                         }
                 }
             }
             .overlay(safetyAreaTopScreen, alignment: .top)
             .task {
-                if selectedShop == Shop.dummyShop {
-                    selectedShop = await mapViewModel.fetchOneShop()
+                if selectedShop == nil {
+                    let country = await mapViewModel.getCountry(mapPoint: userLocate)
+                    selectedShop = await mapViewModel.fetchOneShop(country: country)
                 }
             }
             .edgesIgnoringSafeArea(.top)

@@ -18,7 +18,6 @@ final class MapViewModel: ObservableObject {
     @Published var fetchedCountry: [String] = []
     @Published var areaInShopList: [Shop] = []
      
-    
     @MainActor
     func fetchCountryData(country: String) async {
         fetchNewShopList.removeAll()
@@ -38,10 +37,10 @@ final class MapViewModel: ObservableObject {
         }
     }
     
-    func fetchOneShop() async -> Shop {
-        var tempShop: Shop = Shop.dummyShop
+    func fetchOneShop(country: String) async -> Shop? {
+        var tempShop: Shop?
         do {
-            if let data: Shop = try await firebaseManager.fetchOneAnyData(collectionName: collectionName) {
+            if let data: Shop = try await firebaseManager.fetchWhereOneData(collectionName: collectionName, field: "shopCountry", byData: country)   {
                 tempShop = data
             }
         } catch {

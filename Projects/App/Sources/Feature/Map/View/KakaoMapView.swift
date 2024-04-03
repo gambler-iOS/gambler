@@ -14,7 +14,7 @@ struct KakaoMapView: UIViewRepresentable {
     @ObservedObject var mapViewModel: MapViewModel
     
     @Binding var userLocate: GeoPoint
-    @Binding var selectedShop: Shop
+    @Binding var selectedShop: Shop?
     @Binding var draw: Bool
     @Binding var isShowingSheet: Bool
     @Binding var isLoading: Bool
@@ -52,7 +52,7 @@ struct KakaoMapView: UIViewRepresentable {
     
     final class KakaoMapCoordinator: NSObject, MapControllerDelegate, GuiEventDelegate, KakaoMapEventDelegate {
         @Binding var userLocate: GeoPoint
-        @Binding var selectedShop: Shop
+        @Binding var selectedShop: Shop?
         @Binding var isShowingSheet: Bool
         @Binding var isLoading: Bool
         @ObservedObject var mapViewModel: MapViewModel
@@ -68,7 +68,7 @@ struct KakaoMapView: UIViewRepresentable {
         var firstTap: Bool = true
         
         init (userLocate: Binding<GeoPoint>, isShowingSheet: Binding<Bool>,
-              tappedShop: Binding<Shop>, isLoading: Binding<Bool>, mapViewModel: ObservedObject<MapViewModel>) {
+              tappedShop: Binding<Shop?>, isLoading: Binding<Bool>, mapViewModel: ObservedObject<MapViewModel>) {
             first = true
             self._userLocate = userLocate
             self._isShowingSheet = isShowingSheet
