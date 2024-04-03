@@ -44,9 +44,10 @@ struct ReviewDetailView: View {
                         }
                     }
                 }
+                .listStyle(.plain)
             }
         }
-        .padding(.horizontal, 24)
+        .padding(EdgeInsets(top: 0, leading: 24, bottom: 24, trailing: 24))
         .onAppear {
             Task {
                 await reviewViewModel.fetchReviewData(reviewableItem: reviewableItem)
