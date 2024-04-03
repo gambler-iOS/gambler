@@ -13,6 +13,7 @@ import PhotosUI
 struct WriteReviewView: View {
     @EnvironmentObject private var reviewViewModel: ReviewViewModel
     @EnvironmentObject private var gameDetailViewModel: GameDetailViewModel
+    @EnvironmentObject private var shopDetailViewModel: ShopDetailViewModel
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @Environment(\.dismiss) private var dismiss
     
@@ -94,7 +95,7 @@ struct WriteReviewView: View {
             if reviewableItem is Game {
                 await gameDetailViewModel.updateGameAggregateReview(appendReviewRating: rating)
             } else if reviewableItem is Shop {
-                
+                await shopDetailViewModel.updateShopAggregateReview(appendReviewRating: rating)
             }
             isUploading = false
             dismiss()

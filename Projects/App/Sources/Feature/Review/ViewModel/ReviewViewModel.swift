@@ -39,7 +39,9 @@ final class ReviewViewModel: ObservableObject {
                                 createdDate: Date(),
                                 category: category)
             
+            // 1. 리뷰 글 등록
             await self.addReview(review: review)
+            // 2. reviewableItem.id 값의 reviewCount + 1 / average 값 갱신 (reviewRating 참고해서)
             await self.updateUserReviewCount(user: user)
         }
     }

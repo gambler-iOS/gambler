@@ -79,13 +79,13 @@ struct ShopDetailInfoView: View {
                     guard loginViewModel.currentUser != nil else {
                         switch tabSelection.selectedTab {
                         case 0:
-                            appNavigationPath.homeViewPath.removeLast()
+                            appNavigationPath.homeViewPath.append(true)
                         case 1:
-                            appNavigationPath.mapViewPath.removeLast()
+                            appNavigationPath.mapViewPath.append(true)
                         case 2:
-                            appNavigationPath.searchViewPath.removeLast()
+                            appNavigationPath.searchViewPath.append(true)
                         case 3:
-                            appNavigationPath.myPageViewPath.removeLast()
+                            appNavigationPath.myPageViewPath.append(true)
                         default:
                             appNavigationPath.isGoTologin = false
                         }

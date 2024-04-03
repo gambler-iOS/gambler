@@ -43,4 +43,24 @@ final class ShopDetailViewModel: ObservableObject {
             print("\(#function) : \(error.localizedDescription)")
         }
     }
+    
+    /// review 작성 시 game.reviewCount, game.reviewRatingAverage 정보 수정
+    @MainActor
+    func updateShopAggregateReview(appendReviewRating: Double) async {
+        var calcRatingAvg = (Double(shop.reviewCount) * shop.reviewRatingAverage) + appendReviewRating
+        calcRatingAvg /= Double(shop.reviewCount + 1)
+        
+        let data: [AnyHashable: Any] = [
+            "reviewCount": (shop.reviewCount + 1),
+            "reviewRatingAverage": (calcRatingAvg)
+        ]
+
+        do {
+            try await firebaseManager.updateData(collectionName: AppConstants.CollectionName.shops, byId: shop.id, data: data)
+            shop.reviewCount += 1
+            shop.reviewRatingAverage = calcRatingAvg
+        } catch {
+            print("Error \(#file) - \(#function) : \(error.localizedDescription)")
+        }
+    }
 }
