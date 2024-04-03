@@ -40,8 +40,8 @@ struct ShopListView: View {
                     }
                 }
                 .padding(.top, 24)
+                .padding(.horizontal, 24)
             }
-            .padding(.horizontal, 24)
         }
         .navigationBarBackButtonHidden()
         .task {
