@@ -24,7 +24,7 @@ struct GameDetailView: View {
             GeometryReader { geometry in
                 let offset = geometry.frame(in: .global).minY
                 setOffset(offset: offset)
-                if let url = URL(string: game.gameImage) {
+                if let url = URL(string: gameDetailViewModel.game.gameImage) {
                     KFImage(url)
                         .resizable()
                         .overlay {
@@ -49,7 +49,7 @@ struct GameDetailView: View {
                 titleView
                     .padding(.horizontal, 24)
                 
-                ItemButtonSetView(type: .game, isShowingToast: $isShowingToast, game: game)
+                ItemButtonSetView(type: .game, isShowingToast: $isShowingToast, game: gameDetailViewModel.game)
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, 24)
                     .padding(.bottom, -32)
@@ -57,7 +57,7 @@ struct GameDetailView: View {
                 BorderView()
                 
                 /// 게임 상세 정보
-                GameDetailInfoView(game: game)
+                GameDetailInfoView(game: gameDetailViewModel.game)
                 
                 BorderView()
                 
@@ -75,10 +75,9 @@ struct GameDetailView: View {
             .background(Color.white)
             .padding(.bottom, 32)
         }
-        .onAppear {
-            setGameInViewModel()
-        }
         .task {
+            setLikeState()
+            await gameDetailViewModel.fetchGameInfo(id: game.id)
             await gameDetailViewModel.fetchReviewData()
             await gameDetailViewModel.fetchSimilarGameData()
         }
@@ -107,8 +106,7 @@ struct GameDetailView: View {
             }
     }
     
-    private func setGameInViewModel() {
-        gameDetailViewModel.game = game
+    private func setLikeState() {
         if let curUser = loginViewModel.currentUser, let likeGameArray = curUser.likeGameId {
             isHeartButton = likeGameArray.contains { $0 == game.id }
         }
