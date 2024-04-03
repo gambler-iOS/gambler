@@ -18,13 +18,17 @@ struct MapSheetView: View {
                 .font(.subHead2B)
                 .padding(.top, 20)
                 .padding(.bottom, 10)
-            ScrollView(showsIndicators: false) {
-                if mapViewModel.areaInShopList.isEmpty {
+            if mapViewModel.areaInShopList.isEmpty {
+                Spacer()
+                VStack {
                     Text("주변에 매장이 없어요.")
-                        .font(.subHead1B)
+                        .font(.subHead2B)
                         .foregroundStyle(Color.gray400)
-                        .frame(height: UIScreen.main.bounds.height)
-                } else {
+                        .padding(.bottom, 30)
+                }
+                Spacer()
+            } else {
+                ScrollView {
                     VStack(spacing: 24) {
                         ForEach(mapViewModel.areaInShopList) { shop in
                             NavigationLink(value: shop) {
