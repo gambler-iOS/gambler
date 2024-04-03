@@ -12,16 +12,16 @@ struct RegisterTermsOfUseView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
-
+    
     @State private var isDisabled: Bool = true
     @State private var agreedAll: Bool = false
     @State private var agreedFirstItem: Bool = false
     @State private var agreedSecondItem: Bool = false
     @State private var termsOfUserSafariActive = false
     @State private var personalInformationSafariActive = false
-
+    
     private let personalInformationLink: String = "https://raw.githubusercontent.com/gambler-iOS/gambler-WebPage/main/Pricacy.md"
-
+    
     var body: some View {
         VStack(spacing: .zero) {
             Text("이용약관에 동의해주세요.")
@@ -109,7 +109,13 @@ struct RegisterTermsOfUseView: View {
             Text(title)
                 .font(.body1B)
                 .foregroundStyle(Color.black)
-                .underline(title == "전체동의" ? false: true)
+                .overlay(
+                    title != "전체동의" ?
+                    Rectangle()
+                        .frame(height: 1)
+                        .offset(y: 4)
+                    : nil,
+                    alignment: .bottom)
                 .onTapGesture {
                     if title == "이용약관 동의(필수)" {
                         termsOfUserSafariActive = true

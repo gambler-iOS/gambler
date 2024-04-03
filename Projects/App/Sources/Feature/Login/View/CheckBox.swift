@@ -14,7 +14,6 @@ struct CheckBox: View {
     var body: some View {
         
         Button {
-            print(isAgreed)
             isAgreed.toggle()
         } label: {
             if !isAgreed {
