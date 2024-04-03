@@ -45,7 +45,6 @@ final class AuthService: ObservableObject {
             Auth.auth().signIn(withEmail: email, password: password) { result, error in
                 if let error {
                     print(error.localizedDescription)
-                    print("로그인 실패???")
                     continuation.resume(returning: false)
                 }
                 
