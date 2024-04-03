@@ -10,6 +10,7 @@ import SwiftUI
 
 struct ShopDetailHeaderView: View {
     let shop: Shop
+    var action: () -> Void
     
     var body: some View {
         HStack(spacing: .zero) {
@@ -34,6 +35,9 @@ struct ShopDetailHeaderView: View {
                 .resizable()
                 .frame(width: 24, height: 24)
         }
+        .onTapGesture {
+            action()
+        }
     }
     
     func roundAndTrimDouble(_ value: Double) -> String {
@@ -43,5 +47,5 @@ struct ShopDetailHeaderView: View {
 
 }
 #Preview {
-    ShopDetailHeaderView(shop: .dummyShop)
+    ShopDetailHeaderView(shop: .dummyShop, action: {})
 }

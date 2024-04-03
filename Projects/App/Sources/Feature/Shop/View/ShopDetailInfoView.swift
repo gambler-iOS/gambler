@@ -12,10 +12,12 @@ import Kingfisher
 struct ShopDetailInfoView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @EnvironmentObject private var loginViewModel: LoginViewModel
+    @EnvironmentObject private var shopDetailViewModel: ShopDetailViewModel
     @State private var offsetY: CGFloat = CGFloat.zero
     @State private var isShowingFullScreen: Bool = false
     @State private var url: URL?
     @State private var isHeartButton: Bool = false
+    @State private var isNavigation: Bool = false
     let mainImageHeight: CGFloat = 200
     let shop: Shop
     
@@ -70,15 +72,21 @@ struct ShopDetailInfoView: View {
                 BorderView()
                     .padding(.top, 32)
                 
-                ShopDetailHeaderView(shop: shop)
-                    .padding(.horizontal, 24)
-                    .padding(.top, 32)
+                ShopDetailHeaderView(shop: shop) {
+                    guard loginViewModel.currentUser != nil else {
+                        appNavigationPath.isGoTologin = true
+                        return
+                    }
+                    isNavigation = true
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 32)
                 
                 if shop.reviewCount != 0 {
                     ScrollView(.horizontal) {
                         HStack {
-                            ForEach(0..<shop.reviewCount) { _ in
-                                ReviewListCellView(review: .dummyShopReview)
+                            ForEach(shopDetailViewModel.reviews) { review in
+                                ReviewListCellView(review: review)
                             }
                         }
                     }
@@ -108,6 +116,13 @@ struct ShopDetailInfoView: View {
                     .padding(.horizontal, 24)
                     .padding(.bottom, 36)
                     .disabled(true)
+            }
+            .navigationDestination(isPresented: $isNavigation) {
+                ReviewDetailView(reviewableItem: shop, targetName: shop.shopName)
+            }
+            .task {
+                await shopDetailViewModel.fetchReviewData()
+                await shopDetailViewModel.fetchShopInfo()
             }
             .background(.white)
             .navigationTitle(offsetY < -5 ? "\(shop.shopName)" : "")
