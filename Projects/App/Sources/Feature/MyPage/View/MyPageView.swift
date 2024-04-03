@@ -72,6 +72,7 @@ struct MyPageView: View {
                         .background(Color.gray50)
                         .clipShape(.rect(cornerRadius: 8))
                         ListItemView()
+                            .padding(.bottom, 24)
                     }
                 }
                 .padding(.horizontal, 24)
