@@ -50,7 +50,7 @@ final class ReviewViewModel: ObservableObject {
     private func uploadImages(selectedPhotosData: [Data]?) async -> [String]? {
         do {
             guard let selectedPhotosData else { return [] }
-            let imagesUrl:[String]? = try await StorageManager.uploadImages(selectedPhotosData, folder: .review)
+            let imagesUrl: [String]? = try await StorageManager.uploadImages(selectedPhotosData, folder: .review)
             return imagesUrl
         } catch {
             print(#fileID, #function, #line, "- 이미지 스토어에 올리기 실패! ")

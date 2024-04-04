@@ -83,12 +83,19 @@ struct KakaoMapDefaultView: UIViewRepresentable {
         
         //addView 성공 이벤트 delegate. 추가적으로 수행할 작업을 진행한다.
         func addViewSucceeded(_ viewName: String, viewInfoName: String) {
+            settingMap()
             print("OK") //추가 성공. 성공시 추가적으로 수행할 작업을 진행한다.
         }
         
         //addView 실패 이벤트 delegate. 실패에 대한 오류 처리를 진행한다.
         func addViewFailed(_ viewName: String, viewInfoName: String) {
             print("Failed")
+        }
+        
+        func settingMap() {
+            createLabelLayer()
+            createPoiStyle()
+            createPoisOnMap()
         }
         
         /// KMViewContainer 리사이징 될 때 호출.
@@ -105,6 +112,48 @@ struct KakaoMapDefaultView: UIViewRepresentable {
                     }
                     first = false
                 }
+            }
+        }
+        
+        func createPoisOnMap() {
+            if let mapView = controller?.getView("shopmapview") as? KakaoMap {
+                let manager = mapView.getLabelManager()
+                let layer = manager.getLabelLayer(layerID: "PoiLayer")
+                let poiOption = PoiOptions(styleID: "shopPoiIconStyle")
+                poiOption.rank = 0
+                poiOption.transformType = .decal
+                poiOption.clickable = false
+                
+                let markerPoint = MapPoint(longitude: Double(shopLocate.longitude),
+                                           latitude: shopLocate.latitude)
+                let marker = layer?.addPoi(option: poiOption, at: markerPoint)
+                marker?.show()
+            }
+        }
+        
+        func createPoiStyle() {
+            if let mapView = controller?.getView("shopmapview") as? KakaoMap {
+                let manager = mapView.getLabelManager()
+                let shopPoiIconStyle = PoiIconStyle(symbol: UIImage(named: "markPressed")?
+                    .resized(withSize: CGSize(width: 49, height: 69)))
+                let shopPoiStyle = PoiStyle(styleID: "shopPoiIconStyle", styles: [
+                    PerLevelPoiStyle(iconStyle: shopPoiIconStyle, level: 1)
+                ])
+                manager.addPoiStyle(shopPoiStyle)
+            }
+        }
+        
+        
+        func createLabelLayer() {
+            if let mapView = controller?.getView("shopmapview") as? KakaoMap {
+                let manager = mapView.getLabelManager()
+                
+                let markerLayerOption = LabelLayerOptions(layerID: "PoiLayer"
+                                                          ,competitionType: .none,
+                                                          competitionUnit: .symbolFirst,
+                                                          orderType: .rank, zOrder: 5000)
+                _ = manager.addLabelLayer(option: markerLayerOption)
+                
             }
         }
     }

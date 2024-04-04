@@ -37,10 +37,12 @@ struct CustomModalView: View {
                 .foregroundStyle(Color.gray500)
             HStack(spacing: 8) {
                 ProfileButtonView(text: "취소", width: 127.5, height: 56, isDefaultButton: true, isDisabled: false)
+                    .frame(maxWidth: .infinity)
                     .onTapGesture {
                         isShowingModal = false
                     }
                 ProfileButtonView(text: "확인", width: 127.5, height: 56, isDefaultButton: false, isDisabled: false)
+                    .frame(maxWidth: .infinity)
                     .onTapGesture {
                         modalAction()
                     }

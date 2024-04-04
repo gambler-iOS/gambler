@@ -10,6 +10,7 @@ import SwiftUI
 
 struct GameDetailReviewHScrollView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
+    @EnvironmentObject private var tabSelection: TabSelection
     @EnvironmentObject private var gameDetailViewModel: GameDetailViewModel
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @State private var isNavigation: Bool = false
@@ -30,12 +31,22 @@ struct GameDetailReviewHScrollView: View {
             DetailSectionHeaderView(title: "리뷰",
                                     reviewInfo: "\(formattedReviewRatingAverage)(\(game.reviewCount))") {
                 guard loginViewModel.currentUser != nil else {
-                    appNavigationPath.isGoTologin = true
+                    switch tabSelection.selectedTab {
+                    case 0:
+                        appNavigationPath.homeViewPath.append(true)
+                    case 1:
+                        appNavigationPath.mapViewPath.append(true)
+                    case 2:
+                        appNavigationPath.searchViewPath.append(true)
+                    case 3:
+                        appNavigationPath.myPageViewPath.append(true)
+                    default:
+                        appNavigationPath.isGoTologin = false
+                    }
                     return
                 }
                 isNavigation = true
             }
-            .padding(.trailing, 24)
             .navigationDestination(isPresented: $isNavigation) {
                 ReviewDetailView(reviewableItem: game, targetName: game.gameName)
             }
@@ -48,6 +59,7 @@ struct GameDetailReviewHScrollView: View {
                         }
                     }
                 }
+                .scrollIndicators(.hidden)
             } else {
                 VStack {
                     Text("첫 번째 리뷰를 남겨주세요!")
@@ -56,10 +68,9 @@ struct GameDetailReviewHScrollView: View {
                 }
                 .frame(height: 114)
                 .frame(maxWidth: .infinity)
-                .padding(.trailing, 24)
             }
         }
-        .padding(.leading, 24)
+        .padding(.horizontal, 24)
     }
 }
 

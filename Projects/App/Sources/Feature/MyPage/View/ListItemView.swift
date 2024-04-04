@@ -13,6 +13,7 @@ struct ListItemView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @State private var isShowTermsOfUserView: Bool = false
+
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 0) {

@@ -68,6 +68,7 @@ enum AppConstants {
         static let reviews: String = "Reviews"
         static let users: String = "Users"
         static let complains: String = "Complains"
+        static let notices: String = "Notices"
     }
     
     enum PostType {

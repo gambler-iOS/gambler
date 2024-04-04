@@ -12,11 +12,10 @@ import KakaoMapsSDK
 import CoreLocation
 
 struct MapView: View {
-
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @StateObject private var mapViewModel = MapViewModel()
     
-    @State private var selectedShop: Shop = Shop.dummyShop
+    @State private var selectedShop: Shop?
     @State private var userLocate: GeoPoint = GeoPoint.defaultPoint
     @State private var isLoading: Bool = true
     @State private var isShowingSheet: Bool = false
@@ -33,12 +32,15 @@ struct MapView: View {
                          isLoading: $isLoading)
             .overlay {
                 if !isShowingSheet && !isLoading {
-                    FloatingView(mapViewModel: mapViewModel, 
-                                 selectedShop: $selectedShop,
-                                 isShowingSheet: $isShowingSheet, 
-                                 userLocate: $userLocate)
-                    .frame(width: 327, height: 182)
-                    .offset(y: 250)
+                    VStack {
+                        Spacer()
+                        FloatingView(mapViewModel: mapViewModel,
+                                     selectedShop: $selectedShop,
+                                     isShowingSheet: $isShowingSheet,
+                                     userLocate: $userLocate)
+                        .frame(width: 327, height: 182)
+                    }
+                    .padding(.bottom, 32)
                 }
             }
             .overlay {
@@ -54,21 +56,25 @@ struct MapView: View {
                         .offset(y: getSafeAreaTop())
                         .overlay {
                             showMapButton
-                                .offset(y: 300)
+                                .offset(y: UIScreen.main.bounds.height/2 - 80)
                         }
                 }
             }
             .overlay(safetyAreaTopScreen, alignment: .top)
             .task {
-                if selectedShop == Shop.dummyShop {
-                    selectedShop = await mapViewModel.fetchOneShop()
+                if selectedShop == nil {
+                    await getUserLocation()
+                    let country = await mapViewModel.getCountry(mapPoint: userLocate)
+                    selectedShop = await mapViewModel.fetchOneShop(country: country)
                 }
             }
             .edgesIgnoringSafeArea(.top)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .navigationDestination(isPresented: $appNavigationPath.isGoTologin, destination: {
-                LoginView()
-            })
+            .navigationDestination(for: Bool.self) { boolean in
+                if boolean {
+                    LoginView()
+                }
+            }
         }
     }
     
@@ -91,6 +97,15 @@ struct MapView: View {
                 .foregroundColor(.white)
                 .opacity(isShowingSheet ? 1 : 0)
         }
+    }
+    
+    func getUserLocation() async {
+        let locationManager = CLLocationManager()
+        locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+        locationManager.distanceFilter = 20
+        let coordinate = locationManager.location?.coordinate
+        userLocate.latitude = coordinate?.latitude ?? GeoPoint.defaultPoint.latitude
+        userLocate.longitude = coordinate?.longitude ?? GeoPoint.defaultPoint.longitude
     }
 }
 

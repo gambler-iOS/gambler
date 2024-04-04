@@ -12,6 +12,8 @@ struct RegisterTermsOfUseView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
+    @EnvironmentObject private var tabSelection: TabSelection
+    @Environment(\.dismiss) private var dismiss
     
     @State private var isDisabled: Bool = true
     @State private var agreedAll: Bool = false
@@ -81,11 +83,27 @@ struct RegisterTermsOfUseView: View {
                     myPageViewModel.isShowingToast = true
                     appNavigationPath.returnToPreLogin()
                     
+//                    myPageViewPath.removeLast()
                     AuthService.shared.uploadUserToFirestore(user: user)
                     await loginViewModel.fetchUserData()
                     loginViewModel.authState = .signedIn
                     withAnimation(.easeIn(duration: 0.4)) {
                         myPageViewModel.isShowingToast = true
+                    }
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                        switch tabSelection.selectedTab {
+                        case 0:
+                            dismiss()
+                        case 1:
+                            dismiss()
+                        case 2:
+                            dismiss()
+                        case 3:
+                            dismiss()
+                        default:
+                            appNavigationPath.isGoTologin = false
+                        }
                     }
                 }
             }

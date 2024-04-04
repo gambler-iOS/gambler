@@ -21,6 +21,7 @@ struct SearchShopListView: View {
                     .onTapGesture {
                         appNavigationPath.searchViewPath.append(shop.object)
                     }
+                Divider()
             } noResults: {
                 Text("No Results")
             }

@@ -19,7 +19,6 @@ struct HomeGameCardHScrollView: View {
                 .onTapGesture {
                     appNavigationPath.homeViewPath.append(title)
                 }
-                .padding(.trailing, 24)
             
             ScrollView(.horizontal) {
                 HStack(spacing: 16) {
@@ -30,8 +29,9 @@ struct HomeGameCardHScrollView: View {
                     }
                 }
             }
+            .scrollIndicators(.hidden)
         }
-        .padding(.leading, 24)
+        .padding(.horizontal, 24)
     }
 }
 

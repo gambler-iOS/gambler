@@ -34,7 +34,7 @@ struct SearchMainView: View {
                             searchBoxController: searchBoxController,
                             shopHitsController: shopHitsController,
                             gameHitsController: gameHitsController,
-                            shopStatsController : shopStatsController, gameStatsController: gameStatsController
+                            shopStatsController: shopStatsController, gameStatsController: gameStatsController
                         )
                     } else {
                         RecentKeywordView()
@@ -58,9 +58,11 @@ struct SearchMainView: View {
                 .navigationDestination(for: Game.self) { game in
                     GameDetailView(game: game)
                 }
-                .navigationDestination(isPresented: $appNavigationPath.isGoTologin, destination: {
-                    LoginView()
-                })
+                .navigationDestination(for: Bool.self) { boolean in
+                    if boolean {
+                        LoginView()
+                    }
+                }
             }
         }
     }

@@ -13,11 +13,11 @@ import WebKit
 struct WKView: UIViewRepresentable {
     @Binding var siteURL: String
     
-    func makeUIView(context: Context) -> WKWebView  {
+    func makeUIView(context: Context) -> WKWebView {
         let wkwebView = WKWebView()
         
         guard let url = URL(string: siteURL) else {
-                   return wkwebView
+            return wkwebView
         }
         
         let request = URLRequest(url: url)
@@ -25,6 +25,5 @@ struct WKView: UIViewRepresentable {
         return wkwebView
     }
     
-    func updateUIView(_ uiView: WKWebView, context: Context) {
-    }
+    func updateUIView(_ uiView: WKWebView, context: Context) { }
 }

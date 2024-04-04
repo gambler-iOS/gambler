@@ -9,31 +9,39 @@
 import SwiftUI
 
 struct AnnouncementsView: View {
-    @State private var showingWebView: Bool = false
-    @State private var urlLink: String = ""
+    @StateObject private var announcementsViewModel = AnnouncementsViewModel()
+    @State private var showingWebSheet: Bool = false
     
     var body: some View {
-        if Notice.dummyNotice.isEmpty {
-            Text("공지사항이 없습니다.")
-        } else {
-            ScrollView {
-                ForEach(Notice.dummyNotice) { notice in
-                    announcementsCellView(title: notice.noticeTitle,
-                                          createdDate: notice.createdDate)
-                    .padding(8)
-                    .padding(.horizontal, 8)
-                    .onTapGesture {
-                        showingWebView = true
-                        urlLink = notice.noticeLink
+        VStack {
+            if announcementsViewModel.notices.isEmpty {
+                Text("공지사항이 없습니다.")
+                    .font(.body2B)
+                    .foregroundStyle(Color.gray400)
+            } else {
+                ScrollView {
+                    ForEach(announcementsViewModel.notices) { notice in
+                        
+                        NavigationLink(destination: 
+                                        WKView(siteURL: .constant(notice.noticeLink))
+                                            .navigationTitle(notice.noticeTitle)
+                                            .modifier(BackButton())) {
+                            announcementsCellView(title: notice.noticeTitle,
+                                                  createdDate: notice.createdDate)
+                            .padding(8)
+                            .padding(.horizontal, 8)
+                        }
+                        Divider()
+
                     }
-                    Divider()
                 }
             }
-            .navigationDestination(isPresented: $showingWebView) {
-                MyWebView(siteURL: $urlLink, title: "공지사항")
-            }
-            .navigationTitle("공지사항")
-            .modifier(BackButton())
+        }
+        .navigationTitle("공지사항")
+        .modifier(BackButton())
+        .task {
+            await announcementsViewModel.fetchData()
+
         }
     }
     

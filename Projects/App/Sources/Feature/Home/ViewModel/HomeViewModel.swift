@@ -14,6 +14,7 @@ final class HomeViewModel: ObservableObject {
     @Published var newGames: [Game] = []
     @Published var newShops: [Shop] = []
     @Published var popularGenre: [GameGenre] = []
+    @Published var isLoading: Bool = false
  
     private let firebaseManager = FirebaseManager.shared
     
@@ -30,6 +31,7 @@ final class HomeViewModel: ObservableObject {
     
     @MainActor
     func fetchData() async {
+        isLoading = true
         popularGames.removeAll()
         popularShops.removeAll()
         newGames.removeAll()
@@ -48,6 +50,7 @@ final class HomeViewModel: ObservableObject {
         } catch {
             print("Error fetching HomeviewModel : \(error.localizedDescription)")
         }
+        isLoading = false
     }
     
     func getPopularGenre() -> [GameGenre] {

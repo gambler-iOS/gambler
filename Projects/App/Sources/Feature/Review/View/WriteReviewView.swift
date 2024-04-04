@@ -13,6 +13,7 @@ import PhotosUI
 struct WriteReviewView: View {
     @EnvironmentObject private var reviewViewModel: ReviewViewModel
     @EnvironmentObject private var gameDetailViewModel: GameDetailViewModel
+    @EnvironmentObject private var shopDetailViewModel: ShopDetailViewModel
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @Environment(\.dismiss) private var dismiss
     
@@ -90,6 +91,7 @@ struct WriteReviewView: View {
     private func reply() async {
         Task {
             isUploading = true
+          
             if await reviewViewModel.submitReview(user: loginViewModel.currentUser,
                                                   reviewableItem: reviewableItem,
                                                   reviewContent: reviewContent,
