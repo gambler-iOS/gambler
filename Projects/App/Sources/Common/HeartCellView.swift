@@ -10,6 +10,7 @@ import SwiftUI
 
 struct HeartCellView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
+    @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     let postId: String
     let postType: AppConstants.PostType
@@ -61,9 +62,11 @@ struct HeartCellView: View {
             return
         }
         var userLikeDictionary: [AnyHashable: Any] = [:]
+        var userLikeCountDictionary: [AnyHashable: Any] = [:]
         var likeKey: String = ""
         var updatedLikeArray: [String] = []
-        
+        var countLike: Int = curUser.myLikesCount
+
         if postType == .game {
             likeKey = "likeGameId"
             if let likeGameIdArray = curUser.likeGameId {
@@ -77,8 +80,10 @@ struct HeartCellView: View {
         }
         
         if isLiked {
+            countLike += 1
             updatedLikeArray.append(postId)
         } else {
+            countLike -= 1
             updatedLikeArray.removeAll { $0 == postId }
         }
         
@@ -89,9 +94,12 @@ struct HeartCellView: View {
         }
         
         userLikeDictionary[likeKey] = updatedLikeArray
-        
+        userLikeCountDictionary["myLikesCount"] = countLike
         Task {
-            await loginViewModel.updateLikeList(likePostIds: userLikeDictionary)
+            await loginViewModel.updateLikeList(likePostIds: userLikeDictionary, likeCount: userLikeCountDictionary)
+            
+            await myPageViewModel.fetchLikeGames(user: loginViewModel.currentUser)
+            await myPageViewModel.fetchLikeShops(user: loginViewModel.currentUser)
         }
     }
 }

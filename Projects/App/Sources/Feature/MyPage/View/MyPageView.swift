@@ -64,7 +64,7 @@ struct MyPageView: View {
                                 .foregroundStyle(Color.gray200)
                             Spacer()
                             navigationView(title: "좋아요",
-                                           count: "\(currentUser?.myLikesCount ?? 0)",
+                                           count: "\(myPageViewModel.countLike)",
                                            destination: MyLikesView())
                             Spacer()
                         }
@@ -80,6 +80,7 @@ struct MyPageView: View {
                 .onAppear {
                     Task {
                         await myPageViewModel.fetchReviewData()
+                        myPageViewModel.fetchLikeCount()
                     }
                 }
             }

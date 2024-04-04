@@ -87,7 +87,7 @@ struct ProfileEditView: View {
             appNavigationPath.mapViewPath.removeLast()
             
             if await profileEditViewModel.uploadProfileImage(user: currentUser, selectedPhoto: profileEditViewModel.selectedPhoto) {
-                await loginViewModel.getUserDate()
+                await loginViewModel.getUserData()
             }
         }
     }

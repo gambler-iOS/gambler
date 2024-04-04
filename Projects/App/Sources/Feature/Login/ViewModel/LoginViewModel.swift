@@ -68,7 +68,7 @@ final class LoginViewModel: ObservableObject {
     
     // MARK: - 현재 유저 데이터 가져오기 - Firebasestore
     @MainActor
-    func getUserDate() async {
+    func getUserData() async {
         Task {
             do {
                 guard let user: User = try await FirebaseManager.shared.fetchOneData(collectionName: "Users", byId: currentUser?.id ?? "") else { return }
@@ -137,14 +137,30 @@ final class LoginViewModel: ObservableObject {
     }
   
     /// 찜하기 버튼 클릭 시 유저의 찜한 데이터 업데이트
-    func updateLikeList(likePostIds: [AnyHashable: Any]) async {
+    func updateLikeList(likePostIds: [AnyHashable: Any], likeCount: [AnyHashable: Any]) async {
         if let userId = currentUser?.id {
             do {
                 try await FirebaseManager.shared.updateData(collectionName: AppConstants.CollectionName.users,
                                                             byId: userId,
                                                             data: likePostIds)
+                
+                try await FirebaseManager.shared.updateData(collectionName: AppConstants.CollectionName.users,
+                                                            byId: userId,
+                                                            data: likeCount)
             } catch {
                 print("Error updateLikeList LoginViewModel : \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func updateLikeCount(countLike: [AnyHashable: Any]) async {
+        if let userId = currentUser?.id {
+            do {
+                try await FirebaseManager.shared.updateData(collectionName: AppConstants.CollectionName.users,
+                                                            byId: userId,
+                                                            data: countLike)
+            } catch {
+                print("Error updateLikeCount LoginViewModel : \(error.localizedDescription)")
             }
         }
     }
