@@ -137,16 +137,12 @@ final class LoginViewModel: ObservableObject {
     }
   
     /// 찜하기 버튼 클릭 시 유저의 찜한 데이터 업데이트
-    func updateLikeList(likePostIds: [AnyHashable: Any], likeCount: [AnyHashable: Any]) async {
+    func updateLikeList(likePostIds: [AnyHashable: Any]) async {
         if let userId = currentUser?.id {
             do {
                 try await FirebaseManager.shared.updateData(collectionName: AppConstants.CollectionName.users,
                                                             byId: userId,
                                                             data: likePostIds)
-                
-                try await FirebaseManager.shared.updateData(collectionName: AppConstants.CollectionName.users,
-                                                            byId: userId,
-                                                            data: likeCount)
             } catch {
                 print("Error updateLikeList LoginViewModel : \(error.localizedDescription)")
             }

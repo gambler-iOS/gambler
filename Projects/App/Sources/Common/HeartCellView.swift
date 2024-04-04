@@ -74,10 +74,8 @@ struct HeartCellView: View {
             return
         }
         var userLikeDictionary: [AnyHashable: Any] = [:]
-        var userLikeCountDictionary: [AnyHashable: Any] = [:]
         var likeKey: String = ""
         var updatedLikeArray: [String] = []
-        var countLike: Int = curUser.myLikesCount
 
         if postType == .game {
             likeKey = "likeGameId"
@@ -92,10 +90,8 @@ struct HeartCellView: View {
         }
         
         if isLiked {
-            countLike += 1
             updatedLikeArray.append(postId)
         } else {
-            countLike -= 1
             updatedLikeArray.removeAll { $0 == postId }
         }
         
@@ -106,10 +102,8 @@ struct HeartCellView: View {
         }
         
         userLikeDictionary[likeKey] = updatedLikeArray
-        userLikeCountDictionary["myLikesCount"] = countLike
         Task {
-            await loginViewModel.updateLikeList(likePostIds: userLikeDictionary, likeCount: userLikeCountDictionary)
-            
+            await loginViewModel.updateLikeList(likePostIds: userLikeDictionary)
             await myPageViewModel.fetchLikeGames(user: loginViewModel.currentUser)
             await myPageViewModel.fetchLikeShops(user: loginViewModel.currentUser)
         }
