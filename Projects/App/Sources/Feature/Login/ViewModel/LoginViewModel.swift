@@ -162,7 +162,7 @@ final class LoginViewModel: ObservableObject {
     }
     
     /// Firebase Auth 삭제 및 Firestore 데이터 삭제
-    private func deleteAccount() async -> Bool {
+    func deleteAccount() async -> Bool {
         
         guard let user = Auth.auth().currentUser else { return false }
         var success = false
