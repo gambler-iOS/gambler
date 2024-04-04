@@ -25,3 +25,20 @@ final class AppNavigationPath: ObservableObject {
         registTermsViewIsActive = false
     }
 }
+
+enum LoginViewOptions: Hashable {
+    case loginView
+    case regstrationView
+    case temsOfAgreeView
+    
+    @ViewBuilder func view() -> some View {
+        switch self {
+        case .loginView:
+            LoginView()
+        case .regstrationView:
+            RegistrationView()
+        case .temsOfAgreeView:
+            RegisterTermsOfUseView()
+        }
+    }
+}
