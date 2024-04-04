@@ -46,7 +46,6 @@ final class StorageManager {
     
     private init() { }
     
-    #warning("해당 메서드 사용 후, 데이터 패치해와야 함")
     /// 프로필 이미지 스토지에 저장, 스토어에 업데이트, 사용 후 패치해야함
     /// - Parameter item: PhotosPickerItem?
     func loadProfileImage(fromItem item: PhotosPickerItem?, folder: StoragePath) async throws {
@@ -56,7 +55,7 @@ final class StorageManager {
         self.uiImage = uiImage
         try await updateProfileImage(folder: folder)
     }
-
+    
     /// 프로필 이미지를 스토어에 업데이트
     private func updateProfileImage(folder: StoragePath) async throws {
         guard let image = self.uiImage else { return }

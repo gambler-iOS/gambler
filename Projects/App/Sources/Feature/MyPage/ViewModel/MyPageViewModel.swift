@@ -19,12 +19,13 @@ final class MyPageViewModel: ObservableObject {
     @Published var gameReviews: [ReviewData] = []
     @Published var likeShops: [Shop] = []
     @Published var likeGames: [Game] = []
+    @Published var countLike: Int = 0
     @Published var userImage: Image?
     @Published var profileImageChanged: Bool = false
     @Published var isShowingToast: Bool = false
     @Published var toastCategory: ToastCategory = .complain
-    @Published var termsOfUserSiteURL: String = "https://www.naver.com"
-    @Published var developerInfoSiteURL: String = "https://www.google.co.kr"
+    @Published var termsOfUserSiteURL: String = "https://raw.githubusercontent.com/gambler-iOS/gambler-WebPage/main/Terms%20of%20Use.md"
+    @Published var developerInfoSiteURL: String = "https://github.com/gambler-iOS/gambler"
     
     let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
     
@@ -32,6 +33,11 @@ final class MyPageViewModel: ObservableObject {
     private let storageManager = StorageManager.shared
     
     init() { }
+    
+    @MainActor
+    func fetchLikeCount() {
+        countLike = likeGames.count + likeShops.count
+    }
     
     @MainActor
     func fetchLikeGames(user: User?) async {

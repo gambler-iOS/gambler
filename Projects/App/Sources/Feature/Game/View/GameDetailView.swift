@@ -50,6 +50,7 @@ struct GameDetailView: View {
                     .padding(.horizontal, 24)
                 
                 ItemButtonSetView(type: .game, isShowingToast: $isShowingToast, game: gameDetailViewModel.game)
+              
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, 24)
                     .padding(.bottom, -32)

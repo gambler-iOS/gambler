@@ -10,6 +10,7 @@ import SwiftUI
 
 struct HeartCellView: View {
     @EnvironmentObject private var loginViewModel: LoginViewModel
+    @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @EnvironmentObject private var tabSelected: TabSelection
     let postId: String
@@ -75,7 +76,7 @@ struct HeartCellView: View {
         var userLikeDictionary: [AnyHashable: Any] = [:]
         var likeKey: String = ""
         var updatedLikeArray: [String] = []
-        
+
         if postType == .game {
             likeKey = "likeGameId"
             if let likeGameIdArray = curUser.likeGameId {
@@ -101,9 +102,10 @@ struct HeartCellView: View {
         }
         
         userLikeDictionary[likeKey] = updatedLikeArray
-        
         Task {
             await loginViewModel.updateLikeList(likePostIds: userLikeDictionary)
+            await myPageViewModel.fetchLikeGames(user: loginViewModel.currentUser)
+            await myPageViewModel.fetchLikeShops(user: loginViewModel.currentUser)
         }
     }
 }

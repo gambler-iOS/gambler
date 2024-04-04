@@ -12,7 +12,8 @@ struct RegistrationView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var loginViewModel: LoginViewModel
     @EnvironmentObject var appNavigationPath: AppNavigationPath
-    
+    @EnvironmentObject private var tabNum: TabSelection
+
     @State private var isDisabled: Bool = true
     @State private var nicknameText: String = ""
     @State private var isDuplicated: Bool = false
@@ -40,12 +41,20 @@ struct RegistrationView: View {
             
             CTAButton(disabled: $isDisabled, title: "다음") {
                 AuthService.shared.tempUser?.nickname = nicknameText
-                appNavigationPath.registTermsViewIsActive = true
+                switch tabNum.selectedTab {
+                case 0:
+                    appNavigationPath.homeViewPath.append(LoginViewOptions.temsOfAgreeView)
+                case 1:
+                    appNavigationPath.mapViewPath.append(LoginViewOptions.temsOfAgreeView)
+                case 2:
+                    appNavigationPath.searchViewPath.append(LoginViewOptions.temsOfAgreeView)
+                case 3:
+                    appNavigationPath.myPageViewPath.append(LoginViewOptions.temsOfAgreeView)
+                default:
+                    appNavigationPath.isGoTologin = false
+                }
             }
             .padding(.bottom, 24)
-            .navigationDestination(isPresented: $appNavigationPath.registTermsViewIsActive) {
-                RegisterTermsOfUseView()
-            }
         }
         .padding(.horizontal, 24)
         .navigationBarBackButtonHidden(true)
@@ -94,4 +103,5 @@ struct RegistrationView: View {
     RegistrationView()
         .environmentObject(LoginViewModel())
         .environmentObject(AppNavigationPath())
+        .environmentObject(TabSelection())
 }

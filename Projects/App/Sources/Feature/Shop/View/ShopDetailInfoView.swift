@@ -158,7 +158,7 @@ struct ShopDetailInfoView: View {
                     isHeartButton = likeShopArray.contains { $0 == shop.id }
                 }
             }
-            
+
             if isShowingFullScreen {
                 withAnimation(.smooth()) {
                     FullScreenImageView(isShowingFullScreen: $isShowingFullScreen, url: $url)

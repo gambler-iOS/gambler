@@ -66,19 +66,16 @@ struct ProfileEditView: View {
                             title: "정말 탈퇴하시겠어요?",
                             content: "탈퇴 후에는 작성하신 리뷰를 수정 혹은 삭제할 수 없어요. 탈퇴 신청 전에 꼭 확인해주세요.") {
                 Task {
-                    if await loginViewModel.deleteAndResetAuth() {
-//                        appNavigationPath.myPageViewPath = .init()
+                    loginViewModel.removeAuthStateListener()  // 어스 리스너 중지
+                    if await loginViewModel.deleteAccount() {
                         myPageViewModel.toastCategory = .deleteAccount
                         myPageViewModel.isShowingToast = true
-                        tabSelection.selectedTab = 0
-                        // 재로그인시 로딩 활성화 방지
                         AuthService.shared.isLoading = false
-//                        loginViewModel.authState = .signedOut
+                        tabSelection.selectedTab = 0
                         isShowingResignModal = false
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                            appNavigationPath.myPageViewPath.removeLast()
-                        }
+                        loginViewModel.resetAuth()
+                        loginViewModel.configureAuthStateChanges()  // 어스 리스너 시작
+                        appNavigationPath.myPageViewPath.removeLast()
                     }
                 }
             }
@@ -93,12 +90,11 @@ struct ProfileEditView: View {
             appNavigationPath.mapViewPath.removeLast()
             
             if await profileEditViewModel.uploadProfileImage(user: currentUser, selectedPhoto: profileEditViewModel.selectedPhoto) {
-                await loginViewModel.getUserDate()
+                await loginViewModel.getUserData()
             }
         }
     }
     
-#warning("현재 Data타입을 url로 바꾸는 방법은 storage를 거치는 방법 뿐인것같아 일단은 UIImage로 처리함")
     private var profileView: some View {
         VStack {
             if let data = profileEditViewModel.imageData, let uiImage = UIImage(data: data) {
@@ -145,7 +141,7 @@ struct ProfileEditView: View {
             profileTextField(title: "닉네임", name: self.nickName)
         }
     }
-
+    
     private func profileTextField(title: String, name: String) -> some View {
         TitleAndBoxView(title: title)
             .overlay(alignment: .leading) {
@@ -171,15 +167,15 @@ struct ProfileEditView: View {
                         PluginCellView(image: GamblerAsset.kakaotalkLogo.swiftUIImage,
                                        social: LoginPlatform.kakakotalk,
                                        user: currentUser)
-                            .padding(.horizontal, 16)
+                        .padding(.horizontal, 16)
                         PluginCellView(image: GamblerAsset.appleLogo.swiftUIImage,
                                        social: LoginPlatform.apple,
                                        user: currentUser)
-                            .padding(.horizontal, 16)
+                        .padding(.horizontal, 16)
                         PluginCellView(image: GamblerAsset.googleLogo.swiftUIImage,
                                        social: LoginPlatform.google,
                                        user: currentUser)
-                            .padding(.horizontal, 16)
+                        .padding(.horizontal, 16)
                     }
                 }
             Button {

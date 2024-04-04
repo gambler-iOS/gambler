@@ -12,7 +12,9 @@ import UIKit
 struct ItemButtonSetView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @EnvironmentObject private var loginViewModel: LoginViewModel
+    @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject private var tabSelection: TabSelection
+
     let type: MyPageFilter
     @Binding var isShowingToast: Bool
     var shop: Shop?
@@ -158,7 +160,7 @@ struct ItemButtonSetView: View {
             updatedLikeArray.append(postId)
             heartState = true
         }
-        
+
         if type == .game {
             loginViewModel.currentUser?.likeGameId = updatedLikeArray
         } else {
@@ -166,9 +168,11 @@ struct ItemButtonSetView: View {
         }
         
         userLikeDictionary[likeKey] = updatedLikeArray
-        
+
         Task {
             await loginViewModel.updateLikeList(likePostIds: userLikeDictionary)
+            await myPageViewModel.fetchLikeGames(user: loginViewModel.currentUser)
+            await myPageViewModel.fetchLikeShops(user: loginViewModel.currentUser)
         }
     }
 }

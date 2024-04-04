@@ -13,7 +13,6 @@ struct RegisterTermsOfUseView: View {
     @EnvironmentObject private var appNavigationPath: AppNavigationPath
     @EnvironmentObject private var myPageViewModel: MyPageViewModel
     @EnvironmentObject private var tabSelection: TabSelection
-    
     @Environment(\.dismiss) private var dismiss
     
     @State private var isDisabled: Bool = true
@@ -22,10 +21,9 @@ struct RegisterTermsOfUseView: View {
     @State private var agreedSecondItem: Bool = false
     @State private var termsOfUserSafariActive = false
     @State private var personalInformationSafariActive = false
-
-#warning ("주소 변경 해야함")
-    private let personalInformationLink: String = "https://www.google.co.kr"
-
+    
+    private let personalInformationLink: String = "https://raw.githubusercontent.com/gambler-iOS/gambler-WebPage/main/Pricacy.md"
+    
     var body: some View {
         VStack(spacing: .zero) {
             Text("이용약관에 동의해주세요.")
@@ -83,29 +81,23 @@ struct RegisterTermsOfUseView: View {
                 Task {
                     myPageViewModel.toastCategory = .signUp
                     myPageViewModel.isShowingToast = true
-                    appNavigationPath.returnToPreLogin()
-                    
-//                    myPageViewPath.removeLast()
+                    switch tabSelection.selectedTab {
+                    case 0:
+                        appNavigationPath.homeViewPath.removeLast(3)
+                    case 1:
+                        appNavigationPath.mapViewPath.removeLast(3)
+                    case 2:
+                        appNavigationPath.searchViewPath.removeLast(3)
+                    case 3:
+                        appNavigationPath.myPageViewPath.removeLast(3)
+                    default:
+                        appNavigationPath.isGoTologin = false
+                    }
                     AuthService.shared.uploadUserToFirestore(user: user)
                     await loginViewModel.fetchUserData()
                     loginViewModel.authState = .signedIn
                     withAnimation(.easeIn(duration: 0.4)) {
                         myPageViewModel.isShowingToast = true
-                    }
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                        switch tabSelection.selectedTab {
-                        case 0:
-                            dismiss()
-                        case 1:
-                            dismiss()
-                        case 2:
-                            dismiss()
-                        case 3:
-                            dismiss()
-                        default:
-                            appNavigationPath.isGoTologin = false
-                        }
                     }
                 }
             }
@@ -129,7 +121,13 @@ struct RegisterTermsOfUseView: View {
             Text(title)
                 .font(.body1B)
                 .foregroundStyle(Color.black)
-                .underline(title == "전체동의" ? false: true)
+                .overlay(
+                    title != "전체동의" ?
+                    Rectangle()
+                        .frame(height: 1)
+                        .offset(y: 4)
+                    : nil,
+                    alignment: .bottom)
                 .onTapGesture {
                     if title == "이용약관 동의(필수)" {
                         termsOfUserSafariActive = true
