@@ -77,15 +77,11 @@ struct LoginView: View {
             .padding(.bottom, 32)
         }
         .padding(.horizontal, 24)
-//        .navigationDestination(isPresented: $appNavigationPath.registViewIsActive) {
-//            RegistrationView()
-//        }
         .navigationDestination(for: LoginViewOptions.self, destination: { option in
             option.view()
         })
         .onChange(of: loginViewModel.authState) { _, newAuth in
             if newAuth == .creatingAccount && loginViewModel.userSession != nil {
-//                appNavigationPath.registViewIsActive = true
                 switch tabNum.selectedTab {
                 case 0:
                     appNavigationPath.homeViewPath.append(LoginViewOptions.regstrationView)

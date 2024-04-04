@@ -16,14 +16,6 @@ final class AppNavigationPath: ObservableObject {
     
     /// 로그인 필요할 때 LoginView 이동 navigationDestination 용 flag
     @Published var isGoTologin: Bool = false
-    @Published var registViewIsActive: Bool = false
-    @Published var registTermsViewIsActive: Bool = false
-    
-    func returnToPreLogin() {
-        isGoTologin = false
-        registViewIsActive = false
-        registTermsViewIsActive = false
-    }
 }
 
 enum LoginViewOptions: Hashable {

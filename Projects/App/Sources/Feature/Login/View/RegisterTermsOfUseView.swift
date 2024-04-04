@@ -93,30 +93,12 @@ struct RegisterTermsOfUseView: View {
                     default:
                         appNavigationPath.isGoTologin = false
                     }
-                    
-//                    appNavigationPath.returnToPreLogin()  // 여기서 로그인 뷰로 이동(뒤로 이동 한 번 더?)
-//                    myPageViewPath.removeLast()
                     AuthService.shared.uploadUserToFirestore(user: user)
                     await loginViewModel.fetchUserData()
                     loginViewModel.authState = .signedIn
                     withAnimation(.easeIn(duration: 0.4)) {
                         myPageViewModel.isShowingToast = true
                     }
-                    
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-//                        switch tabSelection.selectedTab {
-//                        case 0:
-//                            dismiss()
-//                        case 1:
-//                            dismiss()
-//                        case 2:
-//                            dismiss()
-//                        case 3:
-//                            dismiss()
-//                        default:
-//                            appNavigationPath.isGoTologin = false
-//                        }
-//                    }
                 }
             }
             .padding(.bottom, 24)

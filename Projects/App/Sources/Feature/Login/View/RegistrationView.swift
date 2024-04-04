@@ -41,7 +41,6 @@ struct RegistrationView: View {
             
             CTAButton(disabled: $isDisabled, title: "다음") {
                 AuthService.shared.tempUser?.nickname = nicknameText
-//                appNavigationPath.registTermsViewIsActive = true
                 switch tabNum.selectedTab {
                 case 0:
                     appNavigationPath.homeViewPath.append(LoginViewOptions.temsOfAgreeView)
@@ -56,10 +55,6 @@ struct RegistrationView: View {
                 }
             }
             .padding(.bottom, 24)
-            
-//            .navigationDestination(isPresented: $appNavigationPath.registTermsViewIsActive) {
-//                RegisterTermsOfUseView()
-//            }
         }
         .padding(.horizontal, 24)
         .navigationBarBackButtonHidden(true)
