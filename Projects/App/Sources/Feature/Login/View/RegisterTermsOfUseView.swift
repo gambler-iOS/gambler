@@ -81,8 +81,7 @@ struct RegisterTermsOfUseView: View {
                 Task {
                     myPageViewModel.toastCategory = .signUp
                     myPageViewModel.isShowingToast = true
-                    appNavigationPath.returnToPreLogin()
-                    
+                    appNavigationPath.returnToPreLogin()  // 여기서 로그인 뷰로 이동(뒤로 이동 한 번 더?)
 //                    myPageViewPath.removeLast()
                     AuthService.shared.uploadUserToFirestore(user: user)
                     await loginViewModel.fetchUserData()

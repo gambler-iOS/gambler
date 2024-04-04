@@ -29,12 +29,6 @@ struct MyLikesView: View {
             }
         }
         .navigationTitle("좋아요")
-//        .onAppear {
-//            Task {
-//                await myPageViewModel.fetchLikeGames(user: loginViewModel.currentUser)
-//                await myPageViewModel.fetchLikeShops(user: loginViewModel.currentUser)
-//            }
-//        }
         .modifier(BackButton())
     }
     
