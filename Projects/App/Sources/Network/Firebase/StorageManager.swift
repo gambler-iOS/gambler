@@ -46,7 +46,6 @@ final class StorageManager {
     
     private init() { }
     
-#warning("해당 메서드 사용 후, 데이터 패치해와야 함")
     /// 프로필 이미지 스토지에 저장, 스토어에 업데이트, 사용 후 패치해야함
     /// - Parameter item: PhotosPickerItem?
     func loadProfileImage(fromItem item: PhotosPickerItem?, folder: StoragePath) async throws {
@@ -131,56 +130,5 @@ final class StorageManager {
             }
         }
         return imageUrls
-    }
-    
-    
-//    func uploadImages2(_ images: [Data], folder: StoragePath) async throws -> [String]? {
-//        let storageRef = storage.reference()
-//        var imageUrls: [String] = []
-//
-//        // DispatchGroup을 사용하여 모든 이미지 업로드가 완료될 때까지 대기
-//        let dispatchGroup = DispatchGroup()
-//
-//        for imageData in images {
-//            let compressedImageData = compressImage(imageData: imageData)
-//            let fileName = UUID().uuidString
-//            let imageRef = storageRef.child(folder.description).child(fileName)
-//
-//            let metadata = StorageMetadata()
-//            metadata.contentType = "image/jpeg"
-//
-//            // 비동기로 이미지 업로드 시작
-//            dispatchGroup.enter()
-//            async let uploadTask = imageRef.putDataAsync(compressedImageData, metadata: metadata)
-//
-//            // 이미지 업로드 완료 후 처리
-//            Task {
-//                    let _ = imageRef.putData(compressedImageData, metadata: metadata)
-//  // 업로드 완료까지 대기
-//                    let url = try await imageRef.downloadURL()  // 이미지 다운로드 URL 가져오기
-//                    let imageUrl = url.absoluteString
-//                    imageUrls.append(imageUrl)
-//                // DispatchGroup에서 해당 작업이 끝났음을 알림
-//                dispatchGroup.leave()
-//            }
-//        }
-//        // 모든 이미지 업로드가 완료될 때까지 대기
-//        await dispatchGroup.wait()
-//        return imageUrls.isEmpty ? nil : imageUrls
-//    }
-    
-    
-    func compressImage(imageData: Data) -> Data {
-        guard let image = UIImage(data: imageData) else {
-            print("Invalid image data")
-            return imageData
-        }
-        
-        if let compressedImageData = image.jpegData(compressionQuality: 0.25) {
-            return compressedImageData
-        } else {
-            print("Error compressing image")
-            return imageData
-        }
     }
 }
