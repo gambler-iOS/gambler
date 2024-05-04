@@ -11,9 +11,9 @@ public extension Project {
             name: String,
             platform: Platform = .iOS,
             product: Product,
-            organizationName: String = "gambler",
+            organizationName: String = "gamblerTeam",
             packages: [Package] = [],
-            deploymentTarget: DeploymentTarget? = .iOS(targetVersion: "16.0", devices: [.iphone]),
+            deploymentTarget: DeploymentTarget? = .iOS(targetVersion: "17.0", devices: [.iphone]),
             dependencies: [TargetDependency] = [],
             sources: SourceFilesList = ["Sources/**"],
             resources: ResourceFileElements? = nil,
@@ -38,7 +38,8 @@ public extension Project {
                 resources: resources,
                 entitlements: entitlements,
                 scripts: [.SwiftLintShell],
-                dependencies: dependencies
+                dependencies: dependencies,
+                environmentVariables: ["IDEPreferLogStreaming": .init(stringLiteral: "YES")]
             )
 
             let testTarget = Target(
@@ -49,7 +50,8 @@ public extension Project {
                 deploymentTarget: deploymentTarget,
                 infoPlist: .default,
                 sources: ["Tests/**"],
-                dependencies: [.target(name: name)]
+                dependencies: [.target(name: name)],
+                environmentVariables: ["IDEPreferLogStreaming": .init(stringLiteral: "YES")]
             )
 
             let schemes: [Scheme] = [.makeScheme(target: .debug, name: name)]
